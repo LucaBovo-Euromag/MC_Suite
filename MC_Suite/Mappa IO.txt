@@ -1,0 +1,48 @@
+﻿        
+		******************************************************************************************* COMUNICAZIONE CON SCHEDA SSM1
+
+		Nome variabile    Raspberry IO       USB-4702 Interface        DSUB Pin       Descrizione
+        DAC_CS_Pin        17				 OUT4					   34             CS  seriale scheda SSM1       
+        DAC_CK_Pin        22				 DAC0                      26             CK  seriale scheda SSM1
+        DAC_DAT_Pin       27                 DAC1                      8              DAT seriale scheda SSM1
+
+		File: Services/SSM1_Com.cs
+		*************************************************************************************************************************
+
+		************************************************************************************************************ I/O DIGITALI
+
+	    Nome variabile    Raspberry IO       USB-4702 Interface        DSUB Pin        Descrizione
+        EmptyPype_Pin     10				 OUT3                      15              Simulazione stato tubo vuoto
+        VAux_Pin          9                  OUT5                      16              Attivazione VAux per 4/20mA  
+        GP_IN_Pin         11                 OUT6                      35              Simulazione Ingresso digitale MC608
+        RL_4_20mA_Pin     5                  OUT2                      33              Relè per lettura 4/20mA schede HW <6.3
+        LowBatteryOut_Pin 24                 OUT1                      14              Attivazione led Batteria Scarica                NEW
+        ProgOut_Pin       13                 IN4                       30              Lettura stato uscita programmabile MC608 
+        PulseOut_Pin      19                 IN5                       12              Lettura stato uscita impulsi MC608
+        FreqOut_Pin       26                 IN6                       31              Lettura stato uscita in frequenza MC608
+        ChargingIn_Pin    21                 IN3                       11              Lettura uscita Charging Alimentatore VPS1       NEW
+        PulseNegOut_Pin   20                 IN1                       10              Lettura uscita impulsi negativi MC406
+        PulsePosOut_Pin   16                 IN0                       28              Lettura uscita impulsi positivi MC406
+
+		File: Services/GPIO_Device.cs
+		***************************************************************************************************************************
+
+		**************************************************************************************************************** ANALOGICHE
+
+        Nome variabile    Canali ADS1115     USB-4702 Interface        DSUB Pin        Descrizione
+        Out4_20mA         3                  AN0                       23			   Lettura uscita 4/20mA         
+        Icoil             2                  AN2                       22        	   Lettura corrente bobine
+        VAlim             1                  AN4                       21              Lettura Tensione batteria
+        AN_Free           0                  AN6                       20              --  
+		
+		File: Services/AnalogService.cs
+		***************************************************************************************************************************
+
+		************************************************************************************************************** ALIMENTAZIONE
+		
+		Nome variabile    Raspberry          USB-4702 Interface        DSUB Pin        Descrizione
+        --                5V                 +5V                       37			   Alimentazione 5V         
+        --                3.3V               +2.5V                     6        	   ALimentazione 3.3V
+        --                GND                DGND                      19              GND 
+
+		***************************************************************************************************************************

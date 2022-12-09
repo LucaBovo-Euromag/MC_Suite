@@ -1,0 +1,1291 @@
+﻿using Euromag.Utility.Endianness;
+
+namespace MC_Suite.Euromag.Protocols.StdCommands
+{
+    using System;
+    using System.Collections.Generic;
+
+    static class AllRAMVarsLister
+    {
+        public static ICollection<ITargetVariable> getList()
+        {
+            List<ITargetVariable> list = new List<ITargetVariable>();
+            list.Add(new FRATE_MS());
+            list.Add(new FRATE_UTTB());
+            list.Add(new FRATE_PERC());
+            list.Add(new ICOIL_MA());
+            list.Add(new TPACC_M3());
+            list.Add(new TNACC_M3());
+            list.Add(new PPACC_M3());
+            list.Add(new PNACC_M3());
+            list.Add(new FRATE_MS_VERIF());
+            list.Add(new HW_INFO());
+            list.Add(new FW_VER());
+            list.Add(new FW_REV());
+            list.Add(new LOG_LAST_ROW());
+            list.Add(new EVENTS_COUNT());
+            list.Add(new DEBUG_MEAS());
+            list.Add(new TEMP_T1());
+            list.Add(new TEMP_T2());
+            list.Add(new PRESSURE());
+            list.Add(new BT_FW_VER());
+            list.Add(new BT_FW_REV());
+            list.Add(new BT_HW_VER());
+            list.Add(new BT_STATUS());
+
+            //Variabili Scheda IO******************************
+
+            //Info **********************************
+            list.Add(new INFO_BOARD_MODEL());
+            list.Add(new INFO_FW_VER());
+            list.Add(new INFO_FW_REV());
+            list.Add(new INFO_FW_DATE());
+            //Web ***********************************
+            list.Add(new WEB_IP_ADDRESS());
+            list.Add(new WEB_MAC_ADDRESS());
+            //HMS ***********************************
+            list.Add(new HMS_MODULE_STATE());
+            list.Add(new HMS_CONN_STATE());
+            //DAC161 ********************************
+            list.Add(new DAC161_STATE());
+            list.Add(new DAC161_OUT_mA());
+            //SYSTEM ********************************
+            list.Add(new SYSTEM_TASK_STATES());
+            list.Add(new SYSTEM_TASK_ERRORS());
+            list.Add(new SYSTEM_DATE_TIME());
+            list.Add(new SYSTEM_MB_LOGS());
+            list.Add(new SYSTEM_MB_EVENTS());
+            //FILE SYSTEM **************************
+            list.Add(new FILE_SYSTEM_FLAGS());
+            list.Add(new FILE_SYSTEM_FILE_COUNT());
+            list.Add(new FILE_SYSTEM_SAVED_LOGS());
+            list.Add(new FILE_SYSTEM_SAVED_EVENTS());
+            //****************************************
+            list.Add(new BLUETOOTH_STATE());
+            return list.AsReadOnly();
+        }
+    }
+    
+    public enum RAMAddresses : uint
+    {
+        FRATE_MS_ADD        = 1,
+        FRATE_UTTB_ADD      = 2,
+        FRATE_PERC_ADD      = 3,
+        ICOIL_MA_ADD        = 4,
+        TPACC_M3_ADD        = 5,
+        TNACC_M3_ADD        = 6,
+        PPACC_M3_ADD        = 7,
+        PNACC_M3_ADD        = 8,
+        FRATE_MS_VERIF_ADD  = 13,
+        TEMP_T1_ADD         = 14,  //temperature T1 2019/05/57 BALLARINI
+        TEMP_T2_ADD         = 15,  //temperature T2 2019/05/57 BALLARINI
+        PRESSURE_ADD        = 16,  //pressure 2019/05/57 BALLARINI
+
+        //Info scheda Bluetooth/Modbus****
+        BT_HW_VER_ADD       = 17,
+        BT_FW_VER_ADD       = 18,
+        BT_FW_REV_ADD       = 19,
+        BT_STATUS_ADD       = 20,
+        //********************************
+
+        HW_INFO_ADD         = 97,
+        FW_VER_ADD          = 98,
+        FW_REV_ADD          = 99,
+        LOG_LAST_ROW_ADD    = 100,
+        EVENTS_COUNT_ADD    = 101,
+        
+        DEBUG_MEAS_ADD      = 200,
+
+        //Variabili scheda IO MC808 ******************************************************
+
+        //Info **********************************
+        INFO_BOARD_MODEL_ADDR           = 0x8001,
+        INFO_FW_VER_ADDR                = 0x8002,
+        INFO_FW_REV_ADDR                = 0x8003,
+        INFO_FW_DATE_ADDR               = 0x8004,
+        //Web ***********************************
+        WEB_IP_ADDRESS_ADDR             = 0x8005,
+        WEB_MAC_ADDRESS_ADDR            = 0x8006,
+        //HMS ***********************************
+        HMS_MODULE_STATE_ADDR           = 0x8007,
+        HMS_CONN_STATE_ADDR             = 0x8008,
+        //DAC161 ********************************
+        DAC161_STATE_ADDR               = 0x8009,
+        DAC161_OUT_mA_ADDR              = 0x800A,
+        //SYSTEM ********************************
+        SYSTEM_TASK_STATES_ADDR         = 0x800B,
+        SYSTEM_TASK_ERRORS_ADDR         = 0x800C,
+        SYSTEM_DATE_TIME_ADDR           = 0x800D,
+        SYSTEM_MB_LOGS_ADDR             = 0x800E,
+        SYSTEM_MB_EVENTS_ADDR           = 0x800F,
+        //FILE SYSTEM **************************
+        FILE_SYSTEM_FLAGS_ADDR          = 0x8010,
+        FILE_SYSTEM_FILE_COUNT_ADDR     = 0x8011,
+        FILE_SYSTEM_SAVED_LOGS_ADDR     = 0x8012,
+        FILE_SYSTEM_SAVED_EVENTS_ADDR   = 0x8013,
+        //BLUETOOTH *****************************
+        BLUETOOTH_STATE_ADDR            = 0x8014
+    }
+
+    public interface IRAMvariable : ITargetVariable
+    {
+        RAMAddresses Address
+        { get; }
+    }
+
+    public class FRATE_MS : FloatTargetVariable, IRAMvariable
+    {
+        public FRATE_MS()
+            : base()
+        {
+
+        }
+        
+        public override string ToString()
+        {
+            return "Filtered flow rate [m/s]";
+        }
+
+        public RAMAddresses Address
+        { 
+            get 
+            { return RAMAddresses.FRATE_MS_ADD; } 
+        }
+    }
+
+    public class FRATE_UTTB : FloatTargetVariable, IRAMvariable
+    {
+        public FRATE_UTTB()
+            : base()
+        {
+
+        }
+
+        public override string ToString()
+        {
+            return "Filtered flow rate [current units]";
+        }
+
+        public RAMAddresses Address
+        {
+            get
+            { return RAMAddresses.FRATE_UTTB_ADD; }
+        }
+    }
+
+    public class FRATE_PERC : FloatTargetVariable, IRAMvariable
+    {
+        public FRATE_PERC()
+            : base()
+        {
+
+        }
+
+        public override string ToString()
+        {
+            return "Filtered flow rate [full scale %]";
+        }
+
+        public RAMAddresses Address
+        {
+            get
+            { return RAMAddresses.FRATE_PERC_ADD; }
+        }
+    }
+
+    public class ICOIL_MA : FloatTargetVariable, IRAMvariable
+    {
+        public ICOIL_MA()
+            : base()
+        {
+
+        }
+
+        public override string ToString()
+        {
+            return "Coils' current [mA]";
+        }
+
+        public RAMAddresses Address
+        {
+            get
+            { return RAMAddresses.ICOIL_MA_ADD; }
+        }
+    }
+
+    public class TPACC_M3 : DoubleTargetVariable, IRAMvariable
+    {
+        public TPACC_M3()
+            : base()
+        { }
+
+        public override string ToString()
+        {
+            return "Total positive flowrate accumulator [m^3]";
+        }
+
+        public RAMAddresses Address
+        {
+            get
+            { return RAMAddresses.TPACC_M3_ADD; }
+        }
+    }
+
+    public class TNACC_M3 : DoubleTargetVariable, IRAMvariable
+    {
+        public TNACC_M3()
+            : base()
+        { }
+
+        public override string ToString()
+        {
+            return "Total negative flowrate accumulator [m^3]";
+        }
+
+        public RAMAddresses Address
+        {
+            get
+            { return RAMAddresses.TNACC_M3_ADD; }
+        }
+    }
+
+    public class PPACC_M3 : DoubleTargetVariable, IRAMvariable
+    {
+        public PPACC_M3()
+            : base()
+        { }
+
+        public override string ToString()
+        {
+            return "Partial positive flowrate accumulator [m^3]";
+        }
+
+        public RAMAddresses Address
+        {
+            get
+            { return RAMAddresses.PPACC_M3_ADD; }
+        }
+    }
+
+    public class PNACC_M3 : DoubleTargetVariable, IRAMvariable
+    {
+        public PNACC_M3()
+            : base()
+        { }
+
+        public override string ToString()
+        {
+            return "Partial negative flowrate accumulator [m^3]";
+        }
+
+        public RAMAddresses Address
+        {
+            get
+            { return RAMAddresses.PNACC_M3_ADD; }
+        }
+    }
+
+    public class FRATE_MS_VERIF : FloatTargetVariable, IRAMvariable
+    {
+        public FRATE_MS_VERIF()
+            : base()
+        {
+
+        }
+
+        public override string ToString()
+        {
+            return "Filtered verificator flow rate [m/s]";
+        }
+
+        public RAMAddresses Address
+        {
+            get
+            { return RAMAddresses.FRATE_MS_VERIF_ADD; }
+        }
+    }
+
+    public class HW_INFO : DataTargetVariable, IRAMvariable
+    {
+        public HW_INFO()
+            : base()
+        {
+
+        }
+
+        public override string ToString()
+        {
+            return "Hardware version info";
+        }
+
+        public override Int32 Size
+        {
+            get
+            {
+                return 2;
+            }
+        }
+
+        /// <summary>
+        /// Gets the board's identification byte
+        /// </summary>
+        public Byte BoardId
+        {
+            get { return _value[0]; }
+        }
+
+        /// <summary>
+        /// Gets the board's hardware version
+        /// </summary>
+        public Byte Version
+        {
+            get { return _value[1]; }
+        }
+
+        public RAMAddresses Address
+        {
+            get
+            { return RAMAddresses.HW_INFO_ADD; }
+        }
+    }
+
+    public class FW_VER : ByteTargetVariable, IRAMvariable
+    {
+        public FW_VER()
+            : base()
+        {
+
+        }
+
+        public override string ToString()
+        {
+            return "Firmware version number";
+        }
+
+        public RAMAddresses Address
+        {
+            get
+            { return RAMAddresses.FW_VER_ADD; }
+        }
+    }
+
+    public class FW_REV : ByteTargetVariable, IRAMvariable
+    {
+        public FW_REV()
+            : base()
+        {
+
+        }
+
+        public override string ToString()
+        {
+            return "Firmware revision number";
+        }
+
+        public RAMAddresses Address
+        {
+            get
+            { return RAMAddresses.FW_REV_ADD; }
+        }
+    }
+
+    public class LOG_LAST_ROW : UInt32TargetVariable, IRAMvariable
+    {
+        public LOG_LAST_ROW()
+            : base()
+        {
+
+        }
+
+        public override string ToString()
+        {
+            return "Data log's rows number";
+        }
+
+        public RAMAddresses Address
+        {
+            get
+            { return RAMAddresses.LOG_LAST_ROW_ADD; }
+        }
+    }
+
+    public class EVENTS_COUNT : UInt16TargetVariable, IRAMvariable
+    {
+        public EVENTS_COUNT()
+            : base()
+        {
+
+        }
+
+        public override string ToString()
+        {
+            return "Events log count";
+        }
+
+        public RAMAddresses Address
+        {
+            get
+            { return RAMAddresses.EVENTS_COUNT_ADD; }
+        }
+    } 
+
+    public class DEBUG_MEAS : DataTargetVariable, IRAMvariable
+    {
+        public struct variables
+        {
+            public variables(List<Byte> buff)
+            {
+                ADCReadFirstStep = LEconverter.LEArrayToInt32(buff.ToArray(), 0);
+                ADCReadSecondStep = LEconverter.LEArrayToInt32(buff.ToArray(), 4);
+                ADCReadThirdStep = LEconverter.LEArrayToInt32(buff.ToArray(), 8);
+                ADCReadFourthStep = LEconverter.LEArrayToInt32(buff.ToArray(), 12);
+                AveragedFlowTU = LEconverter.LEArrayToSingle(buff.ToArray(), 16);
+                BatteryVoltage = LEconverter.LEArrayToSingle(buff.ToArray(), 20);
+                SensorResistance = LEconverter.LEArrayToSingle(buff.ToArray(), 24);
+                WindingsCurrent = LEconverter.LEArrayToSingle(buff.ToArray(), 28);
+            }
+
+            public List<Byte> ToList()
+            {
+                List<Byte> retVal = new List<Byte>(32);
+
+                retVal.AddRange(LEconverter.toLEArray(ADCReadFirstStep));
+                retVal.AddRange(LEconverter.toLEArray(ADCReadSecondStep));
+                retVal.AddRange(LEconverter.toLEArray(ADCReadThirdStep));
+                retVal.AddRange(LEconverter.toLEArray(ADCReadFourthStep));
+                retVal.AddRange(LEconverter.toLEArray(AveragedFlowTU));
+                retVal.AddRange(LEconverter.toLEArray(BatteryVoltage));
+                retVal.AddRange(LEconverter.toLEArray(SensorResistance));
+                retVal.AddRange(LEconverter.toLEArray(WindingsCurrent));
+
+                return retVal;
+            }
+
+            public override string ToString()
+            {
+                String retVal = ADCReadFirstStep.ToString() + "; ";
+                retVal += ADCReadSecondStep.ToString() + "; ";
+                retVal += ADCReadThirdStep.ToString() + "; ";
+                retVal += ADCReadFourthStep.ToString() + "; ";
+                retVal += AveragedFlowTU.ToString() + "; ";
+                retVal += BatteryVoltage.ToString() + "; ";
+                retVal += SensorResistance.ToString() + "; ";
+                retVal += WindingsCurrent.ToString() + ";";
+
+                return retVal;
+            }
+
+            public static List<String> getVarsNames()
+            {   //TODO: change the names
+                List<String> retVal = new List<String>(8);
+                retVal.Add("ADCReadFirstStep");
+                retVal.Add("ADCReadSecondStep");
+                retVal.Add("ADCReadThirdStep");
+                retVal.Add("ADCReadFourthStep");
+                retVal.Add("AveragedFlowTU");
+                retVal.Add("BatteryVoltage");
+                retVal.Add("SensorResistance");
+                retVal.Add("WindingsCurrent");
+                return retVal;
+            }
+
+            public Int32 ADCReadFirstStep;     //SIGNED LONG: lettura AD bobine spente prima di eccitazione positiva
+            public Int32 ADCReadSecondStep;    //SIGNED LONG: lettura AD eccitazione positiva
+            public Int32 ADCReadThirdStep;     //SIGNED LONG: lettura AD prima di eccitazione negativa
+            public Int32 ADCReadFourthStep;    //SIGNED LONG: lettura AD eccitazione negativa
+            public float AveragedFlowTU;       //FLOAT: portata mediata nell’unità tecnica corrente
+            public float BatteryVoltage;       //FLOAT: tensione batteria
+            public float SensorResistance;     //FLOAT: resistenza sensore
+            public float WindingsCurrent;      //FLOAT: corrente bobine
+
+        }
+        
+        public DEBUG_MEAS()
+            : base()
+        {
+
+        }
+
+        public override string ToString()
+        {
+            return "Debug measures struct";
+        }
+
+        public new variables Value
+        {
+            get
+            {
+                return new variables(base._value);
+
+            }
+            set
+            {
+                base._value = value.ToList();
+            }
+        }
+
+        public override String ValAsString
+        {
+            get
+            {
+                variables vars = Value;
+                return vars.ToString();
+            }
+        }
+
+        public RAMAddresses Address
+        {
+            get
+            { return RAMAddresses.DEBUG_MEAS_ADD; }
+        }
+    }
+
+    public class TEMP_T1 : FloatTargetVariable, IRAMvariable
+    {
+        public TEMP_T1()
+            : base()
+        {
+
+        }
+
+        public override string ToString()
+        {
+            return "Temperature Probe 1";
+        }
+
+        public RAMAddresses Address
+        {
+            get
+            { return RAMAddresses.TEMP_T1_ADD; }
+        }
+    }
+
+    public class TEMP_T2 : FloatTargetVariable, IRAMvariable
+    {
+        public TEMP_T2()
+            : base()
+        {
+
+        }
+
+        public override string ToString()
+        {
+            return "Temperature Probe 2";
+        }
+
+        public RAMAddresses Address
+        {
+            get
+            { return RAMAddresses.TEMP_T2_ADD; }
+        }
+    }
+
+    public class PRESSURE : FloatTargetVariable, IRAMvariable
+    {
+        public PRESSURE()
+            : base()
+        {
+
+        }
+
+        public override string ToString()
+        {
+            return "Pressure Probe";
+        }
+
+        public RAMAddresses Address
+        {
+            get
+            { return RAMAddresses.PRESSURE_ADD; }
+        }
+    }
+
+    public class BT_FW_VER : ByteTargetVariable, IRAMvariable
+    {
+        public BT_FW_VER()
+            : base()
+        {
+
+        }
+
+        public override string ToString()
+        {
+            return "Bluetooth/Modbus board firmware version number";
+        }
+
+        public RAMAddresses Address
+        {
+            get
+            { return RAMAddresses.BT_FW_VER_ADD; }
+        }
+    }
+
+    public class BT_FW_REV : ByteTargetVariable, IRAMvariable
+    {
+        public BT_FW_REV()
+            : base()
+        {
+
+        }
+
+        public override string ToString()
+        {
+            return "Bluetooth/Modbus board firmware revision number";
+        }
+
+        public RAMAddresses Address
+        {
+            get
+            { return RAMAddresses.BT_FW_REV_ADD; }
+        }
+    }
+
+    public class BT_HW_VER : ByteTargetVariable, IRAMvariable
+    {
+        public BT_HW_VER()
+            : base()
+        {
+
+        }
+
+        public override string ToString()
+        {
+            return "Bluetooth/Modbus board hardware version number";
+        }
+
+        public RAMAddresses Address
+        {
+            get
+            { return RAMAddresses.BT_HW_VER_ADD; }
+        }
+    }
+
+    public class BT_STATUS : UInt16TargetVariable, IRAMvariable
+    {
+        public BT_STATUS()
+            : base()
+        {
+
+        }
+
+        public override string ToString()
+        {
+            return "Bluetooth/Modbus board status";
+        }
+
+        public RAMAddresses Address
+        {
+            get
+            { return RAMAddresses.BT_STATUS_ADD; }
+        }
+    }
+
+    #region IO String Variables
+
+    public class INFO_BOARD_MODEL : StringTargetVariable, IRAMvariable
+    {
+        public INFO_BOARD_MODEL()
+            : base()
+        {
+
+        }
+
+        public override string ToString()
+        {
+            return "IO Board Model";
+        }
+
+        public RAMAddresses Address
+        {
+            get
+            { return RAMAddresses.INFO_BOARD_MODEL_ADDR; }
+        }
+
+        public override Int32 Size
+        {
+            get
+            {
+                return 31;
+            }
+        }
+
+    }
+
+    public class INFO_FW_DATE : StringTargetVariable, IRAMvariable
+    {
+        public INFO_FW_DATE()
+            : base()
+        {
+
+        }
+
+        public override string ToString()
+        {
+            return "IO Firmware Release Date";
+        }
+
+        public RAMAddresses Address
+        {
+            get
+            { return RAMAddresses.INFO_FW_DATE_ADDR; }
+        }
+
+        public override Int32 Size
+        {
+            get
+            {
+                return 31;
+            }
+        }
+
+    }
+
+    public class SYSTEM_DATE_TIME : StringTargetVariable, IRAMvariable
+    {
+        public SYSTEM_DATE_TIME()
+            : base()
+        {
+
+        }
+
+        public override string ToString()
+        {
+            return "System Timestamp";
+        }
+
+        public RAMAddresses Address
+        {
+            get
+            { return RAMAddresses.SYSTEM_DATE_TIME_ADDR; }
+        }
+
+        public override Int32 Size
+        {
+            get
+            {
+                return 31;
+            }
+        }
+
+    }
+
+    #endregion
+
+    #region IO Byte Variables
+
+    public class INFO_FW_VER : ByteTargetVariable, IRAMvariable
+    {
+        public INFO_FW_VER()
+            : base()
+        {
+
+        }
+
+        public override string ToString()
+        {
+            return "IO Firmware Version";
+        }
+
+        public RAMAddresses Address
+        {
+            get
+            { return RAMAddresses.INFO_FW_VER_ADDR; }
+        }
+    }
+
+    public class INFO_FW_REV : ByteTargetVariable, IRAMvariable
+    {
+        public INFO_FW_REV()
+            : base()
+        {
+
+        }
+
+        public override string ToString()
+        {
+            return "IO Firmware Revision";
+        }
+
+        public RAMAddresses Address
+        {
+            get
+            { return RAMAddresses.INFO_FW_REV_ADDR; }
+        }
+    }
+
+    public class DAC161_STATE : EnumTargetVariable, IRAMvariable
+    {
+        public DAC161_STATE()
+            : base()
+        {
+
+        }
+
+        public override string ToString()
+        {
+            return "4-20 mA Driver State";
+        }
+
+        public RAMAddresses Address
+        {
+            get
+            { return RAMAddresses.DAC161_STATE_ADDR; }
+        }
+
+        public override IDictionary<int, String> Options
+        {
+            get
+            {
+                if (_optionList == null)
+                {
+                    _optionList = new Dictionary<int, String>();
+                    _optionList.Add(0, "Ok");
+                    _optionList.Add(1, "Curr.Loop.Err");
+                    _optionList.Add(2, "Curr.Loop.Err");
+                    _optionList.Add(3, "Curr.Loop.Err");
+                    _optionList.Add(4, "DAC error");
+                    _optionList.Add(5, "Curr.Loop.Err, DAC error");
+                    _optionList.Add(6, "Curr.Loop.Err, DAC error");
+                    _optionList.Add(7, "Curr.Loop.Err, DAC error");
+                    _optionList.Add(8, "DAC error");
+                    _optionList.Add(9, "Curr.Loop.Err, DAC error");
+                    _optionList.Add(10, "Curr.Loop.Err, DAC error");
+                    _optionList.Add(11, "Curr.Loop.Err, DAC error");
+                    _optionList.Add(12, "Curr.Loop.Err, DAC error");
+                    _optionList.Add(13, "Curr.Loop.Err, DAC error");
+                    _optionList.Add(14, "Curr.Loop.Err, DAC error");
+                    _optionList.Add(15, "Curr.Loop.Err, DAC error");
+                }
+                return _optionList;
+            }
+        }
+
+        private Dictionary<int, String> _optionList;
+    }
+
+    public class FILE_SYSTEM_FLAGS : ByteTargetVariable, IRAMvariable
+    {
+        public FILE_SYSTEM_FLAGS()
+            : base()
+        {
+
+        }
+
+        public override string ToString()
+        {
+            return "Files state Flags";
+        }
+
+        public RAMAddresses Address
+        {
+            get
+            { return RAMAddresses.FILE_SYSTEM_FLAGS_ADDR; }
+        }
+    }
+
+    public class FILE_SYSTEM_FILE_COUNT : ByteTargetVariable, IRAMvariable
+    {
+        public FILE_SYSTEM_FILE_COUNT()
+            : base()
+        {
+
+        }
+
+        public override string ToString()
+        {
+            return "Number of uSD files";
+        }
+
+        public RAMAddresses Address
+        {
+            get
+            { return RAMAddresses.FILE_SYSTEM_FILE_COUNT_ADDR; }
+        }
+    }
+
+    #endregion
+
+    #region IO Enum Variables
+
+    public class HMS_MODULE_STATE : EnumTargetVariable, IRAMvariable
+    {
+        public HMS_MODULE_STATE()
+            : base()
+        {
+
+        }
+
+        public override string ToString()
+        {
+            return "HMS Module State";
+        }
+
+        public RAMAddresses Address
+        {
+            get
+            { return RAMAddresses.HMS_MODULE_STATE_ADDR; }
+        }
+
+        public override IDictionary<int, String> Options
+        {
+            get
+            {
+                if (_optionList == null)
+                {
+                    _optionList = new Dictionary<int, String>();
+                    _optionList.Add(0, "Module OK");
+                    _optionList.Add(1, "Unsupported module detected");
+                    _optionList.Add(2, "Reset requested from ABCC");
+                    _optionList.Add(3, "Shutdown requested");
+                    _optionList.Add(4, "Unexpected error occurred");
+                }
+                return _optionList;
+            }
+        }
+
+        private Dictionary<int, String> _optionList;
+    }
+
+    public class HMS_CONN_STATE : EnumTargetVariable, IRAMvariable
+    {
+        public HMS_CONN_STATE()
+            : base()
+        {
+
+        }
+
+        public override string ToString()
+        {
+            return "HMS Connection State";
+        }
+
+        public RAMAddresses Address
+        {
+            get
+            { return RAMAddresses.HMS_CONN_STATE_ADDR; }
+        }
+
+        public override IDictionary<int, String> Options
+        {
+            get
+            {
+                if (_optionList == null)
+                {
+                    _optionList = new Dictionary<int, String>();
+                    _optionList.Add(0, "Setup");
+                    _optionList.Add(1, "Init");
+                    _optionList.Add(2, "Wait Process");
+                    _optionList.Add(3, "Idle");
+                    _optionList.Add(4, "Process Active");
+                    _optionList.Add(5, "Error");
+                    _optionList.Add(6, "Exception");
+                }
+                return _optionList;
+            }
+        }
+
+        private Dictionary<int, String> _optionList;
+    }
+
+    public class BLUETOOTH_STATE : EnumTargetVariable, IRAMvariable
+    {
+        public BLUETOOTH_STATE()
+            : base()
+        {
+
+        }
+
+        public override string ToString()
+        {
+            return "Bluetooth Connection State";
+        }
+
+        public RAMAddresses Address
+        {
+            get
+            { return RAMAddresses.BLUETOOTH_STATE_ADDR; }
+        }
+
+        public override IDictionary<int, String> Options
+        {
+            get
+            {
+                if (_optionList == null)
+                {
+                    _optionList = new Dictionary<int, String>();
+                    _optionList.Add(0, "Setup");
+                    _optionList.Add(1, "Ready");
+                    _optionList.Add(2, "Connected");
+                    _optionList.Add(3, "Error");
+                }
+                return _optionList;
+            }
+        }
+
+        private Dictionary<int, String> _optionList;
+    }
+
+    #endregion
+
+    #region IO Uint16 Variables
+
+    public class SYSTEM_TASK_STATES : UInt16TargetVariable, IRAMvariable
+    {
+        public SYSTEM_TASK_STATES()
+            : base()
+        {
+
+        }
+
+        public override string ToString()
+        {
+            return "State of System Tasks";
+        }
+
+        public RAMAddresses Address
+        {
+            get
+            { return RAMAddresses.SYSTEM_TASK_STATES_ADDR; }
+        }
+    }
+
+    public class SYSTEM_TASK_ERRORS : UInt16TargetVariable, IRAMvariable
+    {
+        public SYSTEM_TASK_ERRORS()
+            : base()
+        {
+
+        }
+
+        public override string ToString()
+        {
+            return "Task Errors Mask";
+        }
+
+        public RAMAddresses Address
+        {
+            get
+            { return RAMAddresses.SYSTEM_TASK_ERRORS_ADDR; }
+        }
+    }
+
+    #endregion
+
+    #region IO Uint32 Variables
+
+    public class SYSTEM_MB_LOGS : UInt32TargetVariable, IRAMvariable
+    {
+        public SYSTEM_MB_LOGS()
+            : base()
+        {
+
+        }
+
+        public override string ToString()
+        {
+            return "Log Lines Saved from MB";
+        }
+
+        public RAMAddresses Address
+        {
+            get
+            { return RAMAddresses.SYSTEM_MB_LOGS_ADDR; }
+        }
+    }
+
+    public class FILE_SYSTEM_SAVED_LOGS : UInt32TargetVariable, IRAMvariable
+    {
+        public FILE_SYSTEM_SAVED_LOGS()
+            : base()
+        {
+
+        }
+
+        public override string ToString()
+        {
+            return "Log Lines Saved on uSD";
+        }
+
+        public RAMAddresses Address
+        {
+            get
+            { return RAMAddresses.FILE_SYSTEM_SAVED_LOGS_ADDR; }
+        }
+    }
+
+    public class SYSTEM_MB_EVENTS : UInt32TargetVariable, IRAMvariable
+    {
+        public SYSTEM_MB_EVENTS()
+            : base()
+        {
+
+        }
+
+        public override string ToString()
+        {
+            return "Event Lines Saved from MB";
+        }
+
+        public RAMAddresses Address
+        {
+            get
+            { return RAMAddresses.SYSTEM_MB_EVENTS_ADDR; }
+        }
+    }
+
+    public class FILE_SYSTEM_SAVED_EVENTS : UInt32TargetVariable, IRAMvariable
+    {
+        public FILE_SYSTEM_SAVED_EVENTS()
+            : base()
+        {
+
+        }
+
+        public override string ToString()
+        {
+            return "Event Lines Saved on uSD";
+        }
+
+        public RAMAddresses Address
+        {
+            get
+            { return RAMAddresses.FILE_SYSTEM_SAVED_EVENTS_ADDR; }
+        }
+    }
+
+    #endregion
+
+    #region IO float Variables
+
+    public class DAC161_OUT_mA : FloatTargetVariable, IRAMvariable
+    {
+        public DAC161_OUT_mA()
+            : base()
+        {
+
+        }
+
+        public override string ToString()
+        {
+            return "4-20 mA out current value [mA]";
+        }
+
+        public RAMAddresses Address
+        {
+            get
+            { return RAMAddresses.DAC161_OUT_mA_ADDR; }
+        }
+    }
+
+    #endregion
+
+    #region IO Web Variables
+
+    public class WEB_IP_ADDRESS : DataTargetVariable, IRAMvariable
+    {
+        public WEB_IP_ADDRESS()
+            : base()
+        {
+
+        }
+
+        public override string ToString()
+        {
+            return "IO IP Address";
+        }
+
+        public override Int32 Size
+        {
+            get
+            {
+                return 4;
+            }
+        }
+
+        /// <summary>
+        /// Gets the MAC's Octets
+        /// </summary>
+        public Byte IP_Oct_0
+        {
+            get { return _value[0]; }
+        }
+        public Byte IP_Oct_1
+        {
+            get { return _value[1]; }
+        }
+        public Byte IP_Oct_2
+        {
+            get { return _value[2]; }
+        }
+        public Byte IP_Oct_3
+        {
+            get { return _value[3]; }
+        }
+
+        public RAMAddresses Address
+        {
+            get
+            { return RAMAddresses.WEB_IP_ADDRESS_ADDR; }
+        }
+    }
+
+    public class WEB_MAC_ADDRESS : DataTargetVariable, IRAMvariable
+    {
+        public WEB_MAC_ADDRESS()
+            : base()
+        {
+
+        }
+
+        public override string ToString()
+        {
+            return "IO MAC Address";
+        }
+
+        public override Int32 Size
+        {
+            get
+            {
+                return 6;
+            }
+        }
+
+        /// <summary>
+        /// Gets the MAC's Octets
+        /// </summary>
+        public Byte MAC_Oct_0
+        {
+            get { return _value[0]; }
+        }
+        public Byte MAC_Oct_1
+        {
+            get { return _value[1]; }
+        }
+        public Byte MAC_Oct_2
+        {
+            get { return _value[2]; }
+        }
+        public Byte MAC_Oct_3
+        {
+            get { return _value[3]; }
+        }
+        public Byte MAC_Oct_4
+        {
+            get { return _value[4]; }
+        }
+        public Byte MAC_Oct_5
+        {
+            get { return _value[5]; }
+        }
+
+
+        public RAMAddresses Address
+        {
+            get
+            { return RAMAddresses.WEB_MAC_ADDRESS_ADDR; }
+        }
+    }
+
+    #endregion
+
+}

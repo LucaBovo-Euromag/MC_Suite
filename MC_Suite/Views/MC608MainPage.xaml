@@ -1,0 +1,259 @@
+﻿<Page
+    x:Class="MC_Suite.Views.MC608MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:MC_Suite.Views"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Grid
+        x:Name="ContentArea"
+        Margin="{StaticResource MediumLeftRightMargin}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition/>
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition Height="Auto" MinHeight="0"/>
+        </Grid.RowDefinitions>
+        <Image x:Name="Frontalino" HorizontalAlignment="Center" VerticalAlignment="Center" Source="/Images/Frontalino_608.PNG" Width="500" Height="500" Grid.ColumnSpan="3" Margin="3,48,0,0"/>
+        <Image x:Name="MainLogo" HorizontalAlignment="Right" VerticalAlignment="Center" Source="/Images/Logo Euromag Alfa Complete.png" Grid.Column="1" Margin="0,0,0,5" Opacity="0.5" Width="383" Grid.Row="1" Grid.ColumnSpan="2">
+            <Image.FocusVisualPrimaryBrush>
+                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                    <GradientStop Color="Black"/>
+                    <GradientStop Color="White" Offset="1"/>
+                </LinearGradientBrush>
+            </Image.FocusVisualPrimaryBrush>
+        </Image>
+        <StackPanel x:Name="TotalizersBox" VerticalAlignment="Top" Grid.Column="2">
+            <TextBlock Text="Totalizers" FontWeight="Normal" FontSize="20" Margin="0,0,4,5"/>
+            <Grid Margin="0,10,0,0">
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="Total +" Margin="0,0,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Row="0"/>
+                <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal">
+                    <TextBlock x:Name="TotalPositiveBox"/>
+                    <TextBlock x:Name="TotalPositiveUnit"  Margin="10,0,0,0"/>
+                </StackPanel>
+                <TextBlock Text="Total -" Margin="0,0,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Row="1"/>
+                <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal">
+                    <TextBlock x:Name="TotalNegativeBox"/>
+                    <TextBlock x:Name="TotaleNegativeUnit"  Margin="10,0,0,0"/>
+                </StackPanel>
+                <TextBlock Text="Partial +" Margin="0,0,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Row="2"/>
+                <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal">
+                    <TextBlock x:Name="PartialPositiveBox"/>
+                    <TextBlock x:Name="PartialPositiveUnit"  Margin="10,0,0,0"/>
+                </StackPanel>
+                <TextBlock Text="Partial -" Margin="0,0,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Row="3"/>
+                <StackPanel Grid.Row="3" Grid.Column="1" Orientation="Horizontal">
+                    <TextBlock x:Name="PartialNegativeBox"/>
+                    <TextBlock x:Name="PartialNegativeUnit"  Margin="10,0,0,0"/>
+                </StackPanel>
+            </Grid>
+        </StackPanel>
+
+
+        <StackPanel x:Name="InfoBox" HorizontalAlignment="Stretch" Margin="0,0,0,10" VerticalAlignment="Top">
+            <TextBlock Text="Converter" FontWeight="Normal" FontSize="20" Margin="10"/>
+            <StackPanel x:Name="ConverterPanel" Margin="10">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="Model"/>
+                    <TextBlock x:Name="ConverterModel" HorizontalAlignment="Stretch" Margin="10,0,0,0" Grid.Column="1"/>
+                    <TextBlock Text="Converter ID " Grid.Row="1"/>
+                    <TextBox x:Name="ConverterMatricola" Grid.Column="1" Margin="10,0,0,0" Grid.Row="1" HorizontalAlignment="Stretch"/>
+                    <Button x:Name="SetConverterIDbtn" Grid.Column="2" Grid.Row="1" Content="Set" Click="SetConverterIDbtn_Click"/>
+                    <TextBlock Text="Serial Number " Grid.Row="2"/>
+                    <TextBox x:Name="ConverterSerialNumber" Grid.Row="2" Grid.Column="1" Margin="10,0,0,0" HorizontalAlignment="Stretch"/>
+                    <Button x:Name="SetConverterSNbtn" Grid.Column="2" Grid.Row="2" Content="Set"/>
+                    <TextBlock Text="Release FW" Grid.Row="3" />
+                    <TextBlock x:Name="RelFW" Grid.Row="3" Grid.Column="1" Margin="10,0,0,0"/>
+                    <TextBlock Text="Release HW" Grid.Row="4"/>
+                    <TextBlock x:Name="RelHW" Grid.Row="4" Grid.Column="1" Margin="10,0,0,0"/>
+                </Grid>
+            </StackPanel>
+            <TextBlock Text="Sensor" FontWeight="Normal" FontSize="20" Margin="10"/>
+            <StackPanel x:Name="SensorPanel" Margin="10,10,10,0">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="Model"  HorizontalAlignment="Stretch"/>
+                    <TextBox x:Name="SensorModel" Grid.Column="1" HorizontalAlignment="Stretch" Margin="10,0,0,0"/>
+                    <Button x:Name="SetSensorModelbtn" Grid.Column="2" Grid.Row="0" Content="Set"/>
+                    <TextBlock Text="Diameter mm" VerticalAlignment="Center" Grid.Row="1"/>
+                    <TextBox x:Name="SensorDiameter" Grid.Column="1" Margin="10,0,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Row="1"/>
+                    <Button x:Name="SetSensorDiameterbtn" Grid.Column="2" Grid.Row="1" Content="Set"/>
+                    <TextBlock Text="Sensor ID" Grid.Row="2" VerticalAlignment="Center"/>
+                    <TextBox x:Name="SensorID" Grid.Column="1" Margin="10,0,0,0" Grid.Row="2" HorizontalAlignment="Stretch"/>
+                    <Button x:Name="SetSensorIDbtn" Grid.Column="2" Grid.Row="2" Content="Set"/>
+                    <TextBlock Text="Empty Pipe" Grid.Row="3" VerticalAlignment="Center"/>
+                    <CheckBox x:Name="EmptyPipe" Margin="10,0,0,0" IsEnabled="False" VerticalAlignment="Center" Grid.Row="3" Grid.Column="1" Width="32" HorizontalAlignment="Left"/>
+                    <TextBlock Text="Notes" Grid.Row="4" VerticalAlignment="Center" Grid.ColumnSpan="2" HorizontalAlignment="Center"/>
+                    <TextBlock x:Name="SensorNotes" Grid.Row="5" VerticalAlignment="Center" Grid.ColumnSpan="2" HorizontalAlignment="Center"/>
+                </Grid>
+            </StackPanel>
+            <Grid x:Name="IOGrid" HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="10,0,10,0">
+                <StackPanel>
+                    <TextBlock Text="I/O" FontWeight="Normal" FontSize="20" Margin="10"/>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition MinWidth="0" Width="*"/>
+                            <ColumnDefinition MinWidth="0" Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Pulse Volume" Grid.Row="1" VerticalAlignment="Center"/>
+                        <StackPanel Grid.Row="1" Grid.Column="2" Orientation="Horizontal">
+                            <TextBlock x:Name="PulseVolume" HorizontalAlignment="Stretch" Margin="0,0,0,0"/>
+                            <TextBlock x:Name="PulseVolumeUnit" VerticalAlignment="Center"  HorizontalAlignment="Center" Margin="5,0,0,0"/>
+                        </StackPanel>
+                        <TextBlock Text="Pulse Width" Grid.Row="2" VerticalAlignment="Center"/>
+                        <StackPanel Grid.Row="2" Grid.Column="2" Orientation="Horizontal">
+                            <TextBlock x:Name="PulseWidth" HorizontalAlignment="Stretch" Margin="0,0,0,0"/>
+                            <TextBlock Text="ms" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                        </StackPanel>
+                        <TextBlock Text="FS Frequency" Grid.Row="3" VerticalAlignment="Center" />
+                        <StackPanel Grid.Row="3" Grid.Column="2" Orientation="Horizontal">
+                            <TextBlock x:Name="FreqOutFS" Grid.Row="3" Grid.Column="2" HorizontalAlignment="Stretch" Margin="0,0,0,0"/>
+                            <TextBlock Text="Hz" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                        </StackPanel>
+                        <TextBlock Text="Prog. Out" Grid.Row="4" VerticalAlignment="Center" />
+                        <TextBlock Text="Prog. In" Grid.Row="5" VerticalAlignment="Center" />
+                        <TextBlock x:Name="ProgInBox" Grid.Row="5" Grid.Column="1"/>
+                        <StackPanel Grid.Row="4" Grid.Column="1" Orientation="Horizontal">
+                            <TextBlock x:Name="ProgOutBox"/>
+                            <StackPanel x:Name="BatchingPanel" Orientation="Horizontal" Margin="10,0,0,0">
+                                <TextBlock Text="Volume:" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                                <TextBlock x:Name="BatchingVolumeBox" Margin="5,0,0,0" />
+                                <TextBlock x:Name="BatchingVolumeUnit"  Margin="5,0,0,0" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
+            </Grid>
+            <StackPanel x:Name="DateTimeBox" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Center" Orientation="Horizontal">
+                <SymbolIcon Symbol="Clock"/>
+                <TextBlock x:Name="CDateTime" HorizontalAlignment="Left" Margin="10,0,10,0" TextWrapping="Wrap" VerticalAlignment="Center"/>
+                <Button x:Name="GetDateTimeBtn" Content="Get Clock" Visibility="Collapsed"/>
+            </StackPanel>
+        </StackPanel>
+        <TextBlock x:Name="ParameterTextBlock"/>
+        <StackPanel x:Name="ReadMeasuresBox"
+                    Grid.Row="1"
+                    VerticalAlignment="Center"
+                    Orientation="Horizontal"
+                    Margin="10" HorizontalAlignment="Stretch">
+            <Button x:Name="ReadMeasuresBtn" Content="Read" Command="{x:Bind Path=ReadValues}"/>
+            <Button x:Name="StartReadMeasuresBtn" Command="{x:Bind Path=StartRead}"/>
+            <TextBlock x:Name="ModbusStatus" VerticalAlignment="Center" Margin="10,0,0,0"/>
+            <ProgressRing x:Name="ConnectionRing" IsActive="True" Margin="10,0,0,0"/>
+        </StackPanel>
+        <Border x:Name="OfflineMessage" HorizontalAlignment="Center" VerticalAlignment="Center" d:IsHidden="True" Grid.Column="1">
+            <StackPanel HorizontalAlignment="Stretch" Margin="0,0,0,0" VerticalAlignment="Stretch">
+                <TextBlock x:Name="ConnectionMessageBox" Text="Please Connect" FontSize="20" HorizontalAlignment="Center"/>
+                <StackPanel x:Name="InfoConnectionBox" Orientation="Horizontal" HorizontalAlignment="Center">
+                    <TextBlock Text="Select a COM Port in" Margin="0,0,5,0"/>
+                    <SymbolIcon Symbol="Setting"/>
+                    <TextBlock Text=", than click" Margin="5,0,5,0"/>
+                    <SymbolIcon Symbol="Play"/>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+        <Border x:Name="LoadingMessage" HorizontalAlignment="Center" VerticalAlignment="Center" Width="200" Grid.Column="1">
+            <StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                    <TextBlock Text="Loading data..."/>
+                    <ProgressRing IsActive="True" Margin="10,0,0,0"/>
+                </StackPanel>
+                <ProgressBar x:Name="LoadingBar" Grid.Row="3" Height="20" Minimum="0" Maximum="2" Grid.ColumnSpan="3"/>
+            </StackPanel>
+        </Border>
+        <Border x:Name="MC608_Display" BorderBrush="Black" HorizontalAlignment="Center" Margin="0,0,0,0" VerticalAlignment="Stretch" Width="280" Height="150" Grid.Column="1">
+            <Border.Background>
+                <ImageBrush/>
+            </Border.Background>
+            <Grid Margin="0,0,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition MinWidth="0" Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" MinHeight="0"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Rectangle RadiusX="10" RadiusY="10" Margin="0,0,0,0" Fill="#BF0069B4" Grid.RowSpan="3" Grid.ColumnSpan="2" HorizontalAlignment="Stretch"/>
+                <StackPanel x:Name="FlorateStackPanel" HorizontalAlignment="Right" VerticalAlignment="Top" Grid.ColumnSpan="2" Orientation="Horizontal" Margin="0,0,10,0">
+                    <TextBlock x:Name="FlowRateVal" Foreground="White" Margin="0,10,0,0" Grid.Column="1" Grid.Row="1" HorizontalAlignment="Stretch" FontSize="24" FontFamily="Assets/Fonts/LCD2N___.TTF#LCD2"/>
+                    <TextBlock x:Name="FlowRateUnitVal" Foreground="White" Margin="5,5,0,0" Grid.Column="1" Grid.Row="1" HorizontalAlignment="Left" FontSize="20"/>
+                    <TextBlock Text="/" Margin="0,5,0,0" Foreground="White" Grid.Column="1" Grid.Row="1" HorizontalAlignment="Left" FontSize="20"/>
+                    <TextBlock x:Name="FlowRateTimeBaseVal" Foreground="White" Margin="0,5,0,0" Grid.Column="1" Grid.Row="1" HorizontalAlignment="Left" FontSize="20"/>
+                </StackPanel>
+                <StackPanel x:Name="FlowrateBarPanel" Grid.Row="1" Grid.ColumnSpan="2" VerticalAlignment="Center">
+                    <Grid Width="250" VerticalAlignment="Center">
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <ProgressBar x:Name="FlowBar" Minimum="0" Maximum="100" Width="250" Height="20" Grid.ColumnSpan="3"/>
+                        <TextBlock x:Name="FlowPercVal" Foreground="White" HorizontalAlignment="Left" Margin="5,0,0,0"/>
+                        <TextBlock x:Name="FlowMsVal"  Foreground="White" Grid.Column="1" HorizontalAlignment="Left" Margin="5,0,0,0"/>
+                        <TextBlock Foreground="White" Text="0" HorizontalAlignment="Left" Grid.Row="1"/>
+                        <TextBlock x:Name="FlowFS" Foreground="White" Grid.Column="2" HorizontalAlignment="Right" Grid.Row="1"/>
+                    </Grid>
+                </StackPanel>
+                <StackPanel x:Name="TotalizerStackPanel" HorizontalAlignment="Right" VerticalAlignment="Bottom" Grid.Row="2" Orientation="Horizontal" Margin="0,0,10,0" Grid.Column="1">
+                    <TextBlock x:Name="TotalPositiveDisplay"  Foreground="White" Margin="0,0,0,10" Grid.Column="1" Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Center" FontSize="36" FontFamily="Assets/Fonts/LCD2N___.TTF#LCD2"/>
+                    <TextBlock x:Name="TotalPositiveDisplayUnit"   Margin="10,0,0,10" FontSize="24"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+    </Grid>
+</Page>

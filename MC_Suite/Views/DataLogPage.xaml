@@ -1,0 +1,50 @@
+﻿<Page
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:MC_Suite.Views"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:Custom="using:Microsoft.Toolkit.Uwp.UI.Controls"
+    x:Class="MC_Suite.Views.DataLogPage"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" MinHeight="0"/>
+            <RowDefinition Height="Auto" MinHeight="0"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <CommandBar>
+            <CommandBar.Content>
+                <Grid/>
+            </CommandBar.Content>
+            <AppBarButton Icon="Download" Label="Download" Command="{Binding DownloadRecords}"/>
+            <AppBarButton Icon="Save" Label="Save"/>
+            <AppBarButton Icon="Delete" Label="Clear" Command="{Binding ClearAllRecords}"/>
+        </CommandBar>
+        <ScrollViewer x:Name="DataLogsScroll" HorizontalScrollBarVisibility="Auto" Grid.Row="2">
+            <Custom:DataGrid x:Name="DataLogGrid" AutoGenerateColumns="False" ItemsSource="{Binding Fields.RowDatabase}" HeadersVisibility="Column" CanUserSortColumns="True" Sorting="DataLogGrid_Sorting" IsReadOnly="True" HorizontalAlignment="Center">
+                <Custom:DataGrid.Columns>
+                    <Custom:DataGridTextColumn Header="Row N."  Tag="Row N." Binding="{Binding RowNumber, Mode=OneWay}" Width="auto"/>
+                    <Custom:DataGridTextColumn Header="Timestamp" Tag="Timestamp" Binding="{Binding Timestamp, Mode=OneWay}" Width="auto"/>
+                    <Custom:DataGridTextColumn Header="Errors" Tag="Errors" Binding="{Binding Errors, Mode=OneWay}" Width="auto"/>
+                    <Custom:DataGridTextColumn Header="Flow" Binding="{Binding Flow, Mode=OneWay}" Width="auto"/>
+                    <Custom:DataGridTextColumn Header="Total +" Binding="{Binding TotalPositive, Mode=OneWay}" Width="auto"/>
+                    <Custom:DataGridTextColumn Header="Total -" Binding="{Binding TotalNegative, Mode=OneWay}" Width="auto"/>
+                    <Custom:DataGridTextColumn Header="Battery Energy" Binding="{Binding BatteryEnergy, Mode=OneWay}" Width="auto"/>
+                    <Custom:DataGridTextColumn Header="Battery Voltage" Binding="{Binding BatteryVoltage, Mode=OneWay}" Width="auto"/>
+                    <Custom:DataGridTextColumn Header="Converter Temperature" Binding="{Binding PCBtemperature, Mode=OneWay}" Width="auto"/>
+                    <Custom:DataGridTextColumn Header="Additional Fields Type" Binding="{Binding LogType, Mode=OneWay}" Width="auto"/>
+                    <Custom:DataGridTextColumn Header="Add. Field 1" Binding="{Binding AuxFloat1, Mode=OneWay}" Width="auto"/>
+                    <Custom:DataGridTextColumn Header="Add. Field 2" Binding="{Binding AuxFloat2, Mode=OneWay}" Width="auto"/>
+                </Custom:DataGrid.Columns>
+            </Custom:DataGrid>
+        </ScrollViewer>
+        <StackPanel HorizontalAlignment="Left" Orientation="Horizontal" Margin="0,10,0,10" Grid.Row="1">
+            <TextBlock x:Name="RowNumbersInfo" Text="Row Numbers: " TextWrapping="Wrap" HorizontalAlignment="Left" Margin="10,0,0,0"/>
+            <TextBlock x:Name="RowNumbers" Text="{Binding Fields.LogLastRow.Value}" TextWrapping="Wrap" HorizontalAlignment="Left" Margin="10,0,0,0"/>
+            <ProgressRing x:Name="DownloadRing" IsActive="True" Visibility="{Binding Fields.DownloadRingVisibility}" Grid.RowSpan="3" Margin="10,0,0,0"/>
+        </StackPanel>
+    </Grid>
+</Page>

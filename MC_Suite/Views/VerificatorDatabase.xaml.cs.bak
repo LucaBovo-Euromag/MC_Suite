@@ -1,0 +1,95 @@
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Windows.Input;
+using System.Runtime.InteropServices.WindowsRuntime;
+using Windows.Foundation;
+using Windows.Foundation.Collections;
+using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Controls.Primitives;
+using Windows.UI.Xaml.Data;
+using Windows.UI.Xaml.Input;
+using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Navigation;
+using MC_Suite.Services;
+
+// Il modello di elemento Pagina vuota è documentato all'indirizzo https://go.microsoft.com/fwlink/?LinkId=234238
+
+namespace MC_Suite.Views
+{
+    /// <summary>
+    /// Pagina vuota che può essere usata autonomamente oppure per l'esplorazione all'interno di un frame.
+    /// </summary>
+    public sealed partial class VerificatorDatabase : Page
+    {
+        public VerificatorDatabase()
+        {
+            this.InitializeComponent();
+        }
+
+        public DataAccess Verificator
+        {
+            get
+            {
+                return DataAccess.Instance;
+            }
+        }
+
+        public TargetVariablesFields Fields
+        {
+            get
+            {
+                return TargetVariablesFields.Instance;
+            }
+        }
+
+        private ICommand _addReportCmd;
+        public ICommand AddReportCmd
+        {
+            get
+            {
+                if (_addReportCmd == null)
+                {
+                    _addReportCmd = new RelayCommand(
+                        param => AddReport()
+                            );
+                }
+                return _addReportCmd;
+            }
+        }
+
+        private void AddReport()
+        {
+            ReportVerificator NewReport = new ReportVerificator();
+            ReportVerificator LastReport = new ReportVerificator();
+
+            Verificator.ReportList = DataAccess.GetData("MC_Suite_Database.db");
+            if (Verificator.ReportList.Count != 0)
+            {
+                LastReport = Verificator.ReportList.Last<ReportVerificator>();
+                NewReport.ID = LastReport.ID + 1;
+            }
+            else
+                NewReport.ID = 1;
+
+            NewReport.Matricola_Convertitore = Fields.ConverterId.Value;
+            NewReport.Modello_Convertitore = Fields.DeviceName.Value;
+            NewReport.Matricola_Sensore = Fields.SensorId.Value;
+            NewReport.Modello_Sensore = Fields.SensorModel.Value;
+            NewReport.SN_Convertitore = Fields.ConverterSerialNumber.Value;
+            NewReport.OperatoreTest = "Luca";
+            NewReport.SN_Verificator = "NV0001";
+            NewReport.SW_Ver_Verificator = "1_0";
+            NewReport.Data_Test = DateTime.Now;
+
+            Verificator.ReportList.Add(NewReport);
+
+            DataAccess.AddData("MC_Suite_Database.db", NewReport);
+
+            Verificator.ReportView.Clear();
+            Verificator.ReportList.ForEach(p => Verificator.ReportView.Add(p));
+        }
+    }
+}

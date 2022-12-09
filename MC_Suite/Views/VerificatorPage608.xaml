@@ -1,0 +1,515 @@
+﻿<Page
+    x:Class="MC_Suite.Views.VerificatorPage608"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:MC_Suite.Views"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:Custom="using:Microsoft.Toolkit.Uwp.UI.Controls"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Height="Auto">
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1.3*"/>
+            <ColumnDefinition Width="1*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <CommandBar VerticalAlignment="Center" Grid.ColumnSpan="3" Margin="0,0,0,0" Height="48" HorizontalAlignment="Stretch">
+            <CommandBar.Content>
+                <Grid Margin="0,10,0,0">
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
+                        <TextBlock x:Name="LastTestInfo" Text="No Test Found" Margin="10,0,0,0" FontSize="20"/>
+                    </StackPanel>
+                </Grid>
+            </CommandBar.Content>
+            <AppBarButton x:Name="OpenComBtn" Visibility="Visible" Label="Reconnect" Command="{x:Bind Path=RefreshDevice608Cmd}" HorizontalAlignment="Center" Margin="0,0,68,0" VerticalAlignment="Stretch" Padding="0,0,0,0">
+                <AppBarButton.Icon>
+                    <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE895;"/>
+                </AppBarButton.Icon>
+            </AppBarButton>
+        </CommandBar>
+        <ProgressRing x:Name="ConncetionRing" IsActive="True" Grid.ColumnSpan="2" Width="40" Height="40" HorizontalAlignment="Center" Margin="0,0,0,0" Grid.Row="1" VerticalAlignment="Center" Grid.RowSpan="2"/>
+        <Grid x:Name="HeadGrid" Grid.Row="1" Grid.ColumnSpan="3" Margin="0,0,0,0" HorizontalAlignment="Stretch">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition MinWidth="0" Width="Auto"/>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="2*"/>
+            </Grid.ColumnDefinitions>
+            <StackPanel x:Name="StatusPanel" Padding="0,10,0,0" Margin="0,0,20,0" >
+                <TextBlock Text="STATUS" FontWeight="Normal" FontSize="20" Margin="10,0,4,5" />
+                <Grid x:Name="StatusGrid" VerticalAlignment="Top">
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="Converter " VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,5,0,5"/>
+                    <Ellipse x:Name="ConverterState" Grid.Column="1" Width="20"  Height="20" Fill="Red" Margin="10,0,0,0" HorizontalAlignment="Left"/>
+                    <TextBlock Text="Simulation Board " Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,5,0,5"/>
+                    <Ellipse x:Name="VerificatorState" Grid.Row="1" Grid.Column="1" Width="20"  Height="20" Fill="Red" Margin="10,0,0,0" HorizontalAlignment="Left"/>
+                    <TextBlock Text="I/O Board " Grid.Row="2" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,5,0,5"/>
+                    <Ellipse x:Name="GPioState" Grid.Row="2" Grid.Column="1" Width="20"  Height="20" Fill="Red" Margin="10,0,0,0" HorizontalAlignment="Left"/>
+                    <TextBlock Text="Sensor Test Board " Grid.Row="3" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,5,0,5"/>
+                    <Ellipse x:Name="SimulatorState" Grid.Row="3" Grid.Column="1" Width="20"  Height="20" Fill="Red" Margin="10,0,0,0" HorizontalAlignment="Left"/>
+                </Grid>
+            </StackPanel>
+            <Pivot x:Name="MainInfo" Grid.Column="1" Margin="40,0,0,0">
+                <PivotItem x:Name="DevicePivot" >
+                    <PivotItem.Header>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Device"/>
+                        </StackPanel>
+                    </PivotItem.Header>
+                    <PivotItem.Background>
+                        <SolidColorBrush Color="{ThemeResource SystemChromeLowColor}"/>
+                    </PivotItem.Background>
+                    <Grid VerticalAlignment="Top">
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition MinWidth="0" Width="Auto"/>
+                            <ColumnDefinition MinWidth="0" Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Converter Type" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Left" Grid.Row="0"/>
+                        <Border Grid.Column="1" Background="Transparent" Margin="0,0,10,0" Height="32">
+                            <TextBlock x:Name="DeviceName" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                        </Border>
+                        <TextBlock Text="Converter Part N" Grid.Column="0" Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0,0,20,0"/>
+                        <Border Grid.Column="1" Grid.Row="1" Background="Transparent" Margin="0,0,10,0"  Height="32">
+                            <TextBlock x:Name="ConverterId" Grid.Column="1" Grid.Row="2" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+                        </Border>
+                        <TextBlock Text="Sensor Type" Grid.Column="0" Grid.Row="3" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                        <Border Grid.Column="1" Grid.Row="3" Background="Transparent" Margin="0,0,10,0" Height="32">
+                            <TextBlock x:Name="SensorModel" Grid.Column="1" Grid.Row="3" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Center"/>
+                        </Border>
+                        <TextBlock Text="Sensor Part N" Grid.Column="0" Grid.Row="4" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                        <Border Grid.Column="1" Grid.Row="4" Background="Transparent" Margin="0,0,10,0" Height="32">
+                            <TextBlock x:Name="SensorId"  Grid.Column="1" Grid.Row="4" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                        </Border>
+
+                        <TextBlock Text="FW Ver." Grid.Column="0" Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                        <Border Grid.Column="1" Grid.Row="2" Background="Transparent" Margin="0,0,10,0" Height="32">
+                            <TextBlock x:Name="FwRelease" Grid.Column="1" Grid.Row="5" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                        </Border>
+                    </Grid>
+                </PivotItem>
+                <PivotItem x:Name="VerifPivot" Header="Verificator">
+                    <PivotItem.Background>
+                        <SolidColorBrush Color="{ThemeResource SystemChromeLowColor}"/>
+                    </PivotItem.Background>
+                    <Grid VerticalAlignment="Top">
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="S/N" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+                        <Border Grid.Column="1" Background="Transparent" Margin="0,0,10,0" Height="32">
+                            <TextBlock Text="{x:Bind Mode=OneWay, Path=RAM_VerifConfiguration.SN_Verificator}" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                        </Border>
+                        <TextBlock Text="SW Version" Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                        <Border Grid.Column="1" Grid.Row="1" Background="Transparent" Margin="0,0,10,0"  Height="32">
+                            <TextBlock Text="{x:Bind Mode=OneWay, Path=RAM_VerifConfiguration.SW_Ver_Verificator}" Grid.Column="1" Grid.Row="2" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+                        </Border>
+                        <TextBlock Text="Calibration" Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                        <Border Grid.Row="2" Background="Transparent" Margin="0,0,10,0" Height="32" Grid.Column="1">
+                            <TextBlock Text="{x:Bind Mode=OneWay, Path=RAM_VerifConfiguration.DataLastTaratura}" Grid.Column="1" Grid.Row="3" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Center"/>
+                        </Border>
+                        <TextBlock Text="Next Calib." Grid.Row="3" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                        <Border Grid.Column="1" Grid.Row="3" Background="Transparent" Margin="0,0,10,0" Height="32">
+                            <TextBlock Text="{x:Bind Mode=OneWay, Path=RAM_VerifConfiguration.DataNextTaratura}" Grid.Column="1" Grid.Row="4" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                        </Border>
+                    </Grid>
+                </PivotItem>
+            </Pivot>
+            <Grid x:Name="ReportInfoGrid" Grid.Column="2" Margin="0,10,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" MinHeight="0"/>
+                    <RowDefinition Height="Auto" MinHeight="0"/>
+                    <RowDefinition Height="Auto" MinHeight="0"/>
+                    <RowDefinition Height="Auto" MinHeight="0"/>
+                    <RowDefinition Height="Auto" MinHeight="0"/>
+                    <RowDefinition Height="Auto" MinHeight="0"/>
+                    <RowDefinition Height="Auto" MinHeight="0"/>
+                    <RowDefinition Height="Auto" MinHeight="0"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition MinWidth="0" Width="Auto"/>
+                    <ColumnDefinition Width="146*"/>
+                    <ColumnDefinition Width="Auto" MinWidth="0"/>
+                    <ColumnDefinition Width="145*"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.ColumnSpan="2" Orientation="Horizontal">
+                    <TextBlock Text="REPORT INFO" FontWeight="Normal" FontSize="20" Margin="0,0,4,5" />
+                    <Button Command="{x:Bind Path=SaveConfigCmd}" Background="{x:Null}">
+                        <Button.Content>
+                            <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE74E;"/>
+                        </Button.Content>
+                    </Button>
+                </StackPanel>
+                <TextBlock Text="Operator"  VerticalAlignment="Center" HorizontalAlignment="Left" Margin="0,0,20,0" Grid.Row="1"/>
+                <TextBox x:Name="OperatorName" Margin="0,0,0,0" BorderThickness="1,1,1,1" HorizontalAlignment="Stretch" VerticalAlignment="Center" Grid.Column="1" Grid.Row="1" >
+                    <TextBox.Background>
+                        <SolidColorBrush Color="{ThemeResource SystemChromeLowColor}"/>
+                    </TextBox.Background>
+                </TextBox>
+                <TextBlock Text="Company"  VerticalAlignment="Center" HorizontalAlignment="Left" Grid.Row="2"/>
+                <TextBox x:Name="CompanyName" HorizontalAlignment="Stretch" BorderThickness="1,1,1,1" VerticalAlignment="Center" Grid.Row="2" Grid.Column="1" Margin="0,0,0,0" >
+                    <TextBox.Background>
+                        <SolidColorBrush Color="{ThemeResource SystemChromeLowColor}"/>
+                    </TextBox.Background>
+                </TextBox>
+                <TextBlock Text="Company Location"  VerticalAlignment="Center" HorizontalAlignment="Left" Grid.Row="2" Grid.Column="2" Margin="20,0,20,0"/>
+                <TextBox x:Name="CompanyLocation" HorizontalAlignment="Stretch" VerticalAlignment="Center" BorderThickness="1,1,1,1" Grid.Row="2" Grid.Column="3" Margin="0,0,0,0" >
+                    <TextBox.Background>
+                        <SolidColorBrush Color="{ThemeResource SystemChromeLowColor}"/>
+                    </TextBox.Background>
+                </TextBox>
+                <TextBlock Text="Customer"  VerticalAlignment="Center" HorizontalAlignment="Left" Grid.Row="3"/>
+                <TextBox x:Name="CustomerName" HorizontalAlignment="Stretch" BorderThickness="1,1,1,1" VerticalAlignment="Center" Grid.Row="3" Grid.Column="1" Margin="0,0,0,0" >
+                    <TextBox.Background>
+                        <SolidColorBrush Color="{ThemeResource SystemChromeLowColor}"/>
+                    </TextBox.Background>
+                </TextBox>
+                <TextBlock Text="Customer Location"  VerticalAlignment="Center" HorizontalAlignment="Left" Grid.Row="3" Grid.Column="2" Margin="20,0,0,0"/>
+                <TextBox x:Name="CustomerLocation" HorizontalAlignment="Stretch" BorderThickness="1,1,1,1" VerticalAlignment="Center" Grid.Row="3" Grid.Column="3" Margin="0,0,0,0" >
+                    <TextBox.Background>
+                        <SolidColorBrush Color="{ThemeResource SystemChromeLowColor}"/>
+                    </TextBox.Background>
+                </TextBox>
+                <TextBlock Text="Note"  VerticalAlignment="Center" HorizontalAlignment="Left" Grid.Row="6"/>
+                <TextBox x:Name="Note" TextWrapping="Wrap" HorizontalAlignment="Stretch" BorderThickness="1,1,1,1" VerticalAlignment="Center" Grid.Row="6" Grid.Column="1" Margin="0,0,0,0" FocusVisualPrimaryBrush="#FF9C5757" Grid.RowSpan="2" Height="64" Grid.ColumnSpan="3" >
+                    <TextBox.Background>
+                        <SolidColorBrush Color="{ThemeResource SystemChromeLowColor}"/>
+                    </TextBox.Background>
+                </TextBox>
+            </Grid>
+        </Grid>
+        <Grid x:Name="InfoGrid" Grid.Row="1" Grid.ColumnSpan="1" Margin="0,0,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition MinWidth="0" Width="0.5*"/>
+                <ColumnDefinition Width="*" MinWidth="0"/>
+            </Grid.ColumnDefinitions>
+
+
+
+        </Grid>
+
+        <Pivot x:Name="InfoPivot" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" Margin="0,0,0,0">
+            <PivotItem Header="Test Log">
+                <PivotItem.Background>
+                    <SolidColorBrush Color="{ThemeResource SystemChromeLowColor}"/>
+                </PivotItem.Background>
+                <Grid x:Name="LogGrid" Grid.Row="2" Grid.Column="1" Margin="10,0,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" MinHeight="0"/>
+                        <RowDefinition/>
+                        <RowDefinition Height="Auto" MinHeight="0"/>
+                    </Grid.RowDefinitions>
+                    <StackPanel Orientation="Horizontal" Grid.ColumnSpan="3">
+                        <Button Content="Clear" Command="{x:Bind Path=ClearLogCmd}" HorizontalAlignment="Stretch" Margin="0,5,0,5"/>
+                        <Button Content="Save" Command="{x:Bind Path=SaveLogCmd}" HorizontalAlignment="Stretch" Margin="10,5,0,5"/>
+                    </StackPanel>
+                    <Custom:DataGrid x:Name="ReportTestGrid"  ItemsSource="{x:Bind Path=Verificator.TestView}" AutoGenerateColumns="False" IsReadOnly="True" Margin="0,0,10,10" Grid.Row="1">
+                        <Custom:DataGrid.Columns>
+                            <Custom:DataGridTextColumn Header="Description"  Tag="Description" Binding="{Binding Description, Mode=OneWay}" />
+                            <Custom:DataGridTextColumn Header="Reference"  Tag="Reference" Binding="{Binding Reference, Mode=OneWay}" />
+                            <Custom:DataGridTextColumn Header="Reading"  Tag="Reading" Binding="{Binding Reading, Mode=OneWay}" />
+                            <Custom:DataGridTextColumn Header="Result"  Tag="Result" Binding="{Binding Result, Mode=OneWay}" />
+                        </Custom:DataGrid.Columns>
+                    </Custom:DataGrid>
+                </Grid>
+            </PivotItem>
+            <PivotItem x:Name="VerificatorPivot" Header="Digitals">
+                <PivotItem.Background>
+                    <SolidColorBrush Color="{ThemeResource SystemChromeLowColor}"/>
+                </PivotItem.Background>
+                <Grid VerticalAlignment="Top">
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="DIGITAL" Grid.ColumnSpan="2" VerticalAlignment="Center" Margin="0,10,0,10"/>
+                    <TextBlock Text="Empty Pipe" Grid.Row="1" VerticalAlignment="Center"/>
+                    <Ellipse x:Name="EPipeStatus" Grid.Row="1" Grid.Column="1" Width="20" Height="20" Fill="Gray" Margin="5,5,0,5" HorizontalAlignment="Left"/>
+
+
+                    <TextBlock Text="V Aux" Grid.Row="2" VerticalAlignment="Center"/>
+                    <Ellipse x:Name="VAuxStatus" Grid.Row="2" Grid.Column="1" Width="20" Height="20" Fill="Gray" Margin="5,5,0,5" HorizontalAlignment="Left"/>
+
+
+                    <TextBlock Text="GP In" Grid.Row="3" VerticalAlignment="Center"/>
+                    <Ellipse x:Name="GPInStatus" Grid.Row="3" Grid.Column="1" Width="20" Height="20" Fill="Gray" Margin="5,5,0,5" HorizontalAlignment="Left"/>
+
+
+                    <TextBlock Text="RL 4/20 mA" Grid.Row="4" VerticalAlignment="Center"/>
+                    <Ellipse x:Name="RL420mAStatus" Grid.Row="4" Grid.Column="1" Width="20" Height="20" Fill="Gray" Margin="5,5,0,5" HorizontalAlignment="Left"/>
+
+
+                    <TextBlock Text="Prog Out" Grid.Row="5" VerticalAlignment="Center"/>
+                    <Ellipse x:Name="ProgOutStatus" Grid.Row="5" Grid.Column="1" Width="20" Height="20" Fill="Gray" Margin="5,5,0,5" HorizontalAlignment="Left"/>
+                    <TextBlock Text="Pulse Out" Grid.Row="6" VerticalAlignment="Center"/>
+                    <Ellipse x:Name="PulseOutStatus" Grid.Row="6" Grid.Column="1" Width="20" Height="20" Fill="Gray" Margin="5,5,0,5" HorizontalAlignment="Left"/>
+                    <TextBlock Text="Freq Out" Grid.Row="7" VerticalAlignment="Center"/>
+                    <Ellipse x:Name="FreqOutStatus" Grid.Row="7" Grid.Column="1" Width="20" Height="20" Fill="Gray" Margin="5,5,0,5" HorizontalAlignment="Left"/>
+                </Grid>
+            </PivotItem>
+            <PivotItem x:Name="AnalogsPivot" Header="Analogs" FontFamily="Segoe UI">
+                <PivotItem.Background>
+                    <SolidColorBrush Color="{ThemeResource SystemChromeLowColor}"/>
+                </PivotItem.Background>
+                <StackPanel>
+                    <Grid HorizontalAlignment="Stretch" VerticalAlignment="Top">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Text="Value" Grid.Row="0" Grid.Column="1" Margin="0,0,0,0" HorizontalAlignment="Center"/>
+                        <TextBlock Text="Test Offset" Grid.Row="0" Grid.Column="2" Margin="0,0,0,0" HorizontalAlignment="Center"/>
+                        <TextBlock Text="In 4_20mA" Grid.Row="1" Margin="0,5,10,5"/>
+                        <TextBlock Text="Simulation" Grid.Row="2" Margin="0,5,10,5"/>
+                        <TextBlock Text="Icoil" Grid.Row="3" Margin="0,5,0,5"/>
+                        <TextBlock Text="VAlim" Grid.Row="4" Margin="0,5,0,5"/>
+                        
+                        <TextBlock x:Name="Out420mA_Meas" Grid.Row="1" Grid.Column="1" Margin="0,0,0,0" HorizontalAlignment="Center"/>
+                        <TextBlock x:Name="Simulation_Read" Grid.Row="2" Grid.Column="1" Margin="0,0,0,0" HorizontalAlignment="Center"/>
+                        <TextBlock x:Name="Icoil_Meas" Grid.Row="3" Grid.Column="1" Margin="0,0,0,0" HorizontalAlignment="Center"/>
+                        <TextBlock x:Name="ValimInVoltBlock" Grid.Row="4" Grid.Column="1" Margin="0,0,0,0" HorizontalAlignment="Center"/>
+
+                        <TextBlock x:Name="TestOffsetOut420mA" Grid.Row="1" Grid.Column="2" Margin="0,0,0,0" HorizontalAlignment="Center"/>
+                        <TextBlock x:Name="TestOffsetIcoil" Grid.Row="3" Grid.Column="2" Margin="0,0,0,0" HorizontalAlignment="Center" FontFamily="Segoe UI"/>
+
+
+                    </Grid>
+                    <Grid VerticalAlignment="Top" Visibility="Collapsed">
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Value" Grid.Column="1"/>
+                        <TextBlock Text="Sim Out" Grid.Row="1"/>
+                        <TextBlock x:Name="SimulationOut" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left"/>
+                    </Grid>
+                </StackPanel>
+            </PivotItem>
+        </Pivot>
+        <StackPanel x:Name="TestPanel" Grid.Row="2" Grid.RowSpan="2" Margin="0,0,4,0">
+            <Button x:Name="ClearAllButton" Content="New Test" Command="{x:Bind ClearAllTestCmd}" Margin="10,10,0,0" Background="#FF0069B4" HorizontalAlignment="Stretch"></Button>
+            <Grid x:Name="ConverterTestGrid" Margin="10,0,0,0"  Grid.Row="2" VerticalAlignment="Top">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="1*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <StackPanel Grid.ColumnSpan="6" Orientation="Horizontal" Margin="0,5,0,0">
+                    <TextBlock Text="CONVERTER" FontWeight="Normal" FontSize="20" Margin="0,0,4,5" />
+                    <TextBlock x:Name="TestInfo" Margin="20,0,0,5" VerticalAlignment="Center"/>
+                </StackPanel>
+                <Button x:Name="Test420mABtn" Command="{x:Bind Test420mACmd}" Grid.Row="1" Content="Test 4/20 mA" Margin="0,0,10,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="#FF0069B4"/>
+                <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal">
+                    <Ellipse x:Name="Check4mA" Width="20" Height="20" Fill="Gray"/>
+                    <TextBlock Text="4 mA" VerticalAlignment="Center" Margin="10,0,0,0" />
+                </StackPanel>
+                <StackPanel Grid.Row="1" Grid.Column="2" Orientation="Horizontal">
+                    <Ellipse x:Name="Check12mA" Width="20" Height="20" Fill="Gray" Margin="10,0,0,0"/>
+                    <TextBlock Text="12 mA" VerticalAlignment="Center" Margin="10,0,0,0" />
+                </StackPanel>
+                <StackPanel Grid.Row="1" Grid.Column="3" Orientation="Horizontal" Margin="10,0,0,0">
+                    <Ellipse x:Name="Check20mA" Width="20" Height="20" Fill="Gray"/>
+                    <TextBlock Text="20 mA" VerticalAlignment="Center" Margin="10,0,0,0" />
+                </StackPanel>
+
+                <Border x:Name="Test420mAResultBorder"  Grid.Row="1" Grid.Column="5" Background="Transparent" Margin="10,0,0,0" BorderBrush="Gray" BorderThickness="1,1,1,1" Width="157" HorizontalAlignment="Right">
+                    <Grid>
+                        <TextBlock x:Name="Test420mAResult" Foreground="Black" Text="--" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,0" />
+                        <ProgressRing x:Name="Test420mARing" IsActive="True" Visibility="Collapsed"/>
+                    </Grid>
+                </Border>
+                <Button x:Name="SimulationBtn" Grid.Row="2" Command="{x:Bind Path=StartTestSimulation}" Content="SIMULATION" Margin="0,0,10,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="#FF0069B4"/>
+                <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal">
+                    <Ellipse x:Name="ZeroCheck" Width="20" Height="20" Fill="Gray"/>
+                    <TextBlock Text="Zero" VerticalAlignment="Center" Margin="10,0,0,0" />
+                </StackPanel>
+                <StackPanel Grid.Row="2" Grid.Column="2" Orientation="Horizontal" Margin="10,0,0,0">
+                    <Ellipse x:Name="MidCheck" Width="20" Height="20" Fill="Gray"/>
+                    <TextBlock Text="Mid" VerticalAlignment="Center" Margin="10,0,0,0" />
+                </StackPanel>
+                <StackPanel Grid.Row="2" Grid.Column="3" Orientation="Horizontal">
+                    <Ellipse x:Name="HiCheck" Width="20" Height="20" Fill="Gray" Margin="10,0,0,0"/>
+                    <TextBlock Text="Hi" VerticalAlignment="Center" Margin="10,0,0,0" />
+                </StackPanel>
+                <StackPanel Grid.Row="2" Grid.Column="4" Orientation="Horizontal" Margin="10,0,0,0">
+                    <Ellipse x:Name="EPipeCheck" Width="20" Height="20" Fill="Gray"/>
+                    <TextBlock Text="Empty Pipe" VerticalAlignment="Center" Margin="10,0,0,0" />
+                </StackPanel>
+                <Border x:Name="SimulationResultBorder"  Grid.Row="2" Grid.Column="5" Background="Transparent" Margin="10,0,0,0" BorderBrush="Gray" BorderThickness="1,1,1,1" Width="157" HorizontalAlignment="Right">
+                    <Grid>
+                        <TextBlock x:Name="SimulationResult" Foreground="Black" Text="--" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,0" />
+                        <ProgressRing x:Name="SimulationTestRing" IsActive="True" Visibility="Collapsed"/>
+                    </Grid>
+                </Border>
+                <Button x:Name="ECoilTestbtn" Command="{x:Bind StartECoilTestCmd}" Grid.Row="3" Content="TEST Energ.Coil" Margin="0,0,10,0" VerticalAlignment="Stretch" Background="#FF0069B4"/>
+                <StackPanel Grid.Row="3" Grid.Column="1" Orientation="Horizontal">
+                    <Ellipse x:Name="ZeroEnergyCheck" Width="20" Height="20" Fill="Gray"/>
+                    <TextBlock Text="Zero" VerticalAlignment="Center" Margin="10,0,0,0" />
+                </StackPanel>
+                <StackPanel Grid.Row="3" Grid.Column="2" Orientation="Horizontal" Margin="10,0,0,0">
+                    <Ellipse x:Name="NegCheck" Width="20" Height="20" Fill="Gray"/>
+                    <TextBlock Text="Neg" VerticalAlignment="Center" Margin="10,0,0,0" />
+                </StackPanel>
+                <StackPanel Grid.Row="3" Grid.Column="3" Orientation="Horizontal" Margin="10,0,0,0">
+                    <Ellipse x:Name="PosCheck" Width="20" Height="20" Fill="Gray"/>
+                    <TextBlock Text="Pos" VerticalAlignment="Center" Margin="10,0,0,0" />
+                </StackPanel>
+                <Border x:Name="ECoilTestResultBorder" Grid.Row="3" Grid.Column="5" Background="Transparent" Margin="10,0,0,0" BorderThickness="1,0,1,0" BorderBrush="Gray" Width="157" HorizontalAlignment="Right">
+                    <Grid>
+                        <TextBlock x:Name="ECoilTestResult" Foreground="Black" Text="--" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,0"/>
+                        <ProgressRing x:Name="ECoilTestRing" IsActive="True" Visibility="Collapsed"/>
+                    </Grid>
+                </Border>
+                <Button x:Name="TestIObtn" Grid.Row="4" Content="TEST I/O" Command="{x:Bind StartIOTestCmd}" Margin="0,0,10,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="#FF0069B4"/>
+                <StackPanel Grid.Row="4" Grid.Column="1" Orientation="Horizontal">
+                    <Ellipse x:Name="ProgInCheck" Width="20" Height="20" Fill="Gray"/>
+                    <TextBlock Text="Prog In" VerticalAlignment="Center" Margin="10,0,0,0" />
+                </StackPanel>
+                <StackPanel Grid.Row="4" Grid.Column="2" Orientation="Horizontal" Margin="10,0,0,0">
+                    <Ellipse x:Name="ProgOutCheck" Width="20" Height="20" Fill="Gray"/>
+                    <TextBlock Text="Prog out" VerticalAlignment="Center" Margin="10,0,0,0" />
+                </StackPanel>
+                <StackPanel Grid.Row="4" Grid.Column="3" Orientation="Horizontal" Margin="10,0,0,0">
+                    <Ellipse x:Name="PulseCheck" Width="20" Height="20" Fill="Gray"/>
+                    <TextBlock Text="Pulse" VerticalAlignment="Center" Margin="10,0,0,0" />
+                </StackPanel>
+                <StackPanel Grid.Row="4" Grid.Column="4" Orientation="Horizontal" Margin="10,0,0,0">
+                    <Ellipse x:Name="FreqCheck" Width="20" Height="20" Fill="Gray"/>
+                    <TextBlock Text="Freq" VerticalAlignment="Center" Margin="10,0,0,0" />
+                </StackPanel>
+                <Border x:Name="TestIOResultBorder" Grid.Row="4" Grid.Column="5" Background="Transparent" Margin="10,0,0,0" BorderBrush="Gray" BorderThickness="1,1,1,1" Width="157" HorizontalAlignment="Right">
+                    <Grid>
+                        <TextBlock x:Name="TestIOResult" Foreground="Black" Text="--" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,0"/>
+                        <ProgressRing x:Name="IOTestTestRing" IsActive="True" Visibility="Collapsed" HorizontalAlignment="Center" Margin="0,0,0,0" VerticalAlignment="Center"/>
+                    </Grid>
+                </Border>
+                <Button x:Name="AllTestBtn" Content="Start All Tests"  Command="{x:Bind StartAllTestCmd}"  Grid.Row="5" Grid.ColumnSpan="6" HorizontalAlignment="Stretch" Margin="0,0,157,0" VerticalAlignment="Stretch" Background="#FF0069B4"/>
+                <Button x:Name="AbortConvTestBtn" Content="Abort"  Command="{x:Bind AbortTestCmd}" Grid.Row="5" Grid.Column="5" HorizontalAlignment="Right" Margin="10,0,0,0" Width="157" VerticalAlignment="Stretch" Background="#FF0069B4"/>
+                <ProgressBar x:Name="ReadingProgress" Grid.Row="6" Minimum="0" Maximum="5" Height="10" Grid.ColumnSpan="6" Margin="0,0,-0,0" VerticalAlignment="Top" />
+            </Grid>
+
+            <Grid x:Name="SensorTestGrid"  Margin="10,10,0,20" Grid.Row="3" VerticalAlignment="Stretch">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="1*"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="157*"/>
+                    <ColumnDefinition Width="Auto" MinWidth="0"/>
+                    <ColumnDefinition Width="157*"/>
+                    <ColumnDefinition Width="156*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="SENSOR" Grid.ColumnSpan="2" FontWeight="Normal" FontSize="20" Margin="0,0,4,5"  HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+                <Button x:Name="TestDryBtn"  Grid.Row="1" Grid.Column="0" Content="TEST Dry" Command="{x:Bind Path=StartTestSensorDry}"  HorizontalAlignment="Stretch" Margin="0,0,0,0" VerticalAlignment="Center" Background="#FF0069B4"/>
+                <StackPanel Grid.Column="1" Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                    <Border x:Name="ResistanceVauleBorder" Margin="5,0,0,0">
+                        <TextBlock x:Name="ResistanceValue" Foreground="Black" VerticalAlignment="Center" HorizontalAlignment="Center" Width="75" Margin="0,0,0,0"/>
+                    </Border>
+                    <TextBlock Text="RL AB" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                </StackPanel>
+                <StackPanel Grid.Row="2" Grid.Column="2" Orientation="Horizontal" Margin="0,0,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                    <Ellipse x:Name="IsolationTCCheck" Width="20" Height="20" Fill="Gray" Margin="10,0,0,0"/>
+                    <TextBlock Text="Isolation T-C" VerticalAlignment="Center" Margin="10,0,0,0" />
+                </StackPanel>
+                <Button x:Name="TestWetBtn" Grid.Row="2" Grid.Column="0" Content="TEST Wet" Command="{x:Bind Path=StartTestSensorWet}"  HorizontalAlignment="Stretch" Margin="0,0,0,0" VerticalAlignment="Center" Background="#FF0069B4"/>
+                <StackPanel Grid.Column="2" Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                    <Ellipse x:Name="IsolationACCheck" Width="20"  Height="20" Fill="Gray" Margin="10,0,0,0"/>
+                    <TextBlock Text="Coil Isolation A-C" VerticalAlignment="Center" Margin="10,0,0,0"/>
+                </StackPanel>
+                <StackPanel Grid.Row="1" Grid.Column="3" Orientation="Horizontal" Margin="0,0,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                    <Ellipse x:Name="IsolationDCCheck" Width="20" Height="20" Fill="Gray" Margin="10,0,0,0"/>
+                    <TextBlock Text="Isolation D-C" VerticalAlignment="Center" Margin="10,0,0,0" />
+                </StackPanel>
+                <StackPanel Grid.Row="2" Grid.Column="3" Orientation="Horizontal" Margin="0,0,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                    <Ellipse x:Name="IsolationECCheck" Width="20" Height="20" Fill="Gray" Margin="10,0,0,0"/>
+                    <TextBlock Text="Isolation E-C" VerticalAlignment="Center" Margin="10,0,0,0" />
+                </StackPanel>
+                <Border x:Name="TestSensorResultBorder" Grid.Row="1" Grid.Column="5" Background="Transparent" Margin="10,0,0,0" BorderBrush="Gray" BorderThickness="1,1,1,1" >
+                    <Grid>
+                        <TextBlock x:Name="TestSensorResult" Foreground="Black" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                        <ProgressRing x:Name="SensorTestRing" IsActive="True" Visibility="Collapsed"/>
+                    </Grid>
+                </Border>
+                <Button x:Name="AbortSensTestBtn" Content="Abort" Grid.Row="2" Grid.Column="5" HorizontalAlignment="Stretch" Margin="10,0,0,0" Background="#FF0069B4"/>
+            </Grid>
+        </StackPanel>
+        <Button Content="SAVE REPORT" Command="{x:Bind Path=AddReportCmd}" HorizontalAlignment="Stretch" Margin="10,0,10,0" VerticalAlignment="Center" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2"/>
+        <Image x:Name="MainLogo" HorizontalAlignment="Left" VerticalAlignment="Center" Source="/Images/Logo Euromag Alfa Complete.png" Margin="1,0,0,0" Opacity="0.5" Width="300" Grid.Row="3" Grid.ColumnSpan="2">
+            <Image.FocusVisualPrimaryBrush>
+                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                    <GradientStop Color="Black"/>
+                    <GradientStop Color="White" Offset="1"/>
+                </LinearGradientBrush>
+            </Image.FocusVisualPrimaryBrush>
+        </Image>
+    </Grid>
+</Page>

@@ -1,0 +1,223 @@
+﻿<Page
+    x:Class="MC_Suite.Views.MC608ConfigurationPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:MC_Suite.Views"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Height="Auto">
+
+    <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+        <ProgressRing x:Name="ConnectionRing" IsActive="True" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        <ScrollViewer x:Name="ConfigScrollViewer" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <StackPanel x:Name="ConfigPanel" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="10,0,0,0">
+                <StackPanel HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="{StaticResource SettingsSubheaderMargin}">
+                    <TextBlock x:Name="ModbusStatusTxt" Text="{x:Bind Mode=OneWay, Path=ModbusStatus}" Margin="0,0,0,10"/>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <Button x:Name="ReadRegisterBtn" Content="Read Configuration" Command="{x:Bind Path=ReadRegistercmd}" HorizontalAlignment="Center" Margin="0,0,5,0" VerticalAlignment="Center"/>
+                        <Button x:Name="WriteRegisterBtn" Content="Write Configuration" Command="{x:Bind Path=WriteRegistercmd}" HorizontalAlignment="Center" Margin="5,0,0,0" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </StackPanel>
+                <Grid x:Name="TechUnitsGrid" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="{StaticResource SettingsSubheaderMargin}" Width="400">
+                    <StackPanel>
+                        <TextBlock Text="Technical Units" FontWeight="Normal" FontSize="20" Margin="0,0,0,10"/>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition MinWidth="0" Width="Auto"/>
+                                <ColumnDefinition MinWidth="0" Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <TextBlock Text="Flow Rate Time Unit" VerticalAlignment="Center"/>
+                            <ComboBox x:Name="FlowTimebaseBox" DisplayMemberPath="Value" SelectionChanged="FlowTimebaseBox_SelectionChanged" ItemsSource="{x:Bind Path=MC608_Device.TimebaseList}" SelectedValuePath="Key" SelectedValue="{x:Bind Path=MC608_Device.FlowrateTimebase}" HorizontalAlignment="Stretch" Grid.Column="1" Margin="10,0,0,0" Grid.Row="0" VerticalAlignment="Center"/>
+                            <TextBlock Text="Flow Rate Volume" Grid.Row="1" VerticalAlignment="Center"/>
+                            <ComboBox x:Name="FlowVolumeBox" DisplayMemberPath="Value" SelectionChanged="FlowVolumeBox_SelectionChanged" ItemsSource="{x:Bind Path=MC608_Device.UnitsList}" SelectedValuePath="Key" SelectedValue="{x:Bind Path=MC608_Device.FlowrateUnit}" HorizontalAlignment="Stretch" Grid.Column="1" Margin="10,0,0,0" Grid.Row="1" VerticalAlignment="Center"/>
+                            <TextBlock Text="Counters Volume" Grid.Row="2" VerticalAlignment="Center"/>
+                            <ComboBox x:Name="CountersVolumeBox" DisplayMemberPath="Value" SelectionChanged="CountersVolumeBox_SelectionChanged" ItemsSource="{x:Bind Path=MC608_Device.UnitsList}" SelectedValuePath="Key" SelectedValue="{x:Bind Path=MC608_Device.CountersUnit}" HorizontalAlignment="Stretch" Grid.Column="1" Margin="10,0,0,0" Grid.Row="2" VerticalAlignment="Center"/>
+                        </Grid>
+                    </StackPanel>
+                </Grid>
+                <Grid x:Name="IOGrid" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="{StaticResource SettingsSubheaderMargin}" Width="500
+                      ">
+                    <StackPanel>
+                        <TextBlock Text="I/O" FontWeight="Normal" FontSize="20" Margin="0,0,0,10"/>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition MinWidth="0" Width="Auto"/>
+                                <ColumnDefinition MinWidth="0" Width="Auto"/>
+                                <ColumnDefinition MinWidth="0" Width="Auto"/>
+                                <ColumnDefinition MinWidth="0" Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="Pulse Volume Unit" VerticalAlignment="Center"/>
+                            <ComboBox x:Name="PulseVolumeBox" DisplayMemberPath="Value" SelectionChanged="PulseVolumeBox_SelectionChanged" ItemsSource="{x:Bind Path=MC608_Device.UnitsList}" SelectedValuePath="Key" SelectedValue="{x:Bind Path=MC608_Device.PulseOutUnit}" HorizontalAlignment="Stretch" Grid.Column="2" Margin="10,0,0,0" VerticalAlignment="Center"/>
+                            <TextBlock Text="Pulse Volume" Grid.Row="1" VerticalAlignment="Center"/>
+                            <TextBlock x:Name="PulseVolumeUnit" Grid.Row="1" VerticalAlignment="Center" Grid.Column="1" HorizontalAlignment="Center"/>
+                            <TextBox x:Name="PulseVolume" Grid.Row="1" Grid.Column="2" HorizontalAlignment="Stretch" Margin="10,0,0,0"/>
+                            <TextBlock Text="Pulse Width" Grid.Row="2" VerticalAlignment="Center"/>
+                            <TextBlock Text="[ms]" Grid.Row="2" Grid.Column="1" VerticalAlignment="Center"/>
+                            <TextBox x:Name="PulseWidth" Grid.Row="2" Grid.Column="2" HorizontalAlignment="Stretch" Margin="10,0,0,0"/>
+                            <TextBlock Text="FS Frequency" Grid.Row="3" VerticalAlignment="Center" />
+                            <TextBlock Text="[Hz]" Grid.Row="3" Grid.Column="1" VerticalAlignment="Center"/>
+                            <TextBox x:Name="FreqOutFS" Grid.Row="3" Grid.Column="2" HorizontalAlignment="Stretch" Margin="10,0,0,0"/>
+                            <TextBlock Text="Prog. Out" Grid.Row="4" VerticalAlignment="Center" />
+                            <ComboBox x:Name="ProgOutBox" DisplayMemberPath="Value" SelectionChanged="ProgOutBox_SelectionChanged" ItemsSource="{x:Bind Path=MC608_Device.ProgOutList}" SelectedValuePath="Key" SelectedValue="{x:Bind Path=MC608_Device.ProgOutSetup}" HorizontalAlignment="Stretch" Grid.Row="4" Grid.Column="2" Margin="10,0,0,0" VerticalAlignment="Center"/>
+                            <TextBlock Text="Prog. In" Grid.Row="5" VerticalAlignment="Center" />
+                            <ComboBox x:Name="ProgInBox" DisplayMemberPath="Value" ItemsSource="{x:Bind Path=MC608_Device.ProgInList}" SelectedValuePath="Key" SelectedValue="{x:Bind Path=MC608_Device.ProgInSetup}" HorizontalAlignment="Stretch" Grid.Row="5" Grid.Column="2" Margin="10,0,0,0" VerticalAlignment="Center"/>
+                            <StackPanel x:Name="BatchingPanel" Grid.Column="3" Grid.Row="4" Orientation="Horizontal" Margin="5,0,0,0">
+                                <TextBlock Text="Volume:" VerticalAlignment="Center"/>
+                                <TextBox x:Name="BatchingVolumeBox" Margin="5,0,0,0" />
+                                <TextBlock x:Name="BatchingVolumeUT" Margin="5,0,0,0" VerticalAlignment="Center"></TextBlock>
+                            </StackPanel>
+                        </Grid>
+                    </StackPanel>
+                </Grid>
+                <Grid x:Name="LCDGrid" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="{StaticResource SettingsSubheaderMargin}" Width="400">
+                    <StackPanel>
+                        <TextBlock Text="Display" FontWeight="Normal" FontSize="20" Margin="0,0,0,10"/>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition MinWidth="0" Width="Auto"/>
+                                <ColumnDefinition MinWidth="0" Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <TextBlock Text="Contrast" VerticalAlignment="Center"/>
+                            <TextBlock x:Name="ContrastValue" Grid.Column="1" Margin="10,0,0,0" VerticalAlignment="Center" />
+                            <Slider x:Name="ContrastSlider" ValueChanged="ContrastSlider_ValueChanged" Margin="10,0,0,0" Width="200" Orientation="Horizontal" Minimum="0" Maximum="100" SmallChange="1" LargeChange="10" TickPlacement="BottomRight" TickFrequency="10" Grid.Column="2"/>
+                            <TextBlock Text="Backlight" VerticalAlignment="Center" Grid.Row="1"/>
+                            <TextBlock x:Name="BacklightValue" Grid.Column="1" Margin="10,0,0,0" Grid.Row="1" VerticalAlignment="Center" />
+                            <Slider x:Name="BacklightSlider"  ValueChanged="BacklightSlider_ValueChanged" Margin="10,0,0,0" Width="200" Orientation="Horizontal" Value="50" Minimum="0" Maximum="100" SmallChange="1" LargeChange="10" TickPlacement="BottomRight" TickFrequency="10" Grid.Column="2" Grid.Row="1"/>
+                            <TextBlock Text="Timeout" VerticalAlignment="Center" Grid.Row="2"/>
+                            <TextBlock Text="[s]" Grid.Column="1" Grid.Row="2" VerticalAlignment="Center" Margin="10,0,0,0" HorizontalAlignment="Center"/>
+                            <TextBox x:Name="LcdTimeoutBox" Grid.Row="2" Grid.Column="2" Margin="10,0,0,0"/>
+                            <TextBlock Text="Language" VerticalAlignment="Center" Grid.Row="3"/>
+                            <ComboBox x:Name="LanguageBox" DisplayMemberPath="Value" ItemsSource="{x:Bind Path=MC608_Device.LanguagesList}" SelectedValuePath="Key" SelectedValue="{x:Bind Path=MC608_Device.Language}" HorizontalAlignment="Stretch" Grid.Row="3" Grid.Column="2" Margin="10,0,0,0" VerticalAlignment="Center"/>
+                        </Grid>
+                    </StackPanel>
+                </Grid>
+                <Grid x:Name="VariousGrid" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="{StaticResource SettingsSubheaderMargin}" Width="400">
+                    <StackPanel>
+                        <TextBlock Text="Various" FontWeight="Normal" FontSize="20" Margin="0,0,0,10"/>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition MinWidth="0" Width="Auto"/>
+                                <ColumnDefinition MinWidth="0" Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <TextBlock Text="Auto Power Off" VerticalAlignment="Center"/>
+                            <TextBlock Text="[s]" Grid.Column="1" Margin="10,0,0,0" VerticalAlignment="Center" />
+                            <TextBox x:Name="AutoPowerOffBox" Grid.Column="2" Margin="10,0,0,0"/>
+                        </Grid>
+                    </StackPanel>
+                </Grid>
+                <Grid x:Name="AlarmsGrid" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="{StaticResource SettingsSubheaderMargin}" Width="400">
+                    <StackPanel>
+                        <TextBlock Text="Alarms" FontWeight="Normal" FontSize="20" Margin="0,0,0,10"/>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition MinWidth="0" Width="Auto"/>
+                                <ColumnDefinition MinWidth="0" Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto" MinWidth="0"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <TextBlock Text="Min Flow Rate Alarm" VerticalAlignment="Center"/>
+                            <TextBlock Text="[%]" Grid.Column="1" Margin="10,0,0,0" VerticalAlignment="Center" />
+                            <TextBox x:Name="MinFlowAlarmBox" Grid.Column="2" Margin="10,0,0,0" VerticalAlignment="Center"/>
+                            <ToggleSwitch x:Name="MinFlowAlarmSW" Toggled="MinFlowAlarmSW_Toggled" HorizontalAlignment="Stretch" Margin="10,0,0,0" VerticalAlignment="Top" Grid.Column="3" MinWidth="0"/>
+                            <TextBlock Text="Max Flow Rate Alarm" VerticalAlignment="Center" Grid.Row="1"/>
+                            <TextBlock Text="[%]" Grid.Column="1" Margin="10,0,0,0" VerticalAlignment="Center" Grid.Row="1" />
+                            <TextBox x:Name="MaxFlowAlarmBox" Grid.Column="2" Margin="10,0,0,0" Grid.Row="1" VerticalAlignment="Center"/>
+                            <ToggleSwitch x:Name="MaxFlowAlarmSW" Toggled="MaxFlowAlarmSW_Toggled" HorizontalAlignment="Stretch" Margin="10,0,0,0" VerticalAlignment="Top" Grid.Column="3" MinWidth="0" Grid.Row="1"/>
+                        </Grid>
+                    </StackPanel>
+                </Grid>
+                <Grid x:Name="FiltersGrid" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="{StaticResource SettingsSubheaderMargin}" Width="400">
+                    <StackPanel>
+                        <TextBlock Text="Filters" FontWeight="Normal" FontSize="20" Margin="0,0,0,10"/>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <StackPanel x:Name="PeakCutPanel" HorizontalAlignment="Center" Margin="0,0,0,0" VerticalAlignment="Stretch">
+                                <TextBlock Text="Peak Cut" HorizontalAlignment="Center"/>
+                                <Slider x:Name="PeakCutSlider" ValueChanged="PeakCutSlider_ValueChanged" Orientation="Vertical" Height="200" Minimum="{x:Bind Path=MC608_Device.PeakCutMin}" Maximum="{x:Bind Path=MC608_Device.PeakCutMax}" SmallChange="1" LargeChange="10" TickPlacement="BottomRight" TickFrequency="10" Margin="0,5,0,0" HorizontalAlignment="Center"/>
+                                <TextBlock x:Name="PeakCutValue" Margin="0,5,0,0" VerticalAlignment="Stretch" HorizontalAlignment="Center"/>
+                            </StackPanel>
+                            <StackPanel x:Name="CutOffPanel" Grid.Column="1" Margin="0,0,0,0" HorizontalAlignment="Center" VerticalAlignment="Stretch">
+                                <TextBlock Text="CutOff" HorizontalAlignment="Left"/>
+                                <Slider x:Name="CutOffSlider" ValueChanged="CutOffSlider_ValueChanged" Orientation="Vertical" Height="200" Minimum="{x:Bind Path=MC608_Device.CutOffMin}" Maximum="{x:Bind Path=MC608_Device.CutOffMax}" SmallChange="1" LargeChange="10" TickPlacement="BottomRight" TickFrequency="10" Margin="0,5,0,0" HorizontalAlignment="Center"/>
+                                <TextBlock x:Name="CutOffValue" Margin="0,5,0,0" VerticalAlignment="Stretch" HorizontalAlignment="Center"/>
+                            </StackPanel>
+                            <StackPanel x:Name="BypassPanel" Grid.Column="2" Margin="0,0,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Center">
+                                <TextBlock Text="ByPass" VerticalAlignment="Stretch" HorizontalAlignment="Center"/>
+                                <Slider x:Name="ByPassSlider" ValueChanged="ByPassSlider_ValueChanged" Orientation="Vertical" Height="200" Minimum="{x:Bind Path=MC608_Device.FilterBypassMin}" Maximum="{x:Bind Path=MC608_Device.FilterBypassMax}" SmallChange="1" LargeChange="10" TickPlacement="BottomRight" TickFrequency="10" Margin="0,5,0,0" HorizontalAlignment="Center"/>
+                                <TextBlock x:Name="ByPassValue" Margin="0,5,0,0" VerticalAlignment="Stretch" HorizontalAlignment="Center"/>
+                            </StackPanel>
+                            <StackPanel x:Name="AveragePanel" Grid.Column="3" Margin="0,0,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Center">
+                                <TextBlock Text="Average" VerticalAlignment="Stretch" HorizontalAlignment="Center"/>
+                                <Slider x:Name="AverageSlider" ValueChanged="AverageSlider_ValueChanged" Orientation="Vertical" Height="200" Minimum="{x:Bind Path=MC608_Device.AverageMin}" SmallChange="1" LargeChange="10" TickPlacement="BottomRight" TickFrequency="10" Margin="0,5,0,0" HorizontalAlignment="Center"/>
+                                <TextBlock x:Name="AverageValue" Margin="0,5,0,0" VerticalAlignment="Stretch" HorizontalAlignment="Center"/>
+                            </StackPanel>
+                            <StackPanel x:Name="DampingPanel" Grid.Column="4" Margin="0,0,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Center">
+                                <TextBlock Text="Damping" VerticalAlignment="Stretch" HorizontalAlignment="Center"/>
+                                <Slider x:Name="DampingSlider" ValueChanged="DampingSlider_ValueChanged" Orientation="Vertical" Height="200" Minimum="{x:Bind Path=MC608_Device.DampingMin}" Maximum="{x:Bind Path=MC608_Device.DampingMax}" SmallChange="1" LargeChange="10" TickPlacement="BottomRight" TickFrequency="10" Margin="0,5,0,0" HorizontalAlignment="Center"/>
+                                <TextBlock x:Name="DampingValue" Margin="0,5,0,0" VerticalAlignment="Stretch" HorizontalAlignment="Center"/>
+                            </StackPanel>
+                        </Grid>
+                    </StackPanel>
+                </Grid>
+                <Grid x:Name="FrequencyGrid" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="{StaticResource SettingsSubheaderMargin}" Width="400">
+                    <StackPanel>
+                        <TextBlock Text="Line Frequency" FontWeight="Normal" FontSize="20" Margin="0,0,0,10"/>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition MinWidth="0" Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <RadioButton x:Name="Freq50Hz" Checked="Freq50Hz_Checked" Content="50 Hz" HorizontalAlignment="Center" Margin="0,0,0,0" VerticalAlignment="Center"/>
+                            <RadioButton x:Name="Freq60Hz" Checked="Freq60Hz_Checked" Content="60 Hz" HorizontalAlignment="Center" Margin="0,0,0,0" VerticalAlignment="Center" Grid.Row="1"/>
+                        </Grid>
+                    </StackPanel>
+                </Grid>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</Page>

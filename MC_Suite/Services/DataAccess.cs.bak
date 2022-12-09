@@ -1,0 +1,256 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Collections.ObjectModel;
+using Microsoft.Data.Sqlite;
+
+namespace MC_Suite.Services
+{
+    public class DataAccess
+    {
+        private static DataAccess _instance;
+        public static DataAccess Instance
+        {
+            get
+            {
+                if (_instance == null)
+                    _instance = new DataAccess();
+                return _instance;
+            }
+        }
+
+        public static void InitializeDatabase(string DataBaseName)
+        {
+            using (SqliteConnection db =
+                new SqliteConnection("Filename=" + DataBaseName))
+            {
+                db.Open();
+
+                String tableCommand = "CREATE TABLE IF NOT " +
+                     "EXISTS MC406_DataBase (Primary_Key INTEGER PRIMARY KEY, " +
+                        "ID int, " +
+                        "Data_Test DateTime," +
+                        "SW_Ver_Verificator string," +
+                        "SN_Verificator string, " +                                                
+                        "OperatoreTest string," +
+                        "Modello_Sensore string," +
+                        "Matricola_Sensore string," +
+                        "Modello_Convertitore string," +
+                        "Matricola_Convertitore string," +
+                        "SN_Convertitore uint" +                                                
+                      ")";
+
+                SqliteCommand createTable = new SqliteCommand(tableCommand, db);
+
+                createTable.ExecuteReader();
+            }
+        }
+
+        public static void AddData(string DataBaseName, ReportVerificator newTest)
+        {
+            using (SqliteConnection db =
+                new SqliteConnection("Filename=" + DataBaseName))
+            {
+                db.Open();
+
+                SqliteCommand insertCommand = new SqliteCommand();
+                insertCommand.Connection = db;
+
+                // Use parameterized query to prevent SQL injection attacks
+                insertCommand.CommandText = "INSERT INTO MC406_DataBase VALUES (NULL, " +
+                                                                                "@ID, " +
+                                                                                "@Data_Test," +
+                                                                                "@SW_Ver_Verificator," +
+                                                                                "@SN_Verificator," +
+                                                                                "@OperatoreTest," +
+                                                                                "@Modello_Sensore," +
+                                                                                "@Matricola_Sensore," +
+                                                                                "@Modello_Convertitore," +
+                                                                                "@Matricola_Convertitore," +
+                                                                                "@SN_Convertitore" +
+                                                                                ");";
+
+                insertCommand.Parameters.AddWithValue("@ID", newTest.ID);
+                insertCommand.Parameters.AddWithValue("@Data_Test", newTest.Data_Test);
+                insertCommand.Parameters.AddWithValue("@SW_Ver_Verificator", newTest.SW_Ver_Verificator);
+                insertCommand.Parameters.AddWithValue("@SN_Verificator", newTest.SN_Verificator);
+                insertCommand.Parameters.AddWithValue("@OperatoreTest", newTest.OperatoreTest);
+                insertCommand.Parameters.AddWithValue("@Modello_Sensore", newTest.Modello_Sensore);
+                insertCommand.Parameters.AddWithValue("@Matricola_Sensore", newTest.Matricola_Sensore);
+                insertCommand.Parameters.AddWithValue("@Modello_Convertitore", newTest.Modello_Convertitore);
+                insertCommand.Parameters.AddWithValue("@Matricola_Convertitore", newTest.Matricola_Convertitore);
+                insertCommand.Parameters.AddWithValue("@SN_Convertitore", newTest.SN_Convertitore);
+                insertCommand.ExecuteReader();
+
+                db.Close();
+            }
+        }
+
+        public static List<ReportVerificator> GetData( string DataBaseName )
+        {
+            List<int> ID_List = new List<int>();
+            List<DateTime> Data_Test_List = new List<DateTime>();
+            List<string> SW_Ver_Verificator_List = new List<string>();
+            List<string> SN_Verificator_List = new List<string>();
+            List<string> OperatoreTest_List = new List<string>();
+            List<string> Modello_Sensore_List = new List<string>();
+            List<string> Matricola_Sensore_List = new List<string>();
+            List<string> Modello_Convertitore_List = new List<string>();
+            List<string> Matricola_Convertitore_List = new List<string>();
+            List<uint> SN_Convertitore_List = new List<uint>();
+
+            List<ReportVerificator> GetReports = new List<ReportVerificator>();
+
+            using (SqliteConnection db =
+                new SqliteConnection("Filename=" + DataBaseName))
+            {
+                db.Open();
+
+                #region ID
+                SqliteCommand selectIDCommand = new SqliteCommand
+                    ("SELECT ID from MC406_DataBase", db);
+
+                SqliteDataReader selectIDCommand_query = selectIDCommand.ExecuteReader();
+
+                while (selectIDCommand_query.Read())
+                {
+                    ID_List.Add(selectIDCommand_query.GetInt32(0));
+                }
+                #endregion
+
+                #region Data_Test
+                SqliteCommand selectData_TestCommand = new SqliteCommand
+                   ("SELECT Data_Test from MC406_DataBase", db);
+
+                SqliteDataReader selectData_TestCommand_query = selectData_TestCommand.ExecuteReader();
+
+                while (selectData_TestCommand_query.Read())
+                {
+                    Data_Test_List.Add(selectData_TestCommand_query.GetDateTime(0));
+                }
+                #endregion
+
+                #region SW_Ver_Verificator
+                SqliteCommand selectSW_Ver_VerificatorCommand = new SqliteCommand
+                    ("SELECT SW_Ver_Verificator from MC406_DataBase", db);
+
+                SqliteDataReader selectSW_Ver_VerificatorCommand_query = selectSW_Ver_VerificatorCommand.ExecuteReader();
+
+                while (selectSW_Ver_VerificatorCommand_query.Read())
+                {
+                    SW_Ver_Verificator_List.Add(selectSW_Ver_VerificatorCommand_query.GetString(0));
+                }
+                #endregion
+
+                #region SN_Verificator
+                SqliteCommand selectSN_VerificatorCommand = new SqliteCommand
+                    ("SELECT SN_Verificator from MC406_DataBase", db);
+
+                SqliteDataReader selectSN_VerificatorCommand_query = selectSN_VerificatorCommand.ExecuteReader();
+
+                while (selectSN_VerificatorCommand_query.Read())
+                {
+                    SN_Verificator_List.Add(selectSN_VerificatorCommand_query.GetString(0));
+                }
+                #endregion
+
+                #region OperatoreTest
+                SqliteCommand selectOperatoreTestCommand = new SqliteCommand
+                    ("SELECT OperatoreTest from MC406_DataBase", db);
+
+                SqliteDataReader selectOperatoreTestCommand_query = selectOperatoreTestCommand.ExecuteReader();
+
+                while (selectOperatoreTestCommand_query.Read())
+                {
+                    OperatoreTest_List.Add(selectOperatoreTestCommand_query.GetString(0));
+                }
+                #endregion
+
+                #region Modello_Sensore
+                SqliteCommand selectModello_SensoreCommand = new SqliteCommand
+                    ("SELECT Modello_Sensore from MC406_DataBase", db);
+
+                SqliteDataReader selectModello_SensoreCommand_query = selectModello_SensoreCommand.ExecuteReader();
+
+                while (selectModello_SensoreCommand_query.Read())
+                {
+                    Modello_Sensore_List.Add(selectModello_SensoreCommand_query.GetString(0));
+                }
+                #endregion
+
+                #region Matricola_Sensore
+                SqliteCommand selectMatricola_SensoreCommand = new SqliteCommand
+                    ("SELECT Matricola_Sensore from MC406_DataBase", db);
+
+                SqliteDataReader selectMatricola_SensoreCommand_query = selectMatricola_SensoreCommand.ExecuteReader();
+
+                while (selectMatricola_SensoreCommand_query.Read())
+                {
+                    Matricola_Sensore_List.Add(selectMatricola_SensoreCommand_query.GetString(0));
+                }
+                #endregion
+
+                #region Modello_Convertitore
+                SqliteCommand selectModello_ConvertitoreCommand = new SqliteCommand
+                    ("SELECT Modello_Convertitore from MC406_DataBase", db);
+
+                SqliteDataReader selectModello_ConvertitoreCommand_query = selectModello_ConvertitoreCommand.ExecuteReader();
+
+                while (selectModello_ConvertitoreCommand_query.Read())
+                {
+                    Modello_Convertitore_List.Add(selectModello_ConvertitoreCommand_query.GetString(0));
+                }
+                #endregion
+
+                #region Matricola_Convertitore
+                SqliteCommand selectMatricola_ConvertitoreCommand = new SqliteCommand
+                    ("SELECT Matricola_Convertitore from MC406_DataBase", db);
+
+                SqliteDataReader selectMatricola_ConvertitoreCommand_query = selectMatricola_ConvertitoreCommand.ExecuteReader();
+
+                while (selectMatricola_ConvertitoreCommand_query.Read())
+                {
+                    Matricola_Convertitore_List.Add(selectMatricola_ConvertitoreCommand_query.GetString(0));
+                }
+                #endregion
+
+                #region SN_Convertitore
+                SqliteCommand selectSN_ConvertitoreCommand = new SqliteCommand
+                    ("SELECT SN_Convertitore from MC406_DataBase", db);
+
+                SqliteDataReader selectSN_ConvertitoreCommand_query = selectSN_ConvertitoreCommand.ExecuteReader();
+
+                while (selectSN_ConvertitoreCommand_query.Read())
+                {
+                    SN_Convertitore_List.Add((uint)selectSN_ConvertitoreCommand_query.GetInt32(0));
+                }
+                #endregion
+
+                db.Close();
+            }
+
+            for (int i=0; i < ID_List.Count; i++)
+            {
+                GetReports.Add(new ReportVerificator() { ID = ID_List[i],
+                                                         Data_Test = Data_Test_List[i],
+                                                         SW_Ver_Verificator = SW_Ver_Verificator_List[i],
+                                                         SN_Verificator = SN_Verificator_List[i],
+                                                         OperatoreTest = OperatoreTest_List[i],
+                                                         Modello_Sensore = Modello_Sensore_List[i],
+                                                         Matricola_Sensore = Matricola_Sensore_List[i],
+                                                         Modello_Convertitore = Modello_Convertitore_List[i],
+                                                         Matricola_Convertitore = Matricola_Convertitore_List[i],
+                                                         SN_Convertitore = SN_Convertitore_List[i]
+
+                });                
+            }
+
+            return GetReports;
+        }
+
+        public List<ReportVerificator> ReportList = new List<ReportVerificator>();
+        public ObservableCollection<ReportVerificator> ReportView = new ObservableCollection<ReportVerificator>();
+    }
+}

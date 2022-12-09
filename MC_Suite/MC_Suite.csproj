@@ -11,13 +11,25 @@
     <AssemblyName>MC_Suite</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
-    <TargetPlatformVersion Condition=" '$(TargetPlatformVersion)' == '' ">10.0.17134.0</TargetPlatformVersion>
+    <TargetPlatformVersion Condition=" '$(TargetPlatformVersion)' == '' ">10.0.18362.0</TargetPlatformVersion>
     <TargetPlatformMinVersion>10.0.16299.0</TargetPlatformMinVersion>
     <MinimumVisualStudioVersion>14</MinimumVisualStudioVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WindowsXamlEnableOverview>true</WindowsXamlEnableOverview>
-    <PackageCertificateKeyFile>MC_Suite_TemporaryKey.pfx</PackageCertificateKeyFile>
+    <PackageCertificateKeyFile>
+    </PackageCertificateKeyFile>
+    <GenerateAppInstallerFile>False</GenerateAppInstallerFile>
+    <AppxAutoIncrementPackageRevision>False</AppxAutoIncrementPackageRevision>
+    <AppxBundle>Always</AppxBundle>
+    <AppxBundlePlatforms>arm</AppxBundlePlatforms>
+    <AppInstallerUpdateFrequency>0</AppInstallerUpdateFrequency>
+    <AppInstallerCheckForUpdateFrequency>OnApplicationRun</AppInstallerCheckForUpdateFrequency>
+    <PackageCertificateThumbprint>D855A2D42FB8C3001DFA89918984C2CA6A8B721F</PackageCertificateThumbprint>
+    <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
+    <AppxPackageSigningTimestampDigestAlgorithm>SHA256</AppxPackageSigningTimestampDigestAlgorithm>
+    <GenerateTestArtifacts>True</GenerateTestArtifacts>
+    <HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <DebugSymbols>true</DebugSymbols>
@@ -29,6 +41,7 @@
     <UseVSHostingProcess>false</UseVSHostingProcess>
     <ErrorReport>prompt</ErrorReport>
     <Prefer32Bit>true</Prefer32Bit>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
     <OutputPath>bin\x86\Release\</OutputPath>
@@ -92,38 +105,189 @@
     <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="Microsoft.Data.Sqlite">
+      <Version>2.2.0</Version>
+    </PackageReference>
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform">
-      <Version>6.1.7</Version>
+      <Version>6.1.9</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Toolkit.Uwp">
+      <Version>5.0.0</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Toolkit.Uwp.UI.Controls">
+      <Version>5.0.0</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Toolkit.Uwp.UI.Controls.DataGrid">
+      <Version>5.0.0</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Toolkit.Uwp.UI.Controls.Graph">
+      <Version>5.0.0</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.Xaml.Behaviors.Uwp.Managed">
       <Version>2.0.0</Version>
     </PackageReference>
     <!-- Nuget package references -->
-    <PackageReference Include="Newtonsoft.Json">
-      <Version>11.0.2</Version>
+    <PackageReference Include="Telerik.UI.for.UniversalWindowsPlatform">
+      <Version>1.0.1.2</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <PRIResource Include="Strings\en-us\Resources.resw" />
+    <PRIResource Include="Strings\en-US\Resources.resw">
+      <SubType>Designer</SubType>
+    </PRIResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Activation\ActivationHandler.cs" />
+    <Compile Include="Euromag\Devices\MC406.cs" />
+    <Compile Include="Euromag\Protocols\CommandResult.cs" />
+    <Compile Include="Euromag\Protocols\Commands.cs" />
+    <Compile Include="Euromag\Protocols\CommunicationFrames\CommunicationFrame.cs" />
+    <Compile Include="Euromag\Protocols\CommunicationFrames\StdCommunicationFrame.cs" />
+    <Compile Include="Euromag\Protocols\CommunicationFrames\StdHeader.cs" />
+    <Compile Include="Euromag\Protocols\CommunicationFrames\StdPayload.cs" />
+    <Compile Include="Euromag\Protocols\StdCommands\CommandScheduler.cs" />
+    <Compile Include="Euromag\Protocols\StdCommands\DataLogErase.cs" />
+    <Compile Include="Euromag\Protocols\StdCommands\EEPROMvariables.cs" />
+    <Compile Include="Euromag\Protocols\StdCommands\EnterSuspendMode.cs" />
+    <Compile Include="Euromag\Protocols\StdCommands\EventLogErase.cs" />
+    <Compile Include="Euromag\Protocols\StdCommands\FileDownload.cs" />
+    <Compile Include="Euromag\Protocols\StdCommands\FirmwareDownload.cs" />
+    <Compile Include="Euromag\Protocols\StdCommands\FirmwareUpdate.cs" />
+    <Compile Include="Euromag\Protocols\StdCommands\Get420mATestFlowLev.cs" />
+    <Compile Include="Euromag\Protocols\StdCommands\GetBslLogLines.cs" />
+    <Compile Include="Euromag\Protocols\StdCommands\GetDataLogLines.cs" />
+    <Compile Include="Euromag\Protocols\StdCommands\GetEventLogLines.cs" />
+    <Compile Include="Euromag\Protocols\StdCommands\GetFilesInfo.cs" />
+    <Compile Include="Euromag\Protocols\StdCommands\GetGSMStatus.cs" />
+    <Compile Include="Euromag\Protocols\StdCommands\GetLogLines.cs" />
+    <Compile Include="Euromag\Protocols\StdCommands\GetTargetDateTime.cs" />
+    <Compile Include="Euromag\Protocols\StdCommands\GetTargetInputs.cs" />
+    <Compile Include="Euromag\Protocols\StdCommands\GetTargetStatus.cs" />
+    <Compile Include="Euromag\Protocols\StdCommands\GetTestMode420mAStatus.cs" />
+    <Compile Include="Euromag\Protocols\StdCommands\GetVerificationModeStatus.cs" />
+    <Compile Include="Euromag\Protocols\StdCommands\GSMvariables.cs" />
+    <Compile Include="Euromag\Protocols\StdCommands\Operation.cs" />
+    <Compile Include="Euromag\Protocols\StdCommands\RAMvariables.cs" />
+    <Compile Include="Euromag\Protocols\StdCommands\ReadBslConfigFlags.cs" />
+    <Compile Include="Euromag\Protocols\StdCommands\ReadEEPROM.cs" />
+    <Compile Include="Euromag\Protocols\StdCommands\ReadEEPROMpage.cs" />
+    <Compile Include="Euromag\Protocols\StdCommands\ReadGSMPar.cs" />
+    <Compile Include="Euromag\Protocols\StdCommands\ReadGSMTest.cs" />
+    <Compile Include="Euromag\Protocols\StdCommands\ReadRAM.cs" />
+    <Compile Include="Euromag\Protocols\StdCommands\ReadVarBundle.cs" />
+    <Compile Include="Euromag\Protocols\StdCommands\Set420mATestFlowLev.cs" />
+    <Compile Include="Euromag\Protocols\StdCommands\SetDateTime.cs" />
+    <Compile Include="Euromag\Protocols\StdCommands\SetDisplay.cs" />
+    <Compile Include="Euromag\Protocols\StdCommands\SetTargetOutputs.cs" />
+    <Compile Include="Euromag\Protocols\StdCommands\SetTargetPassingMode.cs" />
+    <Compile Include="Euromag\Protocols\StdCommands\SetVerificationMode.cs" />
+    <Compile Include="Euromag\Protocols\StdCommands\StdCommands.cs" />
+    <Compile Include="Euromag\Protocols\StdCommands\TargetReset.cs" />
+    <Compile Include="Euromag\Protocols\StdCommands\TargetVariable.cs" />
+    <Compile Include="Euromag\Protocols\StdCommands\TestMode420mA.cs" />
+    <Compile Include="Euromag\Protocols\StdCommands\WriteBslConfigFlags.cs" />
+    <Compile Include="Euromag\Protocols\StdCommands\WriteEEPROM.cs" />
+    <Compile Include="Euromag\Protocols\StdCommands\WriteEEPROMpage.cs" />
+    <Compile Include="Euromag\Protocols\StdCommands\WriteGSMPar.cs" />
+    <Compile Include="Euromag\Protocols\StdCommands\WriteGSMTest.cs" />
     <Compile Include="Helpers\EnumToBooleanConverter.cs" />
     <Compile Include="Helpers\Json.cs" />
     <Compile Include="Helpers\NavHelper.cs" />
     <Compile Include="Helpers\SettingsStorageExtensions.cs" />
+    <Compile Include="Modbus\MC608.cs" />
+    <Compile Include="Modbus\Functions.cs" />
+    <Compile Include="Modbus\Map.cs" />
+    <Compile Include="Modbus\Protocol.cs" />
+    <Compile Include="Modbus\Registers.cs" />
+    <Compile Include="Properties\Settings.cs" />
     <Compile Include="Services\ActivationService.cs" />
     <Compile Include="Activation\DefaultLaunchActivationHandler.cs" />
+    <Compile Include="Services\ADS1115.cs" />
+    <Compile Include="Services\AnalogsService.cs" />
+    <Compile Include="Services\commPortHandler.cs" />
+    <Compile Include="Services\CustomDictionary.cs" />
+    <Compile Include="Services\FileCrypt.cs" />
+    <Compile Include="Services\GPIO_Device.cs" />
+    <Compile Include="Services\GraphData.cs" />
+    <Compile Include="Services\IrCOMPortManager.cs" />
+    <Compile Include="Services\Configuration.cs" />
+    <Compile Include="Services\DataAccess.cs" />
+    <Compile Include="Services\MbCOMPortManager.cs" />
+    <Compile Include="Services\ParametriVerificator.cs" />
+    <Compile Include="Services\Printing\PageToPrint.xaml.cs">
+      <DependentUpon>PageToPrint.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Services\Printing\ContinuationPage.xaml.cs">
+      <DependentUpon>ContinuationPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Services\Printing\PrintHelper.cs" />
+    <Compile Include="Services\Printing\ReportVerificator.xaml.cs">
+      <DependentUpon>ReportVerificator.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Services\ReportLine.cs" />
+    <Compile Include="Services\RisultatiTest.cs" />
+    <Compile Include="Services\SimulatorCOMPortManager.cs" />
+    <Compile Include="Services\SSM1_Com.cs" />
+    <Compile Include="Services\Storage.cs" />
+    <Compile Include="Services\VerificatorConfig.cs" />
+    <Compile Include="Views\BatteryChartViewModel.cs" />
+    <Compile Include="Views\Calibration.xaml.cs">
+      <DependentUpon>Calibration.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ConfigurationPage.xaml.cs">
+      <DependentUpon>ConfigurationPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Converters.cs" />
+    <Compile Include="Views\DataLogPage.xaml.cs">
+      <DependentUpon>DataLogPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\DataLogPageViewModel.cs" />
+    <Compile Include="Views\FileBrowser.xaml.cs">
+      <DependentUpon>FileBrowser.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\IOpage.xaml.cs">
+      <DependentUpon>IOpage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\GraphPage.xaml.cs">
+      <DependentUpon>GraphPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ConnectionStatusConverters.cs" />
     <Compile Include="Services\NavigationService.cs" />
+    <Compile Include="Services\RelayCommand.cs" />
+    <Compile Include="Services\SerialPort.cs" />
+    <Compile Include="Services\TargetVariablesFields.cs" />
     <Compile Include="Services\ThemeSelectorService.cs" />
+    <Compile Include="Views\GraphViewModel.cs" />
+    <Compile Include="Views\LogLinesDownloadercs.cs" />
     <Compile Include="Views\MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\MC406MainPage.xaml.cs">
+      <DependentUpon>MC406MainPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\MC608MainPage.xaml.cs">
+      <DependentUpon>MC608MainPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\MC608ConfigurationPage.xaml.cs">
+      <DependentUpon>MC608ConfigurationPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ReportDatabase.xaml.cs">
+      <DependentUpon>ReportDatabase.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\SensorOnlyPage.xaml.cs">
+      <DependentUpon>SensorOnlyPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\SettingsPage.xaml.cs">
       <DependentUpon>SettingsPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\ShellPage.xaml.cs">
       <DependentUpon>ShellPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\VerificatorPage.xaml.cs">
+      <DependentUpon>VerificatorPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\VerificatorPage608.xaml.cs">
+      <DependentUpon>VerificatorPage608.xaml</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
@@ -133,6 +297,18 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Services\Printing\PageToPrint.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Services\Printing\ContinuationPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Services\Printing\ReportVerificator.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Styles\Page.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -153,9 +329,53 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\Calibration.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\ConfigurationPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\DataLogPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\FileBrowser.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\IOpage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\GraphPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\MainPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\MC406MainPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\MC608MainPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\MC608ConfigurationPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\ReportDatabase.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\SensorOnlyPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\SettingsPage.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -164,6 +384,14 @@
     <Page Include="Views\ShellPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\VerificatorPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\VerificatorPage608.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
   <ItemGroup>
@@ -179,24 +407,129 @@
     <Folder Include="Models\" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Properties\Default.rd.xml" />
-    <Content Include="Assets\LockScreenLogo.scale-200.png" />
+    <Content Include="Assets\BadgeLogo.scale-100.png" />
+    <Content Include="Assets\BadgeLogo.scale-125.png" />
+    <Content Include="Assets\BadgeLogo.scale-150.png" />
+    <Content Include="Assets\BadgeLogo.scale-200.png" />
+    <Content Include="Assets\BadgeLogo.scale-400.png" />
+    <Content Include="Assets\LargeTile.scale-100.png" />
+    <Content Include="Assets\LargeTile.scale-125.png" />
+    <Content Include="Assets\LargeTile.scale-150.png" />
+    <Content Include="Assets\LargeTile.scale-200.png" />
+    <Content Include="Assets\LargeTile.scale-400.png" />
+    <Content Include="Assets\SmallTile.scale-100.png" />
+    <Content Include="Assets\SmallTile.scale-125.png" />
+    <Content Include="Assets\SmallTile.scale-150.png" />
+    <Content Include="Assets\SmallTile.scale-200.png" />
+    <Content Include="Assets\SmallTile.scale-400.png" />
+    <Content Include="Assets\SplashScreen.scale-100.png" />
+    <Content Include="Assets\SplashScreen.scale-125.png" />
+    <Content Include="Assets\SplashScreen.scale-150.png" />
     <Content Include="Assets\SplashScreen.scale-200.png" />
+    <Content Include="Assets\SplashScreen.scale-400.png" />
+    <Content Include="Assets\Square150x150Logo.scale-100.png" />
+    <Content Include="Assets\Square150x150Logo.scale-125.png" />
+    <Content Include="Assets\Square150x150Logo.scale-150.png" />
     <Content Include="Assets\Square150x150Logo.scale-200.png" />
+    <Content Include="Assets\Square150x150Logo.scale-400.png" />
+    <Content Include="Assets\Square44x44Logo.altform-lightunplated_targetsize-16.png" />
+    <Content Include="Assets\Square44x44Logo.altform-lightunplated_targetsize-24.png" />
+    <Content Include="Assets\Square44x44Logo.altform-lightunplated_targetsize-256.png" />
+    <Content Include="Assets\Square44x44Logo.altform-lightunplated_targetsize-32.png" />
+    <Content Include="Assets\Square44x44Logo.altform-lightunplated_targetsize-48.png" />
+    <Content Include="Assets\Square44x44Logo.altform-unplated_targetsize-16.png" />
+    <Content Include="Assets\Square44x44Logo.altform-unplated_targetsize-24.png" />
+    <Content Include="Assets\Square44x44Logo.altform-unplated_targetsize-256.png" />
+    <Content Include="Assets\Square44x44Logo.altform-unplated_targetsize-32.png" />
+    <Content Include="Assets\Square44x44Logo.altform-unplated_targetsize-48.png" />
+    <Content Include="Assets\Square44x44Logo.scale-100.png" />
+    <Content Include="Assets\Square44x44Logo.scale-125.png" />
+    <Content Include="Assets\Square44x44Logo.scale-150.png" />
     <Content Include="Assets\Square44x44Logo.scale-200.png" />
-    <Content Include="Assets\Square44x44Logo.targetsize-24_altform-unplated.png" />
-    <Content Include="Assets\StoreLogo.png" />
+    <Content Include="Assets\Square44x44Logo.scale-400.png" />
+    <Content Include="Assets\Square44x44Logo.targetsize-16.png" />
+    <Content Include="Assets\Square44x44Logo.targetsize-24.png" />
+    <Content Include="Assets\Square44x44Logo.targetsize-256.png" />
+    <Content Include="Assets\Square44x44Logo.targetsize-32.png" />
+    <Content Include="Assets\Square44x44Logo.targetsize-48.png" />
+    <Content Include="Assets\StoreLogo.scale-100.png" />
+    <Content Include="Assets\StoreLogo.scale-125.png" />
+    <Content Include="Assets\StoreLogo.scale-150.png" />
+    <Content Include="Assets\StoreLogo.scale-200.png" />
+    <Content Include="Assets\StoreLogo.scale-400.png" />
+    <Content Include="Assets\Toasts\Confused.png" />
+    <Content Include="Assets\Toasts\Printer.png" />
+    <Content Include="Assets\Toasts\Wink.png" />
+    <Content Include="Assets\Toasts\Worried.png" />
+    <Content Include="Assets\Wide310x150Logo.scale-100.png" />
+    <Content Include="Assets\Wide310x150Logo.scale-125.png" />
+    <Content Include="Assets\Wide310x150Logo.scale-150.png" />
     <Content Include="Assets\Wide310x150Logo.scale-200.png" />
+    <Content Include="Assets\Wide310x150Logo.scale-400.png" />
+    <Content Include="Images\Battery-32.png" />
+    <Content Include="Images\BatteryEmpty-32.png" />
+    <Content Include="Images\BatteryLow-32.png" />
+    <Content Include="Images\euromag-logo-2.png" />
+    <Content Include="Images\Frontalino_406.PNG" />
+    <Content Include="Images\Frontalino_406_Big.PNG" />
+    <Content Include="Images\Frontalino_608.PNG" />
+    <Content Include="Images\Logo Chemitec Alfa Complete.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\Logo Chemitec Alfa.png" />
+    <Content Include="Images\Logo Euromag Alfa.png" />
+    <Content Include="Images\LogoChemitecCertificato.png" />
+    <Content Include="Images\LogoEuromagCertificato.png" />
+    <Content Include="Images\Mail-32.png" />
+    <Content Include="Images\MC406.PNG" />
+    <Content Include="Images\MC406_alfa.PNG" />
+    <Content Include="Images\MC608.PNG" />
+    <Content Include="Images\MC608_alfa.PNG" />
+    <Content Include="Images\Sensore.png" />
+    <Content Include="Images\Signal0_32px.png" />
+    <Content Include="Images\Signal30_32px.png" />
+    <Content Include="Images\Signal60_32px.png" />
+    <Content Include="Images\SignalFull32px.png" />
+    <Content Include="Mappa IO.txt" />
+    <Content Include="Properties\Default.rd.xml" />
   </ItemGroup>
   <ItemGroup>
     <None Include=".editorconfig" />
+    <Content Include="Assets\Fonts\LCD2N___.TTF" />
     <None Include="MC_Suite_TemporaryKey.pfx" />
+    <PRIResource Include="Strings\it-IT\Resources.resw">
+      <SubType>Designer</SubType>
+    </PRIResource>
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Euromag.Memory">
+      <HintPath>Library\Euromag.Memory.dll</HintPath>
+    </Reference>
+    <Reference Include="Euromag.Utility">
+      <HintPath>Library\Euromag.Utility.dll</HintPath>
+    </Reference>
+    <Reference Include="FTDI.D2xx.WinRT, Version=1.0.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Library\FTDI.D2xx.WinRT.winmd</HintPath>
+    </Reference>
+    <Reference Include="FTDI.D2xx.WinRT.USB, Version=1.0.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Library\FTDI.D2xx.WinRT.USB.winmd</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Connected Services\" />
+  </ItemGroup>
+  <ItemGroup>
+    <SDKReference Include="WindowsIoT, Version=10.0.17134.0">
+      <Name>Windows IoT Extensions for the UWP</Name>
+    </SDKReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>

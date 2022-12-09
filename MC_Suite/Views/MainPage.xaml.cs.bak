@@ -1,0 +1,924 @@
+﻿using System;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
+using Windows.UI;
+using Windows.UI.Core;
+using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Data;
+using Windows.UI.Xaml.Media;
+using System.Windows.Input;
+using System.Collections.Generic;
+using Windows.Devices.Enumeration;
+using Windows.Devices.SerialCommunication;
+using System.Collections.ObjectModel;
+using Windows.UI.Popups;
+using MC_Suite.Services;
+using MC_Suite.Properties;
+using MC_Suite.Euromag.Devices;
+using MC_Suite.Euromag.Protocols;
+using MC_Suite.Euromag.Protocols.StdCommands;
+using System.Text.RegularExpressions;
+using Microsoft.Toolkit.Uwp;
+
+
+namespace MC_Suite.Views
+{
+
+    public sealed partial class MainPage : Page, INotifyPropertyChanged
+    {
+        public MC406 MC406_Device;
+
+        #region Istanze
+
+        public TargetVariablesFields Fields
+        {
+            get
+            {
+                return TargetVariablesFields.Instance;
+            }
+        }
+
+        public COMPortManager Connection
+        {
+            get
+            {
+                return COMPortManager.Instance;
+            }
+        }
+
+        #endregion
+          
+        public DispatcherTimer UpdateClockTimer { get; set; }
+
+        public MainPage()
+        {
+            this.InitializeComponent();
+
+            InitBundles();
+
+            Connection.PropertyChanged += Connection_PropertyChanged;
+
+            Fields.FlowRateTU.PropertyChanged += FlowRateTU_PropertyChanged;
+            Fields.FlowRatePERC.PropertyChanged += FlowRatePERC_PropertyChanged;
+            Fields.FlowRateMS.PropertyChanged += FlowRateMS_PropertyChanged;
+            Fields.TotalPositiveM3.PropertyChanged += TotalPositiveM3_PropertyChanged;
+            Fields.TotalNegativeM3.PropertyChanged += TotalNegativeM3_PropertyChanged;
+            Fields.PartialPositiveM3.PropertyChanged += PartialPositiveM3_PropertyChanged;
+            Fields.PartialNegativeM3.PropertyChanged += PartialNegativeM3_PropertyChanged;
+
+            Fields.FwRevision.PropertyChanged += FwRevision_PropertyChanged;
+            Fields.FwVersion.PropertyChanged += FwVersion_PropertyChanged;
+
+            UpdateClockTimer = new DispatcherTimer();
+            UpdateClockTimer.Interval = TimeSpan.FromMinutes(1);
+            UpdateClockTimer.Tick += UpdateClockTimer_Tick;
+            UpdateClockTimer.Stop();
+        }
+
+        private void InitBundles()
+        {
+            string dummyRead;
+            dummyRead = Fields.AccumulatorNdigit.ValAsString;
+            dummyRead = Fields.AccumulatorsTechUnit.ValAsString;
+            dummyRead = Fields.AdcGain.ValAsString;
+            dummyRead = Fields.AlignmentCalibrationFactor.ValAsString;
+            dummyRead = Fields.AlignmentOffset.ValAsString;
+            dummyRead = Fields.AwakeMeasurePeriod.ValAsString;
+            dummyRead = Fields.BatteryAutosave.ValAsString;
+            dummyRead = Fields.Bypass.ValAsString;
+            dummyRead = Fields.BypassCount.ValAsString;
+            dummyRead = Fields.CalibrationDate.ValAsString;
+            dummyRead = Fields.CalibrationTemperature.ValAsString;
+            dummyRead = Fields.CalibrationVoltage.ValAsString;
+            dummyRead = Fields.ConverterId.ValAsString;
+            dummyRead = Fields.ConverterSerialNumber.ValAsString;
+            dummyRead = Fields.Cutoff.ValAsString;
+            dummyRead = Fields.DAC161_OutMax_mA.ValAsString;
+            dummyRead = Fields.DAC161_OutMin_mA.ValAsString;
+            dummyRead = Fields.DAC161_Out_mA.ValAsString;
+            dummyRead = Fields.DAC161_State.ValAsString;
+            dummyRead = Fields.Damping.ValAsString;
+            dummyRead = Fields.DampingSlow.ValAsString;
+            dummyRead = Fields.DeltaTempMin.ValAsString;
+            dummyRead = Fields.DensityCoeffA.ValAsString;
+            dummyRead = Fields.DensityCoeffB.ValAsString;
+            dummyRead = Fields.DensityCoeffC.ValAsString;
+            dummyRead = Fields.DensityCoeffD.ValAsString;
+            dummyRead = Fields.DeviceName.ValAsString;
+            dummyRead = Fields.EmptyPipeCfg.ValAsString;
+            dummyRead = Fields.EmptyPipeFreq.ValAsString;
+            dummyRead = Fields.EmptyPipeFreqFast.ValAsString;
+            dummyRead = Fields.EmptyPipeRelease.ValAsString;
+            dummyRead = Fields.EmptyPipeThreshold.ValAsString;
+            dummyRead = Fields.EnergyOption.ValAsString;
+            dummyRead = Fields.EventsCount.ValAsString;
+            dummyRead = Fields.ExcitationPause.ValAsString;
+            dummyRead = Fields.FileSystem_FileCount.ValAsString;
+            dummyRead = Fields.FileSystem_Flags.ValAsString;
+            dummyRead = Fields.FileSystem_SavedEvents.ValAsString;
+            dummyRead = Fields.FileSystem_SavedLogs.ValAsString;
+            dummyRead = Fields.FlowrateFullscale.ValAsString;
+            dummyRead = Fields.FlowRateMS.ValAsString;
+            dummyRead = Fields.FlowrateNdigit.ValAsString;
+            dummyRead = Fields.FlowRatePERC.ValAsString;
+            dummyRead = Fields.FlowrateTechUnit.ValAsString;
+            dummyRead = Fields.FlowrateTimeBase.ValAsString;
+            dummyRead = Fields.FlowRateTU.ValAsString;
+            dummyRead = Fields.FwRevision.ValAsString;
+            dummyRead = Fields.FwVersion.ValAsString;
+            dummyRead = Fields.InputStageStabTime.ValAsString;
+            dummyRead = Fields.Insertion_Interp_Th.ValAsString;
+            dummyRead = Fields.Insertion_sA_HI.ValAsString;
+            dummyRead = Fields.Insertion_sA_LO.ValAsString;
+            dummyRead = Fields.Insertion_sB_HI.ValAsString;
+            dummyRead = Fields.Insertion_sB_LO.ValAsString;
+            dummyRead = Fields.Insertion_sC_HI.ValAsString;
+            dummyRead = Fields.Insertion_sC_LO.ValAsString;
+            dummyRead = Fields.Insertion_sD_HI.ValAsString;
+            dummyRead = Fields.Insertion_sD_LO.ValAsString;
+            dummyRead = Fields.KaRatio.ValAsString;
+            dummyRead = Fields.LeftuAh.ValAsString;
+            dummyRead = Fields.LogLastRow.ValAsString;
+            dummyRead = Fields.LowPowerMeasurePeriod.ValAsString;
+            dummyRead = Fields.MainsLineFrequency.ValAsString;
+            dummyRead = Fields.Manufacturer.ValAsString;
+            dummyRead = Fields.OffsetReg.ValAsString;
+            dummyRead = Fields.OtherFeatures.ValAsString;
+            dummyRead = Fields.PartialNegativeM3.ValAsString;
+            dummyRead = Fields.PartialPositiveM3.ValAsString;
+            dummyRead = Fields.Password.ValAsString;
+            dummyRead = Fields.PasswordTimeout.ValAsString;
+            dummyRead = Fields.Peakcut.ValAsString;
+            dummyRead = Fields.PeakcutCount.ValAsString;
+            dummyRead = Fields.PressureMeasurePeriod.ValAsString;
+            dummyRead = Fields.PressureOption.ValAsString;
+            dummyRead = Fields.ProcessLogPeriod.ValAsString;
+            dummyRead = Fields.PulseLength.ValAsString;
+            dummyRead = Fields.PulseOutputTechUnit.ValAsString;
+            dummyRead = Fields.PulseOutputVolume.ValAsString;
+            dummyRead = Fields.SD24SamplingIndex.ValAsString;
+            dummyRead = Fields.SensorDiameter.ValAsString;
+            dummyRead = Fields.SensorId.ValAsString;
+            dummyRead = Fields.SensorIsInsertion.ValAsString;
+            dummyRead = Fields.SensorModel.ValAsString;
+            dummyRead = Fields.SensorOffset.ValAsString;
+            dummyRead = Fields.SpecificHeatCoeffA.ValAsString;
+            dummyRead = Fields.SpecificHeatCoeffB.ValAsString;
+            dummyRead = Fields.SpecificHeatCoeffC.ValAsString;
+            dummyRead = Fields.SpecificHeatCoeffD.ValAsString;
+            dummyRead = Fields.TemperatureMeasurePeriod.ValAsString;
+            dummyRead = Fields.TemperatureOffset.ValAsString;
+            dummyRead = Fields.TimeoutToMain.ValAsString;
+            dummyRead = Fields.TotalMeasuresCount.ValAsString;
+            dummyRead = Fields.TotalNegativeM3.ValAsString;
+            dummyRead = Fields.TotalPositiveM3.ValAsString;
+            dummyRead = Fields.TotalTimeAwake.ValAsString;
+            dummyRead = Fields.TotalTimeInLowPower.ValAsString;
+            dummyRead = Fields.TotaluAh.ValAsString;
+            dummyRead = Fields.WakeupPoweroff.ValAsString;
+            dummyRead = Fields.WaterDetectMeasEnable.ValAsString;
+            dummyRead = Fields.WaterDetectMeasThreshold.ValAsString;
+        }
+
+
+        #region FW Version and revision
+
+        private async void FwVersion_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+            {
+                Fields.FwRelease = Fields.FwVersion.ValAsString + "." + Fields.FwRevision.ValAsString;
+            });
+        }
+
+        private async void FwRevision_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+            {
+                Fields.FwRelease = Fields.FwVersion.ValAsString + "." + Fields.FwRevision.ValAsString;
+            });
+        }
+
+        private string _fwVersion_Loc;
+        public string FwVersion_Loc
+        {
+            get { return _fwVersion_Loc; }
+            set
+            {
+                if (value != _fwVersion_Loc)
+                {
+                    _fwVersion_Loc = value;
+                    OnPropertyChanged("FwVersion_Loc");
+                }
+            }
+        }
+
+        private string _fwRevision_Loc;
+        public string FwRevision_Loc
+        {
+            get { return _fwRevision_Loc; }
+            set
+            {
+                if (value != _fwRevision_Loc)
+                {
+                    _fwRevision_Loc = value;
+                    OnPropertyChanged("FwRevision_Loc");
+                }
+            }
+        }
+        #endregion
+
+        #region FlowrateTechUnit
+
+        private string _flowrateTechUnit_Loc;
+        public string FlowrateTechUnit_Loc
+        {
+            get { return _flowrateTechUnit_Loc; }
+            set
+            {
+                if (value != _flowrateTechUnit_Loc)
+                {
+                    _flowrateTechUnit_Loc = value;
+                    OnPropertyChanged("FlowrateTechUnit_Loc");
+                }
+            }
+        }
+
+        #endregion
+
+        #region FlowRateTU
+
+        public int FlowMaxDigit = 5;
+        private async void FlowRateTU_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+            {
+                byte ndig = Fields.FlowrateNdigit.Value;
+                string StrValue = Convert.ToString(Fields.FlowRateTU.Value, System.Globalization.CultureInfo.InvariantCulture);
+                if (Fields.FlowRateTU.Value == 0)
+                {
+                    switch (ndig)
+                    {
+                        case 0:
+                            Fields.FlowRateTU_str = StrValue;
+                            break;
+                        case 1:
+                            Fields.FlowRateTU_str = StrValue + ".0";
+                            break;
+                        case 2:
+                            Fields.FlowRateTU_str = StrValue + ".00";
+                            break;
+                        case 3:
+                            Fields.FlowRateTU_str = StrValue + ".000";
+                            break;
+                    }
+                }
+                else
+                {
+                    int CommaIndex = StrValue.IndexOf(".");
+                    if (ndig == 0)
+                    {
+                        Fields.FlowRateTU_str = StrValue.Substring(0, CommaIndex);
+                    }
+                    else
+                    {
+                        int ValueLenght = StrValue.Length;
+                        byte DecimalDigits = (byte)(ValueLenght - CommaIndex - 1);
+                        if (DecimalDigits < ndig)
+                            ndig = DecimalDigits;
+
+                        if (CommaIndex <= FlowMaxDigit)
+                            Fields.FlowRateTU_str = StrValue.Substring(0, CommaIndex + 1 + ndig);
+                        else
+                            Fields.FlowRateTU_str = StrValue.Substring(0, CommaIndex);
+                    }
+                }
+
+                FlowRateFullScale_Converter();
+            });
+        }
+
+        #endregion
+
+        #region FlowRatePER
+
+        private async void FlowRatePERC_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+            {
+                byte ndig = Fields.FlowrateNdigit.Value;
+                string StrValue = Convert.ToString(Fields.FlowRatePERC.Value, System.Globalization.CultureInfo.InvariantCulture);
+                if (Fields.FlowRatePERC.Value == 0)
+                {
+                    switch (ndig)
+                    {
+                        case 0:
+                            Fields.FlowRatePERC_str = StrValue;
+                            break;
+                        case 1:
+                            Fields.FlowRatePERC_str = StrValue + ".0";
+                            break;
+                        case 2:
+                            Fields.FlowRatePERC_str = StrValue + ".00";
+                            break;
+                        case 3:
+                            Fields.FlowRatePERC_str = StrValue + ".000";
+                            break;
+                    }
+                }
+                else
+                {
+                    int CommaIndex = StrValue.IndexOf(".");
+                    if (ndig == 0)
+                    {
+                        Fields.FlowRatePERC_str = StrValue.Substring(0, CommaIndex);
+                    }
+                    else
+                    {
+                        int ValueLenght = StrValue.Length;
+                        byte DecimalDigits = (byte)(ValueLenght - CommaIndex - 1);
+                        if (DecimalDigits < ndig)
+                            ndig = DecimalDigits;
+
+                        if (CommaIndex <= FlowMaxDigit)
+                            Fields.FlowRatePERC_str = StrValue.Substring(0, CommaIndex + 1 + ndig);
+                        else
+                            Fields.FlowRatePERC_str = StrValue.Substring(0, CommaIndex);
+                    }
+                }
+            });
+        }
+
+        #endregion
+
+        #region FlowRateMS
+
+        private async void FlowRateMS_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+            {
+                byte ndig = Fields.FlowrateNdigit.Value;
+                string StrValue = Convert.ToString(Fields.FlowRateMS.Value, System.Globalization.CultureInfo.InvariantCulture);
+                if (Fields.FlowRateMS.Value == 0)
+                {
+                    switch (ndig)
+                    {
+                        case 0:
+                            Fields.FlowRateMS_str = StrValue;
+                            break;
+                        case 1:
+                            Fields.FlowRateMS_str = StrValue + ".0";
+                            break;
+                        case 2:
+                            Fields.FlowRateMS_str = StrValue + ".00";
+                            break;
+                        case 3:
+                            Fields.FlowRateMS_str = StrValue + ".000";
+                            break;
+                    }
+                }
+                else
+                {
+                    int CommaIndex = StrValue.IndexOf(".");
+                    if (ndig == 0)
+                    {
+                        Fields.FlowRateMS_str = StrValue.Substring(0, CommaIndex);
+                    }
+                    else
+                    {
+                        int ValueLenght = StrValue.Length;
+                        byte DecimalDigits = (byte)(ValueLenght - CommaIndex - 1);
+                        if (DecimalDigits < ndig)
+                            ndig = DecimalDigits;
+
+                        if (CommaIndex <= FlowMaxDigit)
+                            Fields.FlowRateMS_str = StrValue.Substring(0, CommaIndex + 1 + ndig);
+                        else
+                            Fields.FlowRateMS_str = StrValue.Substring(0, CommaIndex);
+                    }
+                }
+            });
+        }
+
+        #endregion
+
+        #region TotalPositive
+
+        public int TotalizerMaxDigit = 8;
+
+        void TotalPositiveM3_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == "Value")
+            {
+                string StrValue = Convert.ToString(Fields.TotalPositiveM3.Value, System.Globalization.CultureInfo.InvariantCulture);
+                byte ndig = Fields.AccumulatorNdigit.Value;
+                if (Fields.TotalPositiveM3.Value == 0)
+                {
+                    switch (ndig)
+                    {
+                        case 0:
+                            Fields.TotalPositiveM3_str = StrValue;
+                            break;
+                        case 1:
+                            Fields.TotalPositiveM3_str = StrValue + ".0";
+                            break;
+                        case 2:
+                            Fields.TotalPositiveM3_str = StrValue + ".00";
+                            break;
+                        case 3:
+                            Fields.TotalPositiveM3_str = StrValue + ".000";
+                            break;
+                    }
+                }
+                else
+                {
+                    int CommaIndex = StrValue.IndexOf(".");
+
+                    if (ndig == 0)
+                    {
+                        int ValueLenght = StrValue.Length;
+                        int IntValue = (ValueLenght - (ValueLenght - CommaIndex));
+                        if (IntValue <= TotalizerMaxDigit)
+                            Fields.TotalPositiveM3_str = StrValue.Substring(0, IntValue);
+                        else
+                            Fields.TotalPositiveM3_str = StrValue.Substring(IntValue - TotalizerMaxDigit, TotalizerMaxDigit);
+                    }
+                    else
+                    {
+                        int ValueLenght = StrValue.Length;
+                        byte DecimalDigits = (byte)(ValueLenght - CommaIndex - 1);
+                        if (DecimalDigits < ndig)
+                            ndig = DecimalDigits;
+
+                        if (CommaIndex <= TotalizerMaxDigit)
+                            Fields.TotalPositiveM3_str = StrValue.Substring(0, CommaIndex + 1 + ndig);
+                        else
+                            Fields.TotalPositiveM3_str = StrValue.Substring(ValueLenght - 8, CommaIndex);
+                    }
+                }
+            }
+        }
+
+        #endregion
+
+        #region TotalNegative
+
+        void TotalNegativeM3_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == "Value")
+            {
+                string StrValue = Convert.ToString(Fields.TotalNegativeM3.Value, System.Globalization.CultureInfo.InvariantCulture);
+                byte ndig = Fields.AccumulatorNdigit.Value;
+                if (Fields.TotalNegativeM3.Value == 0)
+                {
+                    switch (ndig)
+                    {
+                        case 0:
+                            Fields.TotalNegativeM3_str = StrValue;
+                            break;
+                        case 1:
+                            Fields.TotalNegativeM3_str = StrValue + ".0";
+                            break;
+                        case 2:
+                            Fields.TotalNegativeM3_str = StrValue + ".00";
+                            break;
+                        case 3:
+                            Fields.TotalNegativeM3_str = StrValue + ".000";
+                            break;
+                    }
+                }
+                else
+                {
+                    int CommaIndex = StrValue.IndexOf(".");
+
+                    if (ndig == 0)
+                    {
+                        int ValueLenght = StrValue.Length;
+                        int IntValue = (ValueLenght - (ValueLenght - CommaIndex));
+                        if (IntValue <= TotalizerMaxDigit)
+                            Fields.TotalNegativeM3_str = StrValue.Substring(0, IntValue);
+                        else
+                            Fields.TotalNegativeM3_str = StrValue.Substring(IntValue - TotalizerMaxDigit, TotalizerMaxDigit);
+                    }
+                    else
+                    {
+                        int ValueLenght = StrValue.Length;
+                        byte DecimalDigits = (byte)(ValueLenght - CommaIndex - 1);
+                        if (DecimalDigits < ndig)
+                            ndig = DecimalDigits;
+
+                        if (CommaIndex <= TotalizerMaxDigit)
+                            Fields.TotalNegativeM3_str = StrValue.Substring(0, CommaIndex + 1 + ndig);
+                        else
+                            Fields.TotalNegativeM3_str = StrValue.Substring(ValueLenght - 8, CommaIndex);
+                    }
+                }
+            }
+        }
+
+        #endregion
+
+        #region PartialPositive
+
+        void PartialPositiveM3_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == "Value")
+            {
+                string StrValue = Convert.ToString(Fields.PartialPositiveM3.Value, System.Globalization.CultureInfo.InvariantCulture);
+                byte ndig = Fields.AccumulatorNdigit.Value;
+                if (Fields.PartialPositiveM3.Value == 0)
+                {
+                    switch (ndig)
+                    {
+                        case 0:
+                            Fields.PartialPositiveM3_str = StrValue;
+                            break;
+                        case 1:
+                            Fields.PartialPositiveM3_str = StrValue + ".0";
+                            break;
+                        case 2:
+                            Fields.PartialPositiveM3_str = StrValue + ".00";
+                            break;
+                        case 3:
+                            Fields.PartialPositiveM3_str = StrValue + ".000";
+                            break;
+                    }
+                }
+                else
+                {
+                    int CommaIndex = StrValue.IndexOf(".");
+
+                    if (ndig == 0)
+                    {
+                        int ValueLenght = StrValue.Length;
+                        int IntValue = (ValueLenght - (ValueLenght - CommaIndex));
+                        if (IntValue <= TotalizerMaxDigit)
+                            Fields.PartialPositiveM3_str = StrValue.Substring(0, IntValue);
+                        else
+                            Fields.PartialPositiveM3_str = StrValue.Substring(IntValue - TotalizerMaxDigit, TotalizerMaxDigit);
+                    }
+                    else
+                    {
+                        int ValueLenght = StrValue.Length;
+                        byte DecimalDigits = (byte)(ValueLenght - CommaIndex - 1);
+                        if (DecimalDigits < ndig)
+                            ndig = DecimalDigits;
+
+                        if (CommaIndex <= TotalizerMaxDigit)
+                            Fields.PartialPositiveM3_str = StrValue.Substring(0, CommaIndex + 1 + ndig);
+                        else
+                            Fields.PartialPositiveM3_str = StrValue.Substring(ValueLenght - 8, CommaIndex);
+                    }
+                }
+            }
+        }
+
+        #endregion
+
+        #region PartialNegative
+
+        void PartialNegativeM3_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == "Value")
+            {
+                string StrValue = Convert.ToString(Fields.PartialNegativeM3.Value, System.Globalization.CultureInfo.InvariantCulture);
+                byte ndig = Fields.AccumulatorNdigit.Value;
+                if (Fields.PartialNegativeM3.Value == 0)
+                {
+                    switch (ndig)
+                    {
+                        case 0:
+                            Fields.PartialNegativeM3_str = StrValue;
+                            break;
+                        case 1:
+                            Fields.PartialNegativeM3_str = StrValue + ".0";
+                            break;
+                        case 2:
+                            Fields.PartialNegativeM3_str = StrValue + ".00";
+                            break;
+                        case 3:
+                            Fields.PartialNegativeM3_str = StrValue + ".000";
+                            break;
+                    }
+                }
+                else
+                {
+                    int CommaIndex = StrValue.IndexOf(".");
+
+                    if (ndig == 0)
+                    {
+                        int ValueLenght = StrValue.Length;
+                        int IntValue = (ValueLenght - (ValueLenght - CommaIndex));
+                        if (IntValue <= TotalizerMaxDigit)
+                            Fields.PartialNegativeM3_str = StrValue.Substring(0, IntValue);
+                        else
+                            Fields.PartialNegativeM3_str = StrValue.Substring(IntValue - TotalizerMaxDigit, TotalizerMaxDigit);
+                    }
+                    else
+                    {
+                        int ValueLenght = StrValue.Length;
+                        byte DecimalDigits = (byte)(ValueLenght - CommaIndex - 1);
+                        if (DecimalDigits < ndig)
+                            ndig = DecimalDigits;
+
+                        if (CommaIndex <= TotalizerMaxDigit)
+                            Fields.PartialNegativeM3_str = StrValue.Substring(0, CommaIndex + 1 + ndig);
+                        else
+                            Fields.PartialNegativeM3_str = StrValue.Substring(0, CommaIndex);
+                    }
+                }
+            }
+        }
+
+        #endregion
+
+        #region FullScale
+
+        private double _locFlowFullScale;
+        public double LocFlowFullScale
+        {
+            get { return _locFlowFullScale; }
+            set
+            {
+                if (value != _locFlowFullScale)
+                {
+                    _locFlowFullScale = value;
+                    OnPropertyChanged("LocFlowFullScale");
+                }
+            }
+        }
+
+        public double kUT;
+        public double kTB;
+        public double FullScaleFactor;
+        public const double PGRECO = 3.141592653589793;
+
+        void FlowRateFullScale_Converter()
+        {
+            if ((Fields.FlowrateTimeBase.Value != 0) && (Fields.FlowrateFullscale.Value != 0))
+            {
+                switch (Fields.FlowrateTechUnit.Value)
+                {
+                    case (2): // "cubic meter [m³]"
+                        kUT = 0.001;
+                        break;
+                    case (3): // "liter [L]"
+                        kUT = 1.0;
+                        break;
+                    case (4): // "mega liter [ML]"
+                        kUT = 0.000001;
+                        break;
+                    case (5): // "cubic foot [ft³]"
+                        kUT = 0.0353147;
+                        break;
+                    case (6): // "US liquid gallon [gal]"
+                        kUT = 0.264172;
+                        break;
+                    case (7): // "US Oil Barrel [BBL]"
+                        kUT = 0.0062898107;
+                        break;
+                }
+
+                switch (Fields.FlowrateTimeBase.Value)
+                {
+                    case (1): // "second [s]"
+                        kTB = 0.0001;
+                        break;
+                    case (2): // "minute [m]"
+                        kTB = 0.006;
+                        break;
+                    case (3): // "hour [h]"
+                        kTB = 0.36;
+                        break;
+                    case (4): // "day [d]"
+                        kTB = 8.64;
+                        break;
+                }
+
+                if (Fields.FlowrateTechUnit.Value == 1)
+                    FullScaleFactor = kTB / 0.0001; //se voglio i m/s non moltiplico per niente; scalo solo il fattore tempo
+                else
+                    FullScaleFactor = 2.5 * PGRECO * Fields.SensorDiameter.Value * Fields.SensorDiameter.Value * kUT * kTB;
+
+                LocFlowFullScale = (Fields.FlowrateFullscale.Value / 10) * FullScaleFactor;
+
+                byte ndig = Fields.FlowrateNdigit.Value;
+                string StrValue = Convert.ToString(LocFlowFullScale, System.Globalization.CultureInfo.InvariantCulture);
+                int CommaIndex = StrValue.IndexOf(".");
+                if (ndig == 0)
+                {
+                    Fields.LocFlowFullScale_Str = StrValue.Substring(0, CommaIndex);
+                }
+                else
+                {
+                    int ValueLenght = StrValue.Length;
+                    byte DecimalDigits = (byte)(ValueLenght - CommaIndex - 1);
+                    if (DecimalDigits < ndig)
+                        ndig = DecimalDigits;
+
+                    if (CommaIndex <= FlowMaxDigit)
+                        Fields.LocFlowFullScale_Str = StrValue.Substring(0, CommaIndex + 1 + ndig);
+                    else
+                        Fields.LocFlowFullScale_Str = StrValue.Substring(0, CommaIndex);
+                }
+            }
+        }
+
+
+        #endregion
+
+        #region DateTime
+
+        private void UpdateClockTimer_Tick(object sender, object e)
+        {
+            GetTargetClock();
+        }
+
+        private ICommand _readClock;
+        public ICommand ReadClock
+        {
+            get
+            {
+                if (_readClock == null)
+                {
+                    _readClock = new RelayCommand(
+                        param => GetTargetClock()
+                            );
+                }
+                return _readClock;
+            }
+        }
+
+        private void GetTargetClock()
+        {
+            GetTargetDateTime getClockCmd = new GetTargetDateTime(Settings.Instance.portHandler);
+            getClockCmd.CommandCompleted += GetClockCmd_CommandCompleted;
+            COMPortManager.Instance.CommandList.Add(getClockCmd);
+        }
+
+        private async void GetClockCmd_CommandCompleted(object sender, PropertyChangedEventArgs e)
+        {
+            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+            {
+                GetTargetDateTime cmd = sender as GetTargetDateTime;
+                if(cmd.Result.Outcome ==  CommandResultOutcomes.CommandSuccess)
+                { 
+                    Fields.ConvDateTime = cmd.Date_Time.Date;                    
+                    CheckTargetClock();
+                }
+                COMPortManager.Instance.ExtCommandCompleted = COMPortManager.CommandState.WaitForNew;
+                COMPortManager.Instance.CommandList.Remove(cmd);
+                COMPortManager.Instance.SuccessCounter += 1;
+            });
+        }
+
+        Visibility CheckTargetClock()
+        {
+            DateTime CurrentDateTime = DateTime.Now;
+            Visibility LocVisibility;
+
+            LocVisibility = Visibility.Collapsed;
+
+            //Controlla anno
+            if (Fields.ConvDateTime.Year.Equals(CurrentDateTime.Year))
+            {
+                //Controlla Mese
+                if (Fields.ConvDateTime.Month.Equals(CurrentDateTime.Month))
+                {
+                    if (Fields.ConvDateTime.Day.Equals(CurrentDateTime.Day))
+                    {
+                        if (Fields.ConvDateTime.Hour.Equals(CurrentDateTime.Hour))
+                        {
+                            LocVisibility = Visibility.Visible;
+                        }
+                    }
+                }
+            }
+            return LocVisibility;
+        }
+
+        private ICommand _updateClock;
+        public ICommand UpdateClock
+        {
+            get
+            {
+                if (_updateClock == null)
+                {
+                    _updateClock = new RelayCommand(
+                        param => SendSetTimeCommand()
+                            );
+                }
+                return _updateClock;
+            }
+        }
+
+        private void SendSetTimeCommand()
+        {
+            SetDateTime setClockCmd = new SetDateTime(Settings.Instance.portHandler);
+            setClockCmd.DateTimeToSet = DateTime.Now;
+            setClockCmd.CommandCompleted += SetClockCmd_CommandCompleted;
+            COMPortManager.Instance.CommandList.Add(setClockCmd);           
+        }
+
+        private async void SetClockCmd_CommandCompleted(object sender, PropertyChangedEventArgs e)
+        {
+            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+            {
+                SetDateTime cmd = sender as SetDateTime;
+                if (cmd.Result.Outcome == CommandResultOutcomes.CommandSuccess)
+                {
+                    Fields.ConvDateTime = DateTime.Now;
+                    CheckTargetClock();
+                }
+                COMPortManager.Instance.ExtCommandCompleted = COMPortManager.CommandState.WaitForNew;
+                COMPortManager.Instance.CommandList.Remove(cmd);
+            });
+        }
+
+
+        #endregion
+
+        private COMPortManager.ConnectionStates memConnectionStatus;
+        private async void Connection_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+            {
+                switch (Connection.ConnectionStatus)
+                {
+                    case COMPortManager.ConnectionStates.Stop:
+                        memConnectionStatus = Connection.ConnectionStatus;
+                        UpdateClockTimer.Stop();
+                        break;
+                    case COMPortManager.ConnectionStates.Ping:                        
+                        break;
+                    case COMPortManager.ConnectionStates.Retry:
+                    case COMPortManager.ConnectionStates.Working:                     
+                        if(memConnectionStatus == COMPortManager.ConnectionStates.Stop)
+                        { 
+                            GetTargetClock();
+                            memConnectionStatus = Connection.ConnectionStatus;
+                            UpdateClockTimer.Start();
+                        }
+                        break;
+                }
+
+                TimeoutCounterTxt = "Timeouts: " + Connection.TimeoutCounter.ToString();
+                SuccessCounterTxt = "Success : " + Connection.SuccessCounter.ToString();
+            });
+        }       
+
+
+        private string _timeoutCounterTxt;
+        public string TimeoutCounterTxt
+        {
+            get { return _timeoutCounterTxt; }
+            set
+            {
+                if (value != _timeoutCounterTxt)
+                {
+                    _timeoutCounterTxt = value;
+                    OnPropertyChanged("TimeoutCounterTxt");
+                }
+            }
+        }
+        
+        private string _successCounterTxt;
+        public string SuccessCounterTxt
+        {
+            get { return _successCounterTxt; }
+            set
+            {
+                if (value != _successCounterTxt)
+                {
+                    _successCounterTxt = value;
+                    OnPropertyChanged("SuccessCounterTxt");
+                }
+            }
+        }
+
+        #region ObservableObject
+
+        private void RaisePropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        private void Set<T>(ref T storage, T value, [CallerMemberName]string propertyName = null)
+        {
+            if (Equals(storage, value))
+            {
+                return;
+            }
+
+            storage = value;
+            OnPropertyChanged(propertyName);
+        }
+
+        private void OnPropertyChanged(string propertyName) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+
+        #endregion
+    }
+}

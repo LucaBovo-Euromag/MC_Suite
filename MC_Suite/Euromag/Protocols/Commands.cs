@@ -1,0 +1,362 @@
+﻿using MC_Suite.Services;
+
+namespace MC_Suite.Euromag.Protocols
+{
+    using CommunicationFrames;
+    using System;
+    using System.Collections.Generic;
+    using System.ComponentModel;
+
+    public class CommandCompletedEventArgs : RunWorkerCompletedEventArgs
+    {
+        public CommandCompletedEventArgs(Object result, Exception error, bool cancelled)
+            : base(result, error, cancelled)
+        { }
+
+    }
+
+    public delegate void CommandCompletedEventHandler(object sender, CommandCompletedEventArgs e);
+
+    public abstract class Command
+    {
+        protected Command()
+        {
+            reset();
+            Tries = 5;
+            BackgroundWorker backgroundWorker = new BackgroundWorker();
+            worker = backgroundWorker;
+            worker.WorkerSupportsCancellation = true;
+            worker.WorkerReportsProgress = true;
+            worker.DoWork += new DoWorkEventHandler(this.worker_DoWork);
+            worker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(this.worker_Completed);
+            worker.ProgressChanged += new ProgressChangedEventHandler(this.worker_ProgressChanged);
+
+            sendedBytes = new List<byte>();
+        }
+
+        protected Command(String portName)
+            : this()
+        {
+            setPortHandler(portName);
+        }
+
+        protected Command(commPortHandler handler)
+            : this()
+        {
+            setPortHandler(handler);
+        }
+
+        public void setPortHandler(commPortHandler handler)
+        {
+            portHandler = handler;
+        }
+
+        public void setPortHandler(String portID )
+        {
+            if (portHandler != null)
+                if (portHandler.PortID == portID)
+                    return;
+
+            //Impostazione porta Ir
+            portHandler = new commPortHandler(portID, 76800, 0, 8, 0, TimeSpan.FromMilliseconds(500));
+        }
+
+        public commPortHandler PortHandler
+        {
+            get
+            {
+                return portHandler;
+            }
+        }
+
+        public uint Tries
+        { get; set; }
+
+        public void send()
+        {
+            try
+            {
+                SendReceive();
+            }
+            catch { }
+        }
+
+        public void cancel()
+        {
+            worker.CancelAsync();
+        }
+
+        public event CommandCompletedEventHandler Completed;
+        public event ProgressChangedEventHandler ProgressChanged;
+
+        protected TimeSpan PortReadTimeoutMs
+        {
+            get
+            {
+                if (portHandler != null)
+                    return portHandler.ReadTimeout;
+                else
+                    throw new NullReferenceException("Porthandler property is not initialized.");
+            }
+
+            set
+            {
+                if (portHandler != null)
+                    portHandler.ReadTimeout = value;
+                else
+                    throw new NullReferenceException("Porthandler property is not initialized.");
+            }
+
+        }
+
+        private uint receive_tries;
+
+        private CommandResult _Result;
+        public CommandResult Result
+        {
+            get { return _Result; }
+            set
+            {
+                if (value != _Result)
+                {
+                    _Result = value;
+                    OnPropertyChanged("Result");
+                }
+            }
+        }
+
+        public enum CommandState
+        {
+            Sending,
+            Waiting4Sended,
+            Receiving,
+            Decoding
+        }
+
+        private CommandState _CmdState;
+        public CommandState CmdState
+        {
+            get { return _CmdState; }
+            set
+            {
+                if (value != _CmdState)
+                {
+                    _CmdState = value;
+                }
+            }
+        }
+
+        private async void SendReceive()
+        {
+            CommandResult result = new CommandResult(CommandResultOutcomes.CommandFailed);
+
+            try
+            {
+                reset();
+                error = null;
+                ICommunicationFrame toSend = getCommandFrame();
+                toSend.send(sendDataBytes);
+
+                if (!useSerialCom)
+                    return;
+
+                if (portHandler.IsOpen)
+                {
+                    uint tries = Tries;                        
+
+                    while (tries != 0)
+                    {
+                        toSend.send(portHandler.sendData);
+
+                        if ( await portHandler.receiveData( SerialPort.ReadMode.IrMode ))
+                        {
+                            try
+                            {
+                                result = receiveAnswer(portHandler.decodeData);                                    
+                                tries--;
+                                if (result.Outcome != CommandResultOutcomes.CommunicationFails)
+                                    break;
+                            }
+                            catch (Exception exc)
+                            {
+                                error = exc;
+                            }
+                        }
+                        else
+                            tries--;
+                    }
+                }
+            }
+            catch (Exception exc)
+            {
+                error = exc;
+            }
+
+            Result = result;
+
+            //portHandler.close();
+
+            return;
+        }
+
+        private async void go(System.ComponentModel.BackgroundWorker worker, System.ComponentModel.DoWorkEventArgs e)
+        {
+            try
+            {
+                reset();
+                error = null;
+                ICommunicationFrame toSend = getCommandFrame();
+                toSend.send(sendDataBytes);
+
+                if (!useSerialCom)
+                    return;
+
+                if (await portHandler.open())
+                {
+                    while (toSend != null)
+                    {
+                        uint tries = Tries;
+                        while (tries != 0)
+                        {
+                            if (worker.CancellationPending)
+                            {
+                                e.Cancel = true;
+                                break;
+                            }
+
+                            toSend.send(portHandler.sendData);
+
+                            if (portHandler.TransfertCompleted)
+                            {
+                                receive_tries = Tries;
+
+                                while (receive_tries != 0)
+                                {
+                                    if ( await portHandler.receiveData( SerialPort.ReadMode.IrMode ))
+                                    {
+                                        try
+                                        {
+                                            CommandResult result = receiveAnswer(portHandler.decodeData);
+                                            e.Result = result;
+
+                                            tries--;
+                                            if (result.Outcome != CommandResultOutcomes.CommunicationFails)
+                                            {
+                                                worker.ReportProgress(progress, progressString);
+                                                portHandler.close();
+                                                toSend = null;
+                                                break;
+                                            }
+                                        }
+                                        catch (TimeoutException to_exc)
+                                        {
+                                            if (--tries == 0)
+                                                throw to_exc;
+                                        }
+                                        catch (Exception exc)
+                                        {
+                                            throw exc;
+                                        }
+                                    }
+                                    else
+                                        receive_tries--;
+                                }
+                            }
+                            else
+                                tries--;
+                        }
+
+                        if (e.Cancel)
+                            break;
+
+                        if ((e.Result as CommandResult).Outcome != CommandResultOutcomes.CommandSuccess)
+                            break;
+
+                        // get a new frame
+                        toSend = getCommandFrame();
+                    }
+                }
+            }
+            catch (Exception exc)
+            {
+                error = exc;
+            }
+            finally
+            {
+                portHandler.close();
+            }
+
+            return;
+        }
+
+        protected void sendDataBytes(List<Byte> outBuff)
+        {
+            sendedBytes.AddRange(outBuff);
+        }
+
+
+        public List<byte> sendedBytes;
+        public bool useSerialCom = true;
+
+        #region _Command_Class_protected_section
+
+        protected abstract ICommunicationFrame getCommandFrame();
+        protected abstract CommandResult receiveAnswer(dataReceiver receiver);
+        protected virtual int progress
+        {
+            get
+            { return 100; }
+        }
+        protected virtual String progressString
+        {
+            get { return null; }
+        }
+        protected abstract void reset();
+
+        #endregion _Command_Class_protected_section
+
+        #region _Command_Class_private_section
+
+        private void worker_Completed(object sender, RunWorkerCompletedEventArgs e)
+        {
+            if (Completed != null)
+            {
+                CommandCompletedEventArgs res;
+                if (e.Error != null)
+                {
+                    res = new CommandCompletedEventArgs(null, e.Error, e.Cancelled);
+                }
+                else if (e.Cancelled)
+                {
+                    res = new CommandCompletedEventArgs(null, error, e.Cancelled);
+                }
+                else
+                {
+                    res = new CommandCompletedEventArgs(e.Result, error, e.Cancelled);
+                }
+                Completed(this, res);
+            }
+        }
+        private void worker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            go(worker, e);
+        }
+        private void worker_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+            ProgressChanged?.Invoke(this, e);
+        }
+
+        public event PropertyChangedEventHandler CommandCompleted;
+
+        private void OnPropertyChanged(string name)
+        {
+            CommandCompleted?.Invoke(this, new PropertyChangedEventArgs(name));
+        }
+
+        private commPortHandler portHandler;
+        private BackgroundWorker worker;
+        private Exception error;
+
+        #endregion _Command_Class_private_section
+    }
+}

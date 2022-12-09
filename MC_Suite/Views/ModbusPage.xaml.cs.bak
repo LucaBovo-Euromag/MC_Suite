@@ -1,0 +1,194 @@
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
+using System.Windows.Input;
+using System.Runtime.InteropServices.WindowsRuntime;
+using Windows.Foundation;
+using Windows.Foundation.Collections;
+using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
+using Windows.UI.Popups;
+using Windows.Devices.SerialCommunication;
+using Windows.UI.Xaml.Controls.Primitives;
+using Windows.UI.Xaml.Data;
+using Windows.UI.Xaml.Input;
+using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Navigation;
+using MC_Suite.Properties;
+using MC_Suite.Services;
+using MC_Suite.Modbus;
+
+
+
+
+// Il modello di elemento Pagina vuota è documentato all'indirizzo https://go.microsoft.com/fwlink/?LinkId=234238
+
+namespace MC_Suite.Views
+{
+    /// <summary>
+    /// Pagina vuota che può essere usata autonomamente oppure per l'esplorazione all'interno di un frame.
+    /// </summary>
+    public sealed partial class ModbusPage : Page, INotifyPropertyChanged
+    {
+        public ModbusPage()
+        {
+            this.InitializeComponent();
+        }
+
+        public Settings ComSetup
+        {
+            get
+            {
+                return Settings.Instance;
+            }
+        }
+
+        public MbCOMPortManager MbConnection
+        {
+            get
+            {
+                return MbCOMPortManager.Instance;
+            }
+        }
+
+        public Protocol ModbusProtocol
+        {
+            get
+            {
+                return Protocol.Instance;
+            }
+        }
+
+
+        private ICommand _openModbusPortcmd;
+        public ICommand OpenModbusPortcmd
+        {
+            get
+            {
+                if (_openModbusPortcmd == null)
+                {
+                    _openModbusPortcmd = new RelayCommand(
+                        param => OpenModbusCOM()
+                            );
+                }
+                return _openModbusPortcmd;
+            }
+        }
+
+        private async void OpenModbusCOM()
+        {
+            if (ComSetup.ComPort.ID == null)
+            {
+                ModbusStatus = "No Com Port Selected";
+            }
+            else if (ComSetup.ComPort.ID.Contains("FTDI"))
+            {
+                try
+                { 
+                    ComSetup.Address    = Convert.ToByte(AddressVal.Text);
+                }
+                catch
+                {
+                    var dialog = new MessageDialog("Please insert valid Address");
+                    await dialog.ShowAsync();
+                    return;
+                }
+
+                ComSetup.BaudRate   = (uint)BaudRateBox.SelectedValue;
+                ComSetup.Parity     = (byte)ParityBox.SelectedValue;
+                ComSetup.DataBits   = (ushort)DataBitsBox.SelectedValue;
+                ComSetup.StopBits   = (byte)StopBitsBox.SelectedValue;
+
+                if( await MbConnection.Open() )
+                    ModbusStatus = "Ready";
+            }
+            else
+                ModbusStatus = "No FTDI Port";
+        }
+
+        private string _modbusStatus;
+        public string ModbusStatus
+        {
+            get { return _modbusStatus; }
+            set
+            {
+                if (value != _modbusStatus)
+                {
+                    _modbusStatus = value;
+                    OnPropertyChanged("ModbusStatus");
+                }
+            }
+        }
+
+        private string _convModel;
+        public string ConvModel
+        {
+            get { return _convModel; }
+            set
+            {
+                if (value != _convModel)
+                {
+                    _convModel = value;
+                    OnPropertyChanged("ConvModel");
+                }
+            }
+        }
+
+        private ICommand _readConvModelcmd;
+        public ICommand ReadConvModelcmd
+        {
+            get
+            {
+                if (_readConvModelcmd == null)
+                {
+                    _readConvModelcmd = new RelayCommand(
+                        param => ReadConvModel()
+                            );
+                }
+                return _readConvModelcmd;
+            }
+        }
+
+        private async void ReadConvModel()
+        {
+            ModbusStatus = "Reading...";
+            ConvModel = "--";
+            if ( await Functions.Read(ComSetup.Address, Map.CMD3, Map.Registri_CMD3_16.Convertitore.address, Map.Registri_CMD3_16.Convertitore.address_end, 3))
+            { 
+                ModbusStatus = "Success";
+                ConvModel = Map.Registri_CMD3_16.Convertitore.Text;
+            }
+            else
+            { 
+                ModbusStatus = "Failed";
+            }            
+        }
+
+        #region ObservableObject
+
+        private void RaisePropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        private void Set<T>(ref T storage, T value, [CallerMemberName]string propertyName = null)
+        {
+            if (Equals(storage, value))
+            {
+                return;
+            }
+
+            storage = value;
+            OnPropertyChanged(propertyName);
+        }
+
+        private void OnPropertyChanged(string propertyName) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+
+        #endregion
+    }
+}

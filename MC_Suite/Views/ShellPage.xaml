@@ -1,28 +1,62 @@
 <Page
-    x:Class="MC_Suite.Views.ShellPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"    
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:helpers="using:MC_Suite.Helpers"
     xmlns:views="using:MC_Suite.Views"
+    xmlns:Custom="using:Microsoft.Toolkit.Uwp.UI.Controls"
+    x:Class="MC_Suite.Views.ShellPage"
     mc:Ignorable="d">
 
     <NavigationView
         x:Name="navigationView"
-        SelectedItem="{x:Bind Selected, Mode=OneWay}"
-        Header="{x:Bind Selected.Content, Mode=OneWay}"
+        SelectedItem="{x:Bind Mode=OneWay, Path=Selected}"
+        Header="{x:Bind Mode=OneWay, Path=Selected.Content}"
         ItemInvoked="OnItemInvoked"
-        IsSettingsVisible="True"
+        IsSettingsVisible="True"        
         Background="{ThemeResource SystemControlBackgroundAltHighBrush}">
         <NavigationView.MenuItems>
+            <!--<NavigationViewItem x:Uid="Shell_VReport" Icon="Paste" helpers:NavHelper.NavigateTo="views:ReportViewerPage" />-->
             <!--
             TODO WTS: Change the symbols for each item as appropriate for your app
             More on Segoe UI Symbol icons: https://docs.microsoft.com/windows/uwp/style/segoe-ui-symbol-font
             Or to use an IconElement instead of a Symbol see https://github.com/Microsoft/WindowsTemplateStudio/blob/master/docs/projectTypes/navigationpane.md
             Edit String/en-US/Resources.resw: Add a menu item title for each page
             -->
-            <NavigationViewItem x:Uid="Shell_Main" Icon="Document" helpers:NavHelper.NavigateTo="views:MainPage" />
+            <NavigationViewItem x:Name="HomeBtn" x:Uid="Shell_Main" Icon="Home" helpers:NavHelper.NavigateTo="views:MainPage" />
+            <NavigationViewItem x:Name="Verificator_406" x:Uid="Shell_Verificator406" Icon="Paste" helpers:NavHelper.NavigateTo="views:VerificatorPage" />
+            <NavigationViewItem x:Name="Verificator_608" x:Uid="Shell_Verificator608" Icon="Paste" helpers:NavHelper.NavigateTo="views:VerificatorPage608" />
+            <NavigationViewItem x:Name="SensorOnly" x:Uid="Shell_SensorOnly" Icon="Paste" helpers:NavHelper.NavigateTo="views:SensorOnlyPage" />
+            <NavigationViewItem x:Uid="Shell_Database" Icon="Copy" helpers:NavHelper.NavigateTo="views:ReportDatabase" />
+            <NavigationViewItem x:Name="MC406_HomeBtn" x:Uid="Shell_Main406" helpers:NavHelper.NavigateTo="views:MC406MainPage">
+                <NavigationViewItem.Icon>
+                    <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE7F4;"/>
+                    <!--  https://docs.microsoft.com/it-it/windows/uwp/design/style/segoe-ui-symbol-font -->
+                </NavigationViewItem.Icon>
+            </NavigationViewItem>
+            <NavigationViewItem x:Name="MC406_CfgBtn" x:Uid="Shell_ConfigMC406" Icon="Edit" helpers:NavHelper.NavigateTo="views:ConfigurationPage" />
+            <NavigationViewItem x:Name="MC608_HomeBtn" x:Uid="Shell_Main608" helpers:NavHelper.NavigateTo="views:MC608MainPage">
+                <NavigationViewItem.Icon>
+                    <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE7F4;"/>
+                    <!--  https://docs.microsoft.com/it-it/windows/uwp/design/style/segoe-ui-symbol-font -->
+                </NavigationViewItem.Icon>
+            </NavigationViewItem>
+            <NavigationViewItem x:Name="MC608_CfgBtn" x:Uid="Shell_ConfigMC608" Icon="Edit" helpers:NavHelper.NavigateTo="views:MC608ConfigurationPage" />
+            <NavigationViewItem x:Uid="Shell_Graph" Icon="Crop" helpers:NavHelper.NavigateTo="views:GraphPage" Visibility="Collapsed"/>
+            <NavigationViewItem x:Name="Shell_Datalog" x:Uid="Shell_DataLog" Icon="List" helpers:NavHelper.NavigateTo="views:DataLogPage" />
+            <NavigationViewItem x:Uid="Shell_FExplorer" helpers:NavHelper.NavigateTo="views:FileBrowser">
+                <NavigationViewItem.Icon>
+                    <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xEC50;"/>
+                    <!--  https://docs.microsoft.com/it-it/windows/uwp/design/style/segoe-ui-symbol-font -->
+                </NavigationViewItem.Icon>
+            </NavigationViewItem>
+            <NavigationViewItem x:Name="Calibration_Tab" x:Uid="Shell_Calibration" helpers:NavHelper.NavigateTo="views:Calibration" Visibility="Visible">
+                <NavigationViewItem.Icon>
+                    <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE90F;"/>
+                </NavigationViewItem.Icon>
+            </NavigationViewItem>
+            <NavigationViewItem x:Name="IO_Tab" x:Uid="Shell_IO" Icon="Sort" helpers:NavHelper.NavigateTo="views:IOpage" Visibility="Visible"/>
         </NavigationView.MenuItems>
         <NavigationView.HeaderTemplate>
             <DataTemplate>
@@ -33,8 +67,58 @@
                     Text="{Binding}" />
             </DataTemplate>
         </NavigationView.HeaderTemplate>
-        <Grid>
-            <Frame x:Name="shellFrame" />
+        <Grid HorizontalAlignment="Stretch" Margin="0,0,0,0" VerticalAlignment="Stretch">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" MinHeight="0"/>
+                <RowDefinition/>
+                <RowDefinition Height="Auto" MinHeight="0"/>
+            </Grid.RowDefinitions>
+            <Frame x:Name="shellFrame" Grid.Row="1" />
+            <StackPanel x:Name="PowerMessage" Orientation="Horizontal" Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <StackPanel.Background>
+                    <SolidColorBrush Color="{ThemeResource SystemRevealChromeLowColor}"/>
+                </StackPanel.Background>
+                <ProgressRing x:Name="ShutdownRing" IsActive="True" Width="40" Height="40" Margin="10,10,0,10" />
+                <TextBlock x:Name="ShutdownMessage" VerticalAlignment="Center" Margin="20,10,10,10" FontSize="16"/>
+            </StackPanel>
+            <CommandBar x:Name="BottomCommandBar" Grid.Row="2">
+                <CommandBar.Content>
+                    <Grid Margin="10,10,0,0" VerticalAlignment="Center" HorizontalAlignment="Stretch">
+                        <StackPanel Orientation="Horizontal">
+                            <SymbolIcon Symbol="Clock" Margin="10,0,0,0"/>
+                            <TextBlock x:Name="SysDateTimeTextBlock" Text="{x:Bind Mode=OneWay, Path=SysDateTime}" HorizontalAlignment="Stretch" Margin="10,0,0,0" VerticalAlignment="Center" FocusVisualSecondaryBrush="#99FFFFFF"/>
+
+                            <TextBlock x:Name="ActiveConverterTxt" Text="{x:Bind Mode=OneWay, Path=ActiveConverter}" HorizontalAlignment="Stretch" Margin="10,0,0,0" VerticalAlignment="Center" Visibility="Collapsed"/>
+                            <Ellipse x:Name="ConnectionStateVis" HorizontalAlignment="Center" Height="20" Margin="20,0,0,0" VerticalAlignment="Center" Width="20" Visibility="Collapsed"/>
+                            <TextBlock x:Name="ConnectionTextBlock" Text="{x:Bind Mode=OneWay, Path=ConnectionState}"  HorizontalAlignment="Stretch" Margin="10,0,0,0" VerticalAlignment="Center" FocusVisualSecondaryBrush="#99FFFFFF" Visibility="Collapsed"/>
+
+                            <FontIcon Name="CalibrationIcon" FontFamily="Segoe MDL2 Assets" Margin="20,0,0,0" Glyph="&#xE90F;" Visibility="Visible"/>
+                            <TextBlock x:Name="VAlimBlock" Text="{x:Bind Mode=OneWay, Path=VAlimText}"  HorizontalAlignment="Stretch" Margin="10,0,0,0" VerticalAlignment="Center" FocusVisualSecondaryBrush="#99FFFFFF" Visibility="Collapsed"/>
+                            <TextBlock x:Name="BatteryPercBlock" Text="{x:Bind Mode=OneWay, Path=BatteryPercText}" HorizontalAlignment="Stretch" Margin="10,0,0,0" VerticalAlignment="Center" FocusVisualSecondaryBrush="#99FFFFFF" Visibility="Visible"/>
+                            <FontIcon Name="BatteryIcon" FontFamily="Segoe MDL2 Assets" Margin="5,0,0,0" Glyph="&#xEBAA;" Visibility="Visible" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+                        </StackPanel>
+                    </Grid>
+                </CommandBar.Content>
+                <AppBarButton x:Name="ShutDownBtn" Label="Restart/Shutdown">
+                    <AppBarButton.Icon>
+                        <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xE7E8;"/>
+                    </AppBarButton.Icon>
+                    <AppBarButton.Flyout>
+                        <MenuFlyout>
+                            <MenuFlyoutItem Text="Restart" Command="{x:Bind Path=RestartCmd}">
+                                <MenuFlyoutItem.Icon>
+                                    <FontIcon Glyph="&#xE8EE;"/>
+                                </MenuFlyoutItem.Icon>
+                            </MenuFlyoutItem>
+                            <MenuFlyoutItem Text="Shutdown" Command="{x:Bind Path=ShutDownCmd}">
+                                <MenuFlyoutItem.Icon>
+                                    <FontIcon Glyph="&#xE7E8;"/>
+                                </MenuFlyoutItem.Icon>
+                            </MenuFlyoutItem>
+                        </MenuFlyout>
+                    </AppBarButton.Flyout>
+                </AppBarButton>
+            </CommandBar>
         </Grid>
     </NavigationView>
 </Page>

@@ -1,0 +1,613 @@
+﻿<Page
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:MC_Suite.Views"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:Custom="using:Microsoft.Toolkit.Uwp.UI.Controls"
+    xmlns:Telerik="using:Telerik.UI.Xaml.Controls.Input"
+    x:Class="MC_Suite.Views.ConfigurationPage"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Width="Auto">
+    <Page.Resources>
+        <local:CfgFileItemConvert x:Key="CfgFileItemConvert"/>
+    </Page.Resources>
+    <Grid>
+        <ScrollViewer x:Name="ParametersViewer" Margin="0,0,0,0" VerticalAlignment="Stretch">
+            <StackPanel x:Name="ParametersContainer" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,0,0,0">
+                <CommandBar>
+                    <CommandBar.Content>
+                        <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                            <TextBlock x:Name="EditMessageBlock" HorizontalAlignment="Center" Margin="20,15,0,0" Text="{x:Bind Mode=OneWay, Path=Fields.EditCfgMessage}" TextWrapping="Wrap" VerticalAlignment="Center"/>
+                        </Grid>
+                    </CommandBar.Content>
+                    <AppBarButton x:Name="SaveCfgBtn" Icon="Save" Label="Save" Command="{x:Bind Path=SaveCfgCmd}"/>
+                    <AppBarButton x:Name="LoadCfgBtn" Icon="OpenFile" Label="Load" Command="{x:Bind Path=LoadCfgCmd}"/>
+                    <AppBarButton x:Name="EditCfgBtn" Icon="Edit" Label="Edit" Command="{x:Bind Path=EditCfgCmd}"/>
+                    <AppBarButton x:Name="SaveEditBtn" Icon="Accept" Label="Save" Command="{x:Bind Path=SaveEditCmd}"/>
+                    <AppBarButton x:Name="ExitEditBtn" Icon="Cancel" Label="Cancel" Command="{x:Bind Path=ExitEditCmd}"/>
+                    <AppBarButton x:Name="SelectCfgBtn" Icon="Accept" Label="Load" Command="{x:Bind Path=LoadFileCmd}"/>
+                    <AppBarButton x:Name="CancelCfgBtn" Icon="Cancel" Label="Cancel" Command="{x:Bind Path=ExitLoadCmd}"/>
+                </CommandBar>
+                <StackPanel x:Name="FileSelectorPnl" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="{StaticResource SettingsSubheaderMargin}" Orientation="Horizontal">
+                    <TextBox x:Name="CurrentFolderPath" Margin="0,0,10,0" Header="Current Folder:" Text="{x:Bind Path=FileManager.CurrentFolder.Name}" TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Stretch"/>
+                    <ComboBox 
+                            x:Name="FileBox"
+                            Header="Select File:"
+                            ItemsSource="{x:Bind Path=FileManager.ViewFiles}" 
+                            SelectedItem="{x:Bind Converter={StaticResource CfgFileItemConvert}, Mode=TwoWay, Path=SelectedFile}" 
+                            DisplayMemberPath="Name" VerticalAlignment="Center" HorizontalAlignment="Stretch" Margin="0,0,10,0" />
+                </StackPanel>
+                <StackPanel x:Name="ReadBundlePanel" Visibility="Collapsed" VerticalAlignment="Center" Margin="{StaticResource SettingsSubheaderMargin}" Padding="20,0,0,0" HorizontalAlignment="Stretch">
+                    <Grid HorizontalAlignment="Left" VerticalAlignment="Stretch">
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock x:Name="ReadBundleTitle" HorizontalAlignment="Center" Margin="0,0,0,0" Text="Read Bundle" TextWrapping="Wrap" VerticalAlignment="Center" FontSize="20" Height="27" Width="191"/>
+                        <ComboBox x:Name="BundleSelectBox" DisplayMemberPath="Value" ItemsSource="{x:Bind Path=IrConnection.BundlesList}" SelectedValuePath="Key" HorizontalAlignment="Stretch" Margin="0,0,0,0" VerticalAlignment="Center" Grid.Row="1"/>
+                        <Button x:Name="BundleReadBtn" Content="Read" Command="{x:Bind Path=BundleReadCmd}" Grid.Row="1" Grid.Column="1"/>
+                        <TextBlock x:Name="BundleReadState" Grid.Row="2"/>
+                    </Grid>
+                </StackPanel>
+                <StackPanel x:Name="ParametersPanel" Margin="{StaticResource SettingsSubheaderMargin}">
+                    <Custom:Expander x:Name="FlowrateMeasurementOptionsEXP" Header="Flowrate Measurement Options" VerticalAlignment="Center" Margin="0,0,0,0" HorizontalContentAlignment="Stretch">
+                        <Grid x:Name="FlowrateMeasurementOptionsGRID">
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock x:Name="FlowrateTUDescr" Text="{x:Bind Path=Fields.FlowrateTechUnit.Name}" Margin="10,0,0,0"/>
+                            <ComboBox x:Name="FlowrateTUbox" DisplayMemberPath="Value" SelectedValuePath="Key" HorizontalAlignment="Stretch" Grid.Column="1"/>
+                            <Button x:Name="FlowrateTUBtn" Content="Set" Command="{x:Bind Path=SetFlowrateTUCmd}" Grid.Row="0" Grid.Column="2"/>
+                            <TextBlock x:Name="FlowrateTBDescr" Text="{x:Bind Path=Fields.FlowrateTimeBase.Name}" Margin="10,0,0,0" Grid.Row="1"/>
+                            <ComboBox x:Name="FlowrateTBbox" DisplayMemberPath="Value" SelectedValuePath="Key" HorizontalAlignment="Stretch" Grid.Column="1" Grid.Row="1"/>
+                            <Button x:Name="FlowrateTBBtn" Content="Set" Command="{x:Bind Path=SetFlowrateTBCmd}" Grid.Row="1" Grid.Column="2"/>
+                            <TextBlock x:Name="TotalizerTUDescr" Text="{x:Bind Path=Fields.AccumulatorsTechUnit.Name}" Margin="10,0,0,0" Grid.Row="2"/>
+                            <ComboBox x:Name="TotalizerTUbox" DisplayMemberPath="Value" SelectedValuePath="Key" HorizontalAlignment="Stretch" Grid.Column="1" Grid.Row="2"/>
+                            <Button x:Name="TotalizerTUBtn" Content="Set" Command="{x:Bind Path=SetTotalizerTUCmd}" Grid.Row="2" Grid.Column="2"/>
+                            <TextBlock x:Name="FlowrateNdigitDescr" Text="{x:Bind Path=Fields.FlowrateNdigit.Name}" Margin="10,0,0,0" Grid.Row="3"/>
+                            <TextBox x:Name="FlowrateNdigitVal" Text="{x:Bind Path=Fields.FlowrateNdigit.ValAsString}" Grid.Column="1" Grid.Row="3"/>
+                            <Button x:Name="FlowrateNdigitBtn" Content="Set" Command="{x:Bind Path=SetFlowrateNdigitCmd}" Grid.Row="3" Grid.Column="2"/>
+                            <TextBlock x:Name="AccumulatorNdigitDescr" Text="{x:Bind Path=Fields.AccumulatorNdigit.Name}" Margin="10,0,0,0" Grid.Row="4"/>
+                            <TextBox x:Name="AccumulatorNdigitVal" Text="{x:Bind Path=Fields.AccumulatorNdigit.ValAsString}" Grid.Column="1" Grid.Row="4"/>
+                            <Button x:Name="AccumulatorNdigitBtn" Content="Set" Command="{x:Bind Path=SetAccumulatorNdigitCmd}" Grid.Row="4" Grid.Column="2"/>
+                            <TextBlock x:Name="ProcessLogPeriodDescr" Text="{x:Bind Path=Fields.ProcessLogPeriod.Name}" Margin="10,0,0,0" Grid.Row="5"/>
+                            <TextBox x:Name="ProcessLogPeriodVal" Text="{x:Bind Path=Fields.ProcessLogPeriod.ValAsString}" Grid.Column="1" Grid.Row="5"/>
+                            <Button x:Name="ProcessLogPeriodBtn" Content="Set" Command="{x:Bind Path=SetProcessLogPeriodCmd}" Grid.Row="5" Grid.Column="2"/>
+                        </Grid>
+                    </Custom:Expander>
+                    <Custom:Expander x:Name="VisualizationsOptionsEXP" Header="Visualizations Options" VerticalAlignment="Center" Margin="0,0,0,0" HorizontalContentAlignment="Stretch">
+                        <Grid x:Name="isualizationsOptionsGRID">
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock x:Name="VisualizationOptDescr" Text="{x:Bind Path=Fields.SpecialVisualization.Name}" Margin="10,0,0,0"/>
+                            <ComboBox x:Name="VisualizationOptbox" DisplayMemberPath="Value" SelectedValuePath="Key" HorizontalAlignment="Stretch" Grid.Column="1"/>
+                            <Button x:Name="VisualizationOptBtn" Content="Set" Command="{x:Bind Path=SetVisualizationOptCmd}" Grid.Row="0" Grid.Column="2"/>
+                        </Grid>
+                    </Custom:Expander>
+                    <Custom:Expander x:Name="AcquisitionSetupEXP" Header="Acquisition Setup" VerticalAlignment="Center" Margin="0,0,0,0" HorizontalContentAlignment="Stretch">
+                        <Grid x:Name="AcquisitionSetupGRID">
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock x:Name="LowPowerMeasurePeriodDescr" Text="{x:Bind Path=Fields.LowPowerMeasurePeriod.Name}" Margin="10,0,0,0" Grid.Row="0"/>
+                            <TextBox x:Name="LowPowerMeasurePeriodVal" Text="{x:Bind Path=Fields.LowPowerMeasurePeriod.ValAsString}" Grid.Column="1" Grid.Row="0"/>
+                            <Button x:Name="LowPowerMeasurePeriodBtn" Content="Set" Command="{x:Bind Path=SetLowPowerMeasurePeriodCmd}" Grid.Row="0" Grid.Column="2"/>
+                            <TextBlock x:Name="ExcitationPauseDescr" Text="{x:Bind Path=Fields.ExcitationPause.Name}" Margin="10,0,0,0" Grid.Row="1"/>
+                            <TextBox x:Name="ExcitationPauseVal" Text="{x:Bind Path=Fields.ExcitationPause.ValAsString}" Grid.Column="1" Grid.Row="1"/>
+                            <Button x:Name="ExcitationPauseBtn" Content="Set" Command="{x:Bind Path=SetExcitationPauseCmd}" Grid.Row="1" Grid.Column="2"/>
+                            <TextBlock x:Name="OffsetRegDescr" Text="{x:Bind Path=Fields.OffsetReg.Name}" Margin="10,0,0,0" Grid.Row="2"/>
+                            <TextBox x:Name="OffsetRegVal" Text="{x:Bind Path=Fields.OffsetReg.ValAsString}" Grid.Column="1" Grid.Row="2"/>
+                            <Button x:Name="OffsetRegBtn" Content="Set" Command="{x:Bind Path=SetOffsetRegCmd}" Grid.Row="2" Grid.Column="2"/>
+                            <TextBlock x:Name="AwakeMeasurePeriodDescr" Text="{x:Bind Path=Fields.AwakeMeasurePeriod.Name}" Margin="10,0,0,0" Grid.Row="3"/>
+                            <TextBox x:Name="AwakeMeasurePeriodVal" Text="{x:Bind Path=Fields.AwakeMeasurePeriod.ValAsString}" Grid.Column="1" Grid.Row="3"/>
+                            <Button x:Name="AwakeMeasurePeriodBtn" Content="Set" Command="{x:Bind Path=SetAwakeMeasurePeriodCmd}" Grid.Row="3" Grid.Column="2"/>
+                            <TextBlock x:Name="MainsLineFrequencyDescr" Text="{x:Bind Path=Fields.MainsLineFrequency.Name}" Margin="10,0,0,0" Grid.Row="4"/>
+                            <ComboBox x:Name="MainsLineFrequencybox" DisplayMemberPath="Value" SelectedValuePath="Key" HorizontalAlignment="Stretch" Grid.Column="1" Grid.Row="4"/>
+                            <Button x:Name="MainsLineFrequencyBtn" Content="Set" Command="{x:Bind Path=SetMainsLineFrequencyCmd}" Grid.Row="4" Grid.Column="2"/>
+                            <TextBlock x:Name="AdcGainDescr" Text="{x:Bind Path=Fields.AdcGain.Name}" Margin="10,0,0,0" Grid.Row="5"/>
+                            <ComboBox x:Name="AdcGainbox" DisplayMemberPath="Value" SelectedValuePath="Key" HorizontalAlignment="Stretch" Grid.Column="1" Grid.Row="5"/>
+                            <Button x:Name="AdcGainBtn" Content="Set" Command="{x:Bind Path=SetAdcGainCmd}" Grid.Row="5" Grid.Column="2"/>
+                            <TextBlock x:Name="SD24SamplingIndexDescr" Text="{x:Bind Path=Fields.SD24SamplingIndex.Name}" Margin="10,0,0,0" Grid.Row="6"/>
+                            <ComboBox x:Name="SD24SamplingIndexbox" DisplayMemberPath="Value" SelectedValuePath="Key" HorizontalAlignment="Stretch" Grid.Column="1" Grid.Row="6"/>
+                            <Button x:Name="SD24SamplingIndexBtn" Content="Set" Command="{x:Bind Path=SetSD24SamplingIndexCmd}" Grid.Row="6" Grid.Column="2"/>
+                            <TextBlock x:Name="InputStageStabTimeDescr" Text="{x:Bind Path=Fields.InputStageStabTime.Name}" Margin="10,0,0,0" Grid.Row="7"/>
+                            <TextBox x:Name="InputStageStabTimeVal" Text="{x:Bind Path=Fields.InputStageStabTime.ValAsString}" Grid.Column="1" Grid.Row="7"/>
+                            <Button x:Name="InputStageStabTimeBtn" Content="Set" Command="{x:Bind Path=SetInputStageStabTimeCmd}" Grid.Row="7" Grid.Column="2"/>
+                        </Grid>
+                        <!--<Custom:DataGrid x:Name="AcquisitionSetupGrid" AutoGenerateColumns="True" PreparingCellForEdit="AcquisitionSetupGrid_PreparingCellForEdit" HeadersVisibility="None" ItemsSource="{x:Bind Path=FlowMeasAcquisitionSetup}" Margin="0,0,0,0" HorizontalContentAlignment="Left"/>-->
+                    </Custom:Expander>
+                    <Custom:Expander x:Name="FiltersAndFullScaleEXP" Header="Filters and Full Scale" VerticalAlignment="Center" Margin="0,0,0,0" HorizontalContentAlignment="Stretch">
+                        <Grid x:Name="FiltersAndFullScaleGRID">
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock x:Name="CutoffDescr" Text="{x:Bind Path=Fields.Cutoff.Name}" Grid.Row="0" Margin="10,0,0,0"/>
+                            <TextBox x:Name="CutoffVal" Text="{x:Bind Path=Fields.Cutoff.ValAsString}" Grid.Row="0" Grid.Column="1" />
+                            <Button x:Name="CutoffBtn" Content="Set" Command="{x:Bind Path=SetCutoffCmd}" Grid.Row="0" Grid.Column="2"/>
+                            <TextBlock x:Name="DampingDescr" Text="{x:Bind Path=Fields.Damping.Name}" Grid.Row="1" Margin="10,0,0,0"/>
+                            <TextBox x:Name="DampingVal" Text="{x:Bind Path=Fields.Damping.ValAsString}" Grid.Row="1" Grid.Column="1" />
+                            <Button x:Name="DampingBtn" Content="Set" Command="{x:Bind Path=SetDampingCmd}" Grid.Row="1" Grid.Column="2"/>
+                            <TextBlock x:Name="DampingSlowDescr" Text="{x:Bind Path=Fields.DampingSlow.Name}" Grid.Row="2" Margin="10,0,0,0"/>
+                            <TextBox x:Name="DampingSlowVal" Text="{x:Bind Path=Fields.DampingSlow.ValAsString}" Grid.Row="2" Grid.Column="1" />
+                            <Button x:Name="DampingSlowBtn" Content="Set" Command="{x:Bind Path=SetDampingSlowCmd}" Grid.Row="2" Grid.Column="2"/>
+                            <TextBlock x:Name="BypassDescr" Text="{x:Bind Path=Fields.Bypass.Name}" Grid.Row="3" Margin="10,0,0,0"/>
+                            <TextBox x:Name="BypassVal" Text="{x:Bind Path=Fields.Bypass.ValAsString}" Grid.Row="3" Grid.Column="1" />
+                            <Button x:Name="BypassBtn" Content="Set" Command="{x:Bind Path=SetBypassCmd}" Grid.Row="3" Grid.Column="2"/>
+                            <TextBlock x:Name="BypassCountDescr" Text="{x:Bind Path=Fields.BypassCount.Name}" Grid.Row="4" Margin="10,0,0,0"/>
+                            <TextBox x:Name="BypassCountVal" Text="{x:Bind Path=Fields.BypassCount.ValAsString}" Grid.Row="4" Grid.Column="1" />
+                            <Button x:Name="BypassCountBtn" Content="Set" Command="{x:Bind Path=SetBypassCountCmd}" Grid.Row="4" Grid.Column="2"/>
+                            <TextBlock x:Name="PeakcutDescr" Text="{x:Bind Path=Fields.Peakcut.Name}" Grid.Row="5" Margin="10,0,0,0"/>
+                            <TextBox x:Name="PeakcutVal" Text="{x:Bind Path=Fields.Peakcut.ValAsString}" Grid.Row="5" Grid.Column="1" />
+                            <Button x:Name="PeakcutBtn" Content="Set" Command="{x:Bind Path=SetPeakcutCmd}" Grid.Row="5" Grid.Column="2"/>
+                            <TextBlock x:Name="PeakcutCountDescr" Text="{x:Bind Path=Fields.PeakcutCount.Name}" Grid.Row="6" Margin="10,0,0,0"/>
+                            <TextBox x:Name="PeakcutCountVal" Text="{x:Bind Path=Fields.PeakcutCount.ValAsString}" Grid.Row="6" Grid.Column="1" />
+                            <Button x:Name="PeakcutCountBtn" Content="Set" Command="{x:Bind Path=SetPeakcutCountCmd}" Grid.Row="6" Grid.Column="2"/>
+                            <TextBlock x:Name="FlowrateFullscaleDescr" Text="{x:Bind Path=Fields.FlowrateFullscale.Name}" Grid.Row="7" Margin="10,0,0,0"/>
+                            <TextBox x:Name="FlowrateFullscaleVal" Text="{x:Bind Path=Fields.FlowrateFullscale.ValAsString}" Grid.Row="7" Grid.Column="1" />
+                            <Button x:Name="FlowrateFullscaleBtn" Content="Set" Command="{x:Bind Path=SetFlowrateFullscaleCmd}" Grid.Row="7" Grid.Column="2"/>
+                        </Grid>
+                    </Custom:Expander>
+                    <Custom:Expander x:Name="SensorEXP" Header="Sensor" VerticalAlignment="Center" Margin="0,0,0,0" HorizontalContentAlignment="Stretch">
+                        <Grid x:Name="SensorGRID" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock x:Name="SensorOffsetDescr" Text="{x:Bind Path=Fields.SensorOffset.Name}" Grid.Row="0" Margin="10,0,0,0"/>
+                            <TextBox x:Name="SensorOffsetVal" Text="{x:Bind Path=Fields.SensorOffset.ValAsString}" Grid.Row="0" Grid.Column="1" />
+                            <Button x:Name="SensorOffsetBtn" Content="Set" Command="{x:Bind Path=SetSensorOffsetCmd}" Grid.Row="0" Grid.Column="2"/>
+                            <TextBlock x:Name="KaRatioDescr" Text="{x:Bind Path=Fields.KaRatio.Name}" Grid.Row="1" Margin="10,0,0,0"/>
+                            <TextBox x:Name="KaRatioVal" Text="{x:Bind Path=Fields.KaRatio.ValAsString}" Grid.Row="1" Grid.Column="1" />
+                            <Button x:Name="KaRatioBtn" Content="Set" Command="{x:Bind Path=SetKaRatioCmd}" Grid.Row="1" Grid.Column="2"/>
+                            <TextBlock x:Name="SensorDiameterDescr" Text="{x:Bind Path=Fields.SensorDiameter.Name}" Grid.Row="2" Margin="10,0,0,0"/>
+                            <TextBox x:Name="SensorDiameterVal" Text="{x:Bind Path=Fields.SensorDiameter.ValAsString}" Grid.Row="2" Grid.Column="1" />
+                            <Button x:Name="SensorDiameterBtn" Content="Set" Command="{x:Bind Path=SetSensorDiameterCmd}" Grid.Row="2" Grid.Column="2"/>
+                            <TextBlock x:Name="SensorModelDescr" Text="{x:Bind Path=Fields.SensorModel.Name}" Grid.Row="3" Margin="10,0,0,0"/>
+                            <TextBox x:Name="SensorModelVal" Text="{x:Bind Path=Fields.SensorModel.ValAsString}" Grid.Row="3" Grid.Column="1" />
+                            <Button x:Name="SensorModelBtn" Content="Set" Command="{x:Bind Path=SetSensorModelCmd}" Grid.Row="3" Grid.Column="2"/>
+                            <TextBlock x:Name="SensorIdDescr" Text="{x:Bind Path=Fields.SensorId.Name}" Grid.Row="4" Margin="10,0,0,0"/>
+                            <TextBox x:Name="SensorIdVal" Text="{x:Bind Path=Fields.SensorId.ValAsString}" Grid.Row="4" Grid.Column="1" />
+                            <Button x:Name="SensorIdBtn" Content="Set" Command="{x:Bind Path=SetSensorIdCmd}" Grid.Row="4" Grid.Column="2"/>
+                            <TextBlock x:Name="SensorIsInsertionDescr" Text="{x:Bind Path=Fields.SensorIsInsertion.Name}" Margin="10,0,0,0" Grid.Row="5"/>
+                            <ComboBox x:Name="SensorIsInsertionbox" DisplayMemberPath="Value" SelectedValuePath="Key" HorizontalAlignment="Stretch" Grid.Column="1" Grid.Row="5"/>
+                            <Button x:Name="SensorIsInsertionBtn" Content="Set" Command="{x:Bind Path=SetSensorIsInsertionCmd}" Grid.Row="5" Grid.Column="2"/>
+                            <TextBlock x:Name="Insertion_sA_LODescr" Text="{x:Bind Path=Fields.Insertion_sA_LO.Name}" Grid.Row="6" Margin="10,0,0,0"/>
+                            <TextBox x:Name="Insertion_sA_LOVal" Text="{x:Bind Path=Fields.Insertion_sA_LO.ValAsString}" Grid.Row="6" Grid.Column="1" />
+                            <Button x:Name="Insertion_sA_LOBtn" Content="Set" Command="{x:Bind Path=SetInsertion_sA_LOCmd}" Grid.Row="6" Grid.Column="2"/>
+                            <TextBlock x:Name="Insertion_sB_LODescr" Text="{x:Bind Path=Fields.Insertion_sB_LO.Name}" Grid.Row="7" Margin="10,0,0,0"/>
+                            <TextBox x:Name="Insertion_sB_LOVal" Text="{x:Bind Path=Fields.Insertion_sB_LO.ValAsString}" Grid.Row="7" Grid.Column="1" />
+                            <Button x:Name="Insertion_sB_LOBtn" Content="Set" Command="{x:Bind Path=SetInsertion_sB_LOCmd}" Grid.Row="7" Grid.Column="2"/>
+                            <TextBlock x:Name="Insertion_sC_LODescr" Text="{x:Bind Path=Fields.Insertion_sC_LO.Name}" Grid.Row="8" Margin="10,0,0,0"/>
+                            <TextBox x:Name="Insertion_sC_LOVal" Text="{x:Bind Path=Fields.Insertion_sC_LO.ValAsString}" Grid.Row="8" Grid.Column="1" />
+                            <Button x:Name="Insertion_sC_LOBtn" Content="Set" Command="{x:Bind Path=SetInsertion_sC_LOCmd}" Grid.Row="8" Grid.Column="2"/>
+                            <TextBlock x:Name="Insertion_sD_LODescr" Text="{x:Bind Path=Fields.Insertion_sD_LO.Name}" Grid.Row="9" Margin="10,0,0,0"/>
+                            <TextBox x:Name="Insertion_sD_LOVal" Text="{x:Bind Path=Fields.Insertion_sD_LO.ValAsString}" Grid.Row="9" Grid.Column="1" />
+                            <Button x:Name="Insertion_sD_LOBtn" Content="Set" Command="{x:Bind Path=SetInsertion_sD_LOCmd}" Grid.Row="9" Grid.Column="2"/>
+                            <TextBlock x:Name="Insertion_sA_HIDescr" Text="{x:Bind Path=Fields.Insertion_sA_HI.Name}" Grid.Row="10" Margin="10,0,0,0"/>
+                            <TextBox x:Name="Insertion_sA_HIVal" Text="{x:Bind Path=Fields.Insertion_sA_HI.ValAsString}" Grid.Row="10" Grid.Column="1" />
+                            <Button x:Name="Insertion_sA_HIBtn" Content="Set" Command="{x:Bind Path=SetInsertion_sA_HICmd}" Grid.Row="10" Grid.Column="2"/>
+                            <TextBlock x:Name="Insertion_sB_HIDescr" Text="{x:Bind Path=Fields.Insertion_sB_HI.Name}" Grid.Row="11" Margin="10,0,0,0"/>
+                            <TextBox x:Name="Insertion_sB_HIVal" Text="{x:Bind Path=Fields.Insertion_sB_HI.ValAsString}" Grid.Row="11" Grid.Column="1" />
+                            <Button x:Name="Insertion_sB_HIBtn" Content="Set" Command="{x:Bind Path=SetInsertion_sB_HICmd}" Grid.Row="11" Grid.Column="2"/>
+                            <TextBlock x:Name="Insertion_sC_HIDescr" Text="{x:Bind Path=Fields.Insertion_sC_HI.Name}" Grid.Row="12" Margin="10,0,0,0"/>
+                            <TextBox x:Name="Insertion_sC_HIVal" Text="{x:Bind Path=Fields.Insertion_sC_HI.ValAsString}" Grid.Row="12" Grid.Column="1" />
+                            <Button x:Name="Insertion_sC_HIBtn" Content="Set" Command="{x:Bind Path=SetInsertion_sC_HICmd}" Grid.Row="12" Grid.Column="2"/>
+                            <TextBlock x:Name="Insertion_sD_HIDescr" Text="{x:Bind Path=Fields.Insertion_sD_HI.Name}" Grid.Row="13" Margin="10,0,0,0"/>
+                            <TextBox x:Name="Insertion_sD_HIVal" Text="{x:Bind Path=Fields.Insertion_sD_HI.ValAsString}" Grid.Row="13" Grid.Column="1" />
+                            <Button x:Name="Insertion_sD_HIBtn" Content="Set" Command="{x:Bind Path=SetInsertion_sD_HICmd}" Grid.Row="13" Grid.Column="2"/>
+                            <TextBlock x:Name="Insertion_Interp_ThDescr" Text="{x:Bind Path=Fields.Insertion_Interp_Th.Name}" Grid.Row="14" Margin="10,0,0,0"/>
+                            <TextBox x:Name="Insertion_Interp_ThVal" Text="{x:Bind Path=Fields.Insertion_Interp_Th.ValAsString}" Grid.Row="14" Grid.Column="1" />
+                            <Button x:Name="Insertion_Interp_ThBtn" Content="Set" Command="{x:Bind Path=SetInsertion_Interp_ThCmd}" Grid.Row="14" Grid.Column="2"/>
+                        </Grid>
+                    </Custom:Expander>
+                    <Custom:Expander x:Name="ConverterEXP" Header="Converter" VerticalAlignment="Center" Margin="0,0,0,0" HorizontalContentAlignment="Stretch">
+                        <Grid x:Name="ConverterGRID" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock x:Name="AlignmentCalibrationFactorDescr" Text="{x:Bind Path=Fields.AlignmentCalibrationFactor.Name}" Grid.Row="0" Margin="10,0,0,0"/>
+                            <TextBox x:Name="AlignmentCalibrationFactorVal" Text="{x:Bind Path=Fields.AlignmentCalibrationFactor.ValAsString}" Grid.Row="0" Grid.Column="1" />
+                            <Button x:Name="AlignmentCalibrationFactorBtn" Content="Set" Command="{x:Bind Path=SetAlignmentCalibrationFactorCmd}" Grid.Row="0" Grid.Column="2"/>
+                            <TextBlock x:Name="AlignmentOffsetDescr" Text="{x:Bind Path=Fields.AlignmentOffset.Name}" Grid.Row="1" Margin="10,0,0,0"/>
+                            <TextBox x:Name="AlignmentOffsetVal" Text="{x:Bind Path=Fields.AlignmentOffset.ValAsString}" Grid.Row="1" Grid.Column="1" />
+                            <Button x:Name="AlignmentOffsetBtn" Content="Set" Command="{x:Bind Path=SetAlignmentOffsetCmd}" Grid.Row="1" Grid.Column="2"/>
+                            <TextBlock x:Name="TemperatureOffsetDescr" Text="{x:Bind Path=Fields.TemperatureOffset.Name}" Grid.Row="2" Margin="10,0,0,0"/>
+                            <TextBox x:Name="TemperatureOffsetVal" Text="{x:Bind Path=Fields.TemperatureOffset.ValAsString}" Grid.Row="2" Grid.Column="1" />
+                            <Button x:Name="TemperatureOffsetBtn" Content="Set" Command="{x:Bind Path=SetTemperatureOffsetCmd}" Grid.Row="2" Grid.Column="2"/>
+                            <TextBlock x:Name="ConverterIdDescr" Text="{x:Bind Path=Fields.ConverterId.Name}" Grid.Row="3" Margin="10,0,0,0"/>
+                            <TextBox x:Name="ConverterIdVal" Text="{x:Bind Path=Fields.ConverterId.ValAsString}" Grid.Row="3" Grid.Column="1" />
+                            <Button x:Name="ConverterIdBtn" Content="Set" Command="{x:Bind Path=SetConverterIdCmd}" Grid.Row="3" Grid.Column="2"/>
+                            <TextBlock x:Name="ConverterSerialNumberDescr" Text="{x:Bind Path=Fields.ConverterSerialNumber.Name}" Grid.Row="4" Margin="10,0,0,0"/>
+                            <TextBox x:Name="ConverterSerialNumberVal" Text="{x:Bind Path=Fields.ConverterSerialNumber.ValAsString}" Grid.Row="4" Grid.Column="1" />
+                            <Button x:Name="ConverterSerialNumberBtn" Content="Set" Command="{x:Bind Path=SetConverterSerialNumberCmd}" Grid.Row="4" Grid.Column="2"/>
+                            <TextBlock x:Name="DeviceNameDescr" Text="{x:Bind Path=Fields.DeviceName.Name}" Grid.Row="5" Margin="10,0,0,0"/>
+                            <TextBox x:Name="DeviceNameVal" Text="{x:Bind Path=Fields.DeviceName.ValAsString}" Grid.Row="5" Grid.Column="1" />
+                            <Button x:Name="DeviceNameBtn" Content="Set" Command="{x:Bind Path=SetDeviceNameCmd}" Grid.Row="5" Grid.Column="2"/>
+                        </Grid>
+                    </Custom:Expander>
+                    <Custom:Expander x:Name="PulseOutputEXP" Header="Pulse Output" VerticalAlignment="Center" Margin="0,0,0,0" HorizontalContentAlignment="Stretch">
+                        <Grid x:Name="PulseOutputGRID">
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock x:Name="PulseLengthDescr" Text="{x:Bind Path=Fields.PulseLength.Name}" Grid.Row="0" Margin="10,0,0,0"/>
+                            <TextBox x:Name="PulseLengthVal" Text="{x:Bind Path=Fields.PulseLength.ValAsString}" Grid.Row="0" Grid.Column="1" />
+                            <Button x:Name="PulseLengthBtn" Content="Set" Command="{x:Bind Path=SetPulseLengthCmd}" Grid.Row="0" Grid.Column="2"/>
+                            <TextBlock x:Name="PulseOutputTechUnitDescr" Text="{x:Bind Path=Fields.PulseOutputTechUnit.Name}" Margin="10,0,0,0" Grid.Row="1"/>
+                            <ComboBox x:Name="PulseOutputTechUnitbox" DisplayMemberPath="Value" SelectedValuePath="Key" HorizontalAlignment="Stretch" Grid.Column="1" Grid.Row="1"/>
+                            <Button x:Name="PulseOutputTechUnitBtn" Content="Set" Command="{x:Bind Path=SetPulseOutputTechUnitCmd}" Grid.Row="1" Grid.Column="2"/>
+                            <TextBlock x:Name="PulseOutputVolumeDescr" Text="{x:Bind Path=Fields.PulseOutputVolume.Name}" Grid.Row="2" Margin="10,0,0,0"/>
+                            <TextBox x:Name="PulseOutputVolumeVal" Text="{x:Bind Path=Fields.PulseOutputVolume.ValAsString}" Grid.Row="2" Grid.Column="1" />
+                            <Button x:Name="PulseOutputVolumeBtn" Content="Set" Command="{x:Bind Path=SetPulseOutputVolumeCmd}" Grid.Row="2" Grid.Column="2"/>
+                        </Grid>
+                    </Custom:Expander>
+                    <Custom:Expander x:Name="CalibrationEXP" Header="Calibration" VerticalAlignment="Center" Margin="0,0,0,0" HorizontalContentAlignment="Stretch">
+                        <Grid x:Name="CalibrationGRID">
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock x:Name="CalibrationTemperatureDescr" Text="{x:Bind Path=Fields.CalibrationTemperature.Name}" Grid.Row="0" Margin="10,0,0,0"/>
+                            <TextBox x:Name="CalibrationTemperatureVal" Text="{x:Bind Path=Fields.CalibrationTemperature.ValAsString}" Grid.Row="0" Grid.Column="1" />
+                            <Button x:Name="CalibrationTemperatureBtn" Content="Set" Command="{x:Bind Path=SetCalibrationTemperatureCmd}" Grid.Row="0" Grid.Column="2"/>
+                            <TextBlock x:Name="CalibrationVoltageDescr" Text="{x:Bind Path=Fields.CalibrationVoltage.Name}" Grid.Row="1" Margin="10,0,0,0"/>
+                            <TextBox x:Name="CalibrationVoltageVal" Text="{x:Bind Path=Fields.CalibrationVoltage.ValAsString}" Grid.Row="1" Grid.Column="1" />
+                            <Button x:Name="CalibrationVoltageBtn" Content="Set" Command="{x:Bind Path=SetCalibrationVoltageCmd}" Grid.Row="1" Grid.Column="2"/>
+                            <TextBlock x:Name="CalibrationDateDescr" Text="{x:Bind Path=Fields.CalibrationDate.Name}" Grid.Row="2" Margin="10,0,0,0"/>
+                            <TextBox x:Name="CalibrationDateVal" Text="{x:Bind Path=Fields.CalibrationDate.ValAsString}" Grid.Row="2" Grid.Column="1" />
+                            <Button x:Name="CalibrationDateBtn" Content="Set" Command="{x:Bind Path=SetCalibrationDateCmd}" Grid.Row="2" Grid.Column="2"/>
+                            <TextBlock x:Name="ManufacturerDescr" Text="{x:Bind Path=Fields.Manufacturer.Name}" Grid.Row="3" Margin="10,0,0,0"/>
+                            <TextBox x:Name="ManufacturerVal" Text="{x:Bind Path=Fields.Manufacturer.ValAsString}" Grid.Row="3" Grid.Column="1" />
+                            <Button x:Name="ManufacturerBtn" Content="Set" Command="{x:Bind Path=SetManufacturerCmd}" Grid.Row="3" Grid.Column="2"/>
+                            <TextBlock x:Name="OtherFeaturesDescr" Text="{x:Bind Path=Fields.OtherFeatures.Name}" Grid.Row="4" Margin="10,0,0,0"/>
+                            <TextBox x:Name="OtherFeaturesVal" Text="{x:Bind Path=Fields.OtherFeatures.ValAsString}" Grid.Row="4" Grid.Column="1" />
+                            <Button x:Name="OtherFeaturesBtn" Content="Set" Command="{x:Bind Path=SetOtherFeaturesCmd}" Grid.Row="4" Grid.Column="2"/>
+                        </Grid>
+                    </Custom:Expander>
+                    <Custom:Expander x:Name="EmptyPipeDetectionEXP" Header="Empty Pipe Detection" VerticalAlignment="Center" Margin="0,0,0,0" HorizontalContentAlignment="Stretch">
+                        <Grid x:Name="EmptyPipeDetectionGRID">
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock x:Name="EmptyPipeCfgDescr" Text="{x:Bind Path=Fields.EmptyPipeCfg.Name}" Margin="10,0,0,0"/>
+                            <ComboBox x:Name="EmptyPipeCfgbox" DisplayMemberPath="Value" SelectedValuePath="Key" HorizontalAlignment="Stretch" Grid.Column="1"/>
+                            <Button x:Name="EmptyPipeCfgBtn" Content="Set" Command="{x:Bind Path=SetEmptyPipeCfgCmd}" Grid.Column="2"/>
+                            <TextBlock x:Name="EmptyPipeThresholdDescr" Text="{x:Bind Path=Fields.EmptyPipeThreshold.Name}" Grid.Row="1" Margin="10,0,0,0"/>
+                            <TextBox x:Name="EmptyPipeThresholdVal" Text="{x:Bind Path=Fields.EmptyPipeThreshold.ValAsString}" Grid.Row="1" Grid.Column="1" />
+                            <Button x:Name="EmptyPipeThresholdBtn" Content="Set" Command="{x:Bind Path=SetEmptyPipeThresholdCmd}" Grid.Row="1" Grid.Column="2"/>
+                            <TextBlock x:Name="EmptyPipeReleaseDescr" Text="{x:Bind Path=Fields.EmptyPipeRelease.Name}" Grid.Row="2" Margin="10,0,0,0"/>
+                            <TextBox x:Name="EmptyPipeReleaseVal" Text="{x:Bind Path=Fields.EmptyPipeRelease.ValAsString}" Grid.Row="2" Grid.Column="1" />
+                            <Button x:Name="EmptyPipeReleaseBtn" Content="Set" Command="{x:Bind Path=SetEmptyPipeReleaseCmd}" Grid.Row="2" Grid.Column="2"/>
+                            <TextBlock x:Name="EmptyPipeFreqDescr" Text="{x:Bind Path=Fields.EmptyPipeFreq.Name}" Grid.Row="3" Margin="10,0,0,0"/>
+                            <TextBox x:Name="EmptyPipeFreqVal" Text="{x:Bind Path=Fields.EmptyPipeFreq.ValAsString}" Grid.Row="3" Grid.Column="1" />
+                            <Button x:Name="EmptyPipeFreqBtn" Content="Set" Command="{x:Bind Path=SetEmptyPipeFreqCmd}" Grid.Row="3" Grid.Column="2"/>
+                            <TextBlock x:Name="EmptyPipeFreqFastDescr" Text="{x:Bind Path=Fields.EmptyPipeFreqFast.Name}" Grid.Row="4" Margin="10,0,0,0"/>
+                            <TextBox x:Name="EmptyPipeFreqFastVal" Text="{x:Bind Path=Fields.EmptyPipeFreqFast.ValAsString}" Grid.Row="4" Grid.Column="1" />
+                            <Button x:Name="EmptyPipeFreqFastBtn" Content="Set" Command="{x:Bind Path=SetEmptyPipeFreqFastCmd}" Grid.Row="4" Grid.Column="2"/>
+                            <TextBlock x:Name="WaterDetectMeasEnableDescr" Text="{x:Bind Path=Fields.WaterDetectMeasEnable.Name}" Margin="10,0,0,0" Grid.Row="5"/>
+                            <ComboBox x:Name="WaterDetectMeasEnablebox" DisplayMemberPath="Value" SelectedValuePath="Key" HorizontalAlignment="Stretch" Grid.Column="1" Grid.Row="5"/>
+                            <Button x:Name="WaterDetectMeasEnableBtn" Content="Set" Command="{x:Bind Path=SetWaterDetectMeasEnableCmd}" Grid.Column="2" Grid.Row="5"/>
+                            <TextBlock x:Name="WaterDetectMeasThresholdDescr" Text="{x:Bind Path=Fields.WaterDetectMeasEnable.Name}" Margin="10,0,0,0" Grid.Row="6"/>
+                            <TextBox x:Name="WaterDetectMeasThresholdVal" Text="{x:Bind Path=Fields.WaterDetectMeasThreshold.ValAsString}" Grid.Row="6" Grid.Column="1" />
+                            <Button x:Name="WaterDetectMeasThresholdBtn" Content="Set" Command="{x:Bind Path=SetWaterDetectMeasThresholdCmd}" Grid.Column="2" Grid.Row="6"/>
+                        </Grid>
+                    </Custom:Expander>
+                    <Custom:Expander x:Name="BatteryAndEnergyEXP" Header="Battery And Energy" VerticalAlignment="Center" Margin="0,0,0,0" HorizontalContentAlignment="Stretch">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock x:Name="TotalTimeInLowPowerDescr" Text="{x:Bind Path=Fields.TotalTimeInLowPower.Name}" Margin="10,0,0,0"/>
+                            <TextBox x:Name="TotalTimeInLowPowerVal" Text="{x:Bind Path=Fields.TotalTimeInLowPower.ValAsString}" Grid.Column="1" />
+                            <Button x:Name="TotalTimeInLowPowerBtn" Content="Set" Command="{x:Bind Path=SetTotalTimeInLowPowerCmd}" Grid.Column="2"/>
+                            <TextBlock x:Name="TotalMeasuresCountDescr" Text="{x:Bind Path=Fields.TotalMeasuresCount.Name}" Margin="10,0,0,0" Grid.Row="1"/>
+                            <TextBox x:Name="TotalMeasuresCountVal" Text="{x:Bind Path=Fields.TotalMeasuresCount.ValAsString}" Grid.Column="1" Grid.Row="1" />
+                            <Button x:Name="TotalMeasuresCountBtn" Content="Set" Command="{x:Bind Path=SetTotalMeasuresCountCmd}" Grid.Column="2" Grid.Row="1"/>
+                            <TextBlock x:Name="TotalTimeAwakeDescr" Text="{x:Bind Path=Fields.TotalTimeAwake.Name}" Margin="10,0,0,0" Grid.Row="2"/>
+                            <TextBox x:Name="TotalTimeAwakeVal" Text="{x:Bind Path=Fields.TotalTimeAwake.ValAsString}" Grid.Column="1" Grid.Row="2" />
+                            <Button x:Name="TotalTimeAwakeBtn" Content="Set" Command="{x:Bind Path=SetTotalTimeAwakeCmd}" Grid.Column="2" Grid.Row="2"/>
+                            <TextBlock x:Name="TotaluAhDescr" Text="{x:Bind Path=Fields.TotaluAh.Name}" Margin="10,0,0,0" Grid.Row="3"/>
+                            <TextBox x:Name="TotaluAhVal" Text="{x:Bind Path=Fields.TotaluAh.ValAsString}" Grid.Column="1" Grid.Row="3" />
+                            <Button x:Name="TotaluAhBtn" Content="Set" Command="{x:Bind Path=SetTotaluAhCmd}" Grid.Column="2" Grid.Row="3"/>
+                            <TextBlock x:Name="LeftuAhDescr" Text="{x:Bind Path=Fields.LeftuAh.Name}" Margin="10,0,0,0" Grid.Row="4"/>
+                            <TextBox x:Name="LeftuAhVal" Text="{x:Bind Path=Fields.LeftuAh.ValAsString}" Grid.Column="1" Grid.Row="4" />
+                            <Button x:Name="LeftuAhBtn" Content="Set" Command="{x:Bind Path=SetLeftuAhCmd}" Grid.Column="2" Grid.Row="4"/>
+                            <TextBlock x:Name="BatteryAutosaveDescr" Text="{x:Bind Path=Fields.BatteryAutosave.Name}" Margin="10,0,0,0" Grid.Row="5"/>
+                            <TextBox x:Name="BatteryAutosaveVal" Text="{x:Bind Path=Fields.BatteryAutosave.ValAsString}" Grid.Column="1" Grid.Row="5" />
+                            <Button x:Name="BatteryAutosaveBtn" Content="Set" Command="{x:Bind Path=SetBatteryAutosaveCmd}" Grid.Column="2" Grid.Row="5"/>
+                        </Grid>
+                    </Custom:Expander>
+                    <Custom:Expander x:Name="PressureMeasureEXP" Header="Pressure Measure" VerticalAlignment="Center" Margin="0,0,0,0" HorizontalContentAlignment="Stretch">
+                        <Grid x:Name="PressureMeasureGRID">
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock x:Name="PressureOptionDescr" Text="{x:Bind Path=Fields.PressureOption.Name}" Margin="10,0,0,0"/>
+                            <ComboBox x:Name="PressureOptionbox" DisplayMemberPath="Value" SelectedValuePath="Key" HorizontalAlignment="Stretch" Grid.Column="1"/>
+                            <Button x:Name="PressureOptionBtn" Content="Set" Command="{x:Bind Path=SetPressureOptionCmd}" Grid.Column="2"/>
+                            <TextBlock x:Name="PressureMeasurePeriodDescr" Text="{x:Bind Path=Fields.PressureMeasurePeriod.Name}" Margin="10,0,0,0" Grid.Row="1"/>
+                            <TextBox x:Name="PressureMeasurePeriodVal" Text="{x:Bind Path=Fields.PressureMeasurePeriod.ValAsString}" Grid.Column="1" Grid.Row="1" />
+                            <Button x:Name="PressureMeasurePeriodBtn" Content="Set" Command="{x:Bind Path=SetPressureMeasurePeriodCmd}" Grid.Column="2" Grid.Row="1"/>
+                        </Grid>
+                    </Custom:Expander>
+                    <Custom:Expander x:Name="TemperatureAndEnergyMeterEXP" Header="Temperature And Energy Meter" VerticalAlignment="Center" Margin="0,0,0,0" HorizontalContentAlignment="Stretch">
+                        <Grid x:Name="TemperatureAndEnergyMeterGRID">
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock x:Name="EnergyOptionDescr" Text="{x:Bind Path=Fields.EnergyOption.Name}" Margin="10,0,0,0"/>
+                            <ComboBox x:Name="EnergyOptionbox" DisplayMemberPath="Value" SelectedValuePath="Key" HorizontalAlignment="Stretch" Grid.Column="1"/>
+                            <Button x:Name="EnergyOptionBtn" Content="Set" Command="{x:Bind Path=SetEnergyOptionCmd}" Grid.Column="2"/>
+                            <TextBlock x:Name="TemperatureMeasurePeriodDescr" Text="{x:Bind Path=Fields.TemperatureMeasurePeriod.Name}" Margin="10,0,0,0" Grid.Row="1"/>
+                            <TextBox x:Name="TemperatureMeasurePeriodVal" Text="{x:Bind Path=Fields.TemperatureMeasurePeriod.ValAsString}" Grid.Column="1" Grid.Row="1" />
+                            <Button x:Name="TemperatureMeasurePeriodBtn" Content="Set" Command="{x:Bind Path=SetTemperatureMeasurePeriodCmd}" Grid.Column="2" Grid.Row="1"/>
+                            <TextBlock x:Name="DeltaTempMinDescr" Text="{x:Bind Path=Fields.DeltaTempMin.Name}" Margin="10,0,0,0" Grid.Row="2"/>
+                            <TextBox x:Name="DeltaTempMinVal" Text="{x:Bind Path=Fields.DeltaTempMin.ValAsString}" Grid.Column="1" Grid.Row="2" />
+                            <Button x:Name="DeltaTempMinBtn" Content="Set" Command="{x:Bind Path=SetDeltaTempMinCmd}" Grid.Column="2" Grid.Row="2"/>
+                            <TextBlock x:Name="SpecificHeatCoeffADescr" Text="{x:Bind Path=Fields.SpecificHeatCoeffA.Name}" Margin="10,0,0,0" Grid.Row="3"/>
+                            <TextBox x:Name="SpecificHeatCoeffAVal" Text="{x:Bind Path=Fields.SpecificHeatCoeffA.ValAsString}" Grid.Column="1" Grid.Row="3" />
+                            <Button x:Name="SpecificHeatCoeffABtn" Content="Set" Command="{x:Bind Path=SetSpecificHeatCoeffACmd}" Grid.Column="2" Grid.Row="3"/>
+                            <TextBlock x:Name="SpecificHeatCoeffBDescr" Text="{x:Bind Path=Fields.SpecificHeatCoeffB.Name}" Margin="10,0,0,0" Grid.Row="4"/>
+                            <TextBox x:Name="SpecificHeatCoeffBVal" Text="{x:Bind Path=Fields.SpecificHeatCoeffB.ValAsString}" Grid.Column="1" Grid.Row="4" />
+                            <Button x:Name="SpecificHeatCoeffBBtn" Content="Set" Command="{x:Bind Path=SetSpecificHeatCoeffBCmd}" Grid.Column="2" Grid.Row="4"/>
+                            <TextBlock x:Name="SpecificHeatCoeffCDescr" Text="{x:Bind Path=Fields.SpecificHeatCoeffC.Name}" Margin="10,0,0,0" Grid.Row="5"/>
+                            <TextBox x:Name="SpecificHeatCoeffCVal" Text="{x:Bind Path=Fields.SpecificHeatCoeffC.ValAsString}" Grid.Column="1" Grid.Row="5" />
+                            <Button x:Name="SpecificHeatCoeffCBtn" Content="Set" Command="{x:Bind Path=SetSpecificHeatCoeffCCmd}" Grid.Column="2" Grid.Row="5"/>
+                            <TextBlock x:Name="SpecificHeatCoeffDDescr" Text="{x:Bind Path=Fields.SpecificHeatCoeffD.Name}" Margin="10,0,0,0" Grid.Row="6"/>
+                            <TextBox x:Name="SpecificHeatCoeffDVal" Text="{x:Bind Path=Fields.SpecificHeatCoeffD.ValAsString}" Grid.Column="1" Grid.Row="6" />
+                            <Button x:Name="SpecificHeatCoeffDBtn" Content="Set" Command="{x:Bind Path=SetSpecificHeatCoeffDCmd}" Grid.Column="2" Grid.Row="6"/>
+                            <TextBlock x:Name="DensityCoeffADescr" Text="{x:Bind Path=Fields.DensityCoeffA.Name}" Margin="10,0,0,0" Grid.Row="7"/>
+                            <TextBox x:Name="DensityCoeffAVal" Text="{x:Bind Path=Fields.DensityCoeffA.ValAsString}" Grid.Column="1" Grid.Row="7" />
+                            <Button x:Name="DensityCoeffABtn" Content="Set" Command="{x:Bind Path=SetDensityCoeffACmd}" Grid.Column="2" Grid.Row="7"/>
+                            <TextBlock x:Name="DensityCoeffBDescr" Text="{x:Bind Path=Fields.DensityCoeffB.Name}" Margin="10,0,0,0" Grid.Row="8"/>
+                            <TextBox x:Name="DensityCoeffBVal" Text="{x:Bind Path=Fields.DensityCoeffB.ValAsString}" Grid.Column="1" Grid.Row="8" />
+                            <Button x:Name="DensityCoeffBBtn" Content="Set" Command="{x:Bind Path=SetDensityCoeffBCmd}" Grid.Column="2" Grid.Row="8"/>
+                            <TextBlock x:Name="DensityCoeffCDescr" Text="{x:Bind Path=Fields.DensityCoeffC.Name}" Margin="10,0,0,0" Grid.Row="9"/>
+                            <TextBox x:Name="DensityCoeffCVal" Text="{x:Bind Path=Fields.DensityCoeffC.ValAsString}" Grid.Column="1" Grid.Row="9" />
+                            <Button x:Name="DensityCoeffCBtn" Content="Set" Command="{x:Bind Path=SetDensityCoeffCCmd}" Grid.Column="2" Grid.Row="9"/>
+                            <TextBlock x:Name="DensityCoeffDDescr" Text="{x:Bind Path=Fields.DensityCoeffD.Name}" Margin="10,0,0,0" Grid.Row="10"/>
+                            <TextBox x:Name="DensityCoeffDVal" Text="{x:Bind Path=Fields.DensityCoeffD.ValAsString}" Grid.Column="1" Grid.Row="10" />
+                            <Button x:Name="DensityCoeffDBtn" Content="Set" Command="{x:Bind Path=SetDensityCoeffDCmd}" Grid.Column="2" Grid.Row="10"/>
+                        </Grid>
+                    </Custom:Expander>
+                    <Custom:Expander x:Name="TimeoutAndPasswordEXP" Header="Timeout And Password" VerticalAlignment="Center" Margin="0,0,0,0" HorizontalContentAlignment="Stretch">
+                        <Grid x:Name="TimeoutAndPasswordGRID">
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock x:Name="TimeoutToMainDescr" Text="{x:Bind Path=Fields.TimeoutToMain.Name}" Margin="10,0,0,0"/>
+                            <TextBox x:Name="TimeoutToMainVal" Text="{x:Bind Path=Fields.TimeoutToMain.ValAsString}" Grid.Column="1" />
+                            <Button x:Name="TimeoutToMainBtn" Content="Set" Command="{x:Bind Path=SetTimeoutToMainCmd}" Grid.Column="2"/>
+                            <TextBlock x:Name="WakeupPoweroffDescr" Text="{x:Bind Path=Fields.WakeupPoweroff.Name}" Margin="10,0,0,0" Grid.Row="1"/>
+                            <ComboBox x:Name="WakeupPoweroffbox" DisplayMemberPath="Value" SelectedValuePath="Key" HorizontalAlignment="Stretch" Grid.Column="1" Grid.Row="1"/>
+                            <Button x:Name="WakeupPoweroffBtn" Content="Set" Command="{x:Bind Path=SetWakeupPoweroffCmd}" Grid.Column="2" Grid.Row="1"/>
+                            <TextBlock x:Name="PasswordTimeoutDescr" Text="{x:Bind Path=Fields.PasswordTimeout.Name}" Margin="10,0,0,0" Grid.Row="2"/>
+                            <TextBox x:Name="PasswordTimeoutVal" Text="{x:Bind Path=Fields.PasswordTimeout.ValAsString}" Grid.Column="1" Grid.Row="2" />
+                            <Button x:Name="PasswordTimeoutBtn" Content="Set" Command="{x:Bind Path=SetPasswordTimeoutCmd}" Grid.Column="2" Grid.Row="2"/>
+                        </Grid>
+                    </Custom:Expander>
+                    <Custom:Expander x:Name="GsmEXP" Header="GSM" VerticalAlignment="Center" Margin="0,0,0,0" HorizontalContentAlignment="Stretch">
+                        <Grid x:Name="GsmGRID">
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock x:Name="GSM_InstalledDescr" Text="{x:Bind Path=Fields.GSM_Installed.Name}" Margin="10,0,0,0"/>
+                            <ComboBox x:Name="GSM_Installedbox" DisplayMemberPath="Value" SelectedValuePath="Key" HorizontalAlignment="Stretch" Grid.Column="1"/>
+                            <Button x:Name="GSM_InstalledBtn" Content="Set" Command="{x:Bind Path=SetGSM_InstalledCmd}" Grid.Column="2"/>
+                        </Grid>
+                    </Custom:Expander>
+                </StackPanel>
+                <StackPanel x:Name="ChangePasswordPanel" HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="{StaticResource SettingsSubheaderMargin}" Padding="20,0,0,0">
+                    <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition MinWidth="0" Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="128"/>
+                            <ColumnDefinition MinWidth="51" Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock x:Name="ChangePasswordTitle" HorizontalAlignment="Center" Margin="0,0,0,0" Text="Change Password" TextWrapping="Wrap" VerticalAlignment="Center" FontSize="20" Height="27" Width="191"/>
+                        <TextBlock x:Name="OldPasswordTxt" HorizontalAlignment="Left" Margin="0,0,0,0" Text="Password" TextWrapping="Wrap" VerticalAlignment="Center" Grid.Row="1" Height="20" Width="62"/>
+                        <TextBlock x:Name="NewPasswordTxt" HorizontalAlignment="Left" Margin="0,0,0,0" Text="New Password" TextWrapping="Wrap" VerticalAlignment="Center" Grid.Row="2" Height="20" Width="96"/>
+                        <TextBox x:Name="OldPassword" TextWrapping="Wrap" MaxLength="6" Grid.Column="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="0,0,0,0" BorderThickness="1" Grid.Row="1" Grid.ColumnSpan="2"/>
+                        <TextBox x:Name="NewPassword" TextWrapping="Wrap" MaxLength="6" Grid.Row="2" Grid.Column="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="0,0,0,0" Grid.ColumnSpan="2"/>
+                        <Button x:Name="OldPasswordBtn" Content="Ok" Command="{x:Bind Path=CheckOldPasswordCmd}" Grid.Column="3" Grid.Row="1" HorizontalAlignment="Stretch" Height="32" Margin="0,0,0,0" VerticalAlignment="Center"/>
+                        <Button x:Name="NewPasswordBtn" Content="Save" Command="{x:Bind Path=SetNewPasswordCmd}" Grid.Column="3" Grid.Row="2" HorizontalAlignment="Stretch" Height="32" Margin="0,0,0,0" VerticalAlignment="Center"/>
+                    </Grid>
+                </StackPanel>
+                <StackPanel x:Name="DateTimeBox" HorizontalAlignment="Stretch" Margin="{StaticResource SettingsSubheaderMargin}" VerticalAlignment="Bottom" Orientation="Horizontal" Grid.Row="1" Grid.ColumnSpan="2">
+                    <Grid HorizontalAlignment="Stretch" Margin="20,0,0,0" VerticalAlignment="Stretch">
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        <TextBlock Text="Update Clock" HorizontalAlignment="Left" FontSize="20" />
+                        <StackPanel Orientation="Horizontal" Grid.Row="1">
+                            <SymbolIcon Symbol="Clock" HorizontalAlignment="Stretch" Margin="0,0,0,0" Grid.RowSpan="2" VerticalAlignment="Stretch" Grid.Row="1"/>
+                            <TextBlock x:Name="CDateTime" Text="{x:Bind Mode=OneWay, Path=Fields.ConvDateTime}" HorizontalAlignment="Left" Margin="20,0,20,0" TextWrapping="Wrap" VerticalAlignment="Center" Grid.RowSpan="2" Grid.Row="1"/>
+                            <Telerik:RadDatePicker x:Name="DatePicker" Margin="0,0,0,0" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Grid.Row="1"/>
+                            <Telerik:RadTimePicker x:Name="TimePicker" Margin="0,0,0,0" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Grid.Row="1"/>
+                            <Button x:Name="SetDateTimeBtn" Content="Update" Command="{x:Bind Path=UpdateClock}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,0,0,0" Grid.Row="1"/>
+                            <Button x:Name="SetDateTimeNowBtn" Content="Now" Command="{x:Bind Path=UpdateClockToNow}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,0,0,0" Grid.Row="1"/>
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
+                <StackPanel x:Name="ResetAccumulatorsPanel" VerticalAlignment="Center" Margin="{StaticResource SettingsSubheaderMargin}" Padding="20,0,0,0" HorizontalAlignment="Stretch">
+                    <Grid HorizontalAlignment="Left" VerticalAlignment="Stretch">
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Reset Accumulators" FontSize="20" Margin="0,0,0,10"/>
+                        <TextBlock Text="Reset Partial Positive" Grid.Row="1" VerticalAlignment="Center"/>
+                        <Button x:Name="ResetPartPosBtn" Content="Reset" Command="{x:Bind Path=ResetPartialPositive}" Grid.Row="1" Grid.Column="1"/>
+                        <TextBlock Text="Reset Partial Negative" Grid.Row="2" VerticalAlignment="Center"/>
+                        <Button x:Name="ResetPartNegBtn" Content="Reset" Command="{x:Bind Path=ResetPartialNegative}" Grid.Row="2" Grid.Column="1"/>
+                        <TextBlock Text="Reset Total Positive" Grid.Row="3" VerticalAlignment="Center"/>
+                        <Button x:Name="ResetTotPosBtn" Content="Reset" Command="{x:Bind Path=ResetTotalPositive}" Grid.Row="3" Grid.Column="1"/>
+                        <TextBlock Text="Reset Total Negative" Grid.Row="4" VerticalAlignment="Center"/>
+                        <Button x:Name="ResetTotNegBtn" Content="Reset" Command="{x:Bind Path=ResetTotalNegative}" Grid.Row="4" Grid.Column="1"/>
+                    </Grid>
+                </StackPanel>
+            </StackPanel>
+        </ScrollViewer>
+
+    </Grid>
+</Page>

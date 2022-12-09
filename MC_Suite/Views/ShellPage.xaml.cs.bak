@@ -1,0 +1,339 @@
+﻿using System;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Linq;
+using System.Runtime.CompilerServices;
+
+using MC_Suite.Helpers;
+using MC_Suite.Services;
+using MC_Suite.Properties;
+
+using Windows.Foundation.Metadata;
+using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Navigation;
+using Windows.UI;
+using Windows.UI.Xaml.Media;
+using Windows.UI.Core;
+using System.Windows.Input;
+
+using System.Collections.Generic;
+using Windows.Devices.Enumeration;
+using Windows.Devices.SerialCommunication;
+
+
+namespace MC_Suite.Views
+{
+    // TODO WTS: Change the icons and titles for all NavigationViewItems in ShellPage.xaml.
+    public sealed partial class ShellPage : Page, INotifyPropertyChanged
+    {
+        private NavigationViewItem _selected;
+
+        public NavigationViewItem Selected
+        {
+            get { return _selected; }
+            set { Set(ref _selected, value); }
+        }
+
+        public ShellPage()
+        {
+            InitializeComponent();
+            HideNavViewBackButton();
+            DataContext = this;
+            Initialize();
+        }
+
+        private void Initialize()
+        {
+            NavigationService.Frame = shellFrame;
+            NavigationService.Navigated += Frame_Navigated;
+            KeyboardAccelerators.Add(ActivationService.AltLeftKeyboardAccelerator);
+            KeyboardAccelerators.Add(ActivationService.BackKeyboardAccelerator);
+
+            //Connection******************************************************************
+            ConnectionStateVis.Fill = new SolidColorBrush(Colors.Red);
+            ConnectionState = "Offline";
+            Connection.PropertyChanged += Connection_PropertyChanged;
+            getPortNames();
+            //****************************************************************************
+
+            //DataBase********************************************************************
+            InitDatabase();
+            //****************************************************************************
+        }
+
+        private void Frame_Navigated(object sender, NavigationEventArgs e)
+        {
+            if (e.SourcePageType == typeof(SettingsPage))
+            {
+                Selected = navigationView.SettingsItem as NavigationViewItem;
+                return;
+            }
+
+            Selected = navigationView.MenuItems
+                            .OfType<NavigationViewItem>()
+                            .FirstOrDefault(menuItem => IsMenuItemForPageType(menuItem, e.SourcePageType));
+        }
+
+        private bool IsMenuItemForPageType(NavigationViewItem menuItem, Type sourcePageType)
+        {
+            var pageType = menuItem.GetValue(NavHelper.NavigateToProperty) as Type;
+            return pageType == sourcePageType;
+        }
+
+        private void OnItemInvoked(NavigationView sender, NavigationViewItemInvokedEventArgs args)
+        {
+            if (args.IsSettingsInvoked)
+            {
+                NavigationService.Navigate(typeof(SettingsPage));
+                return;
+            }
+
+            var item = navigationView.MenuItems
+                            .OfType<NavigationViewItem>()
+                            .First(menuItem => (string)menuItem.Content == (string)args.InvokedItem);
+            var pageType = item.GetValue(NavHelper.NavigateToProperty) as Type;
+            NavigationService.Navigate(pageType);
+        }
+
+        private void HideNavViewBackButton()
+        {
+            if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 6))
+            {
+                navigationView.IsBackButtonVisible = NavigationViewBackButtonVisible.Collapsed;
+            }
+        }
+
+        #region COMPortSettings
+
+        public Settings ComSetup
+        {
+            get
+            {
+                return Settings.Instance;
+            }
+        }
+
+        private string _comPortID;
+        public string ComPortID
+        {
+            get { return _comPortID; }
+            set
+            {
+                if (value != _comPortID)
+                {
+                    _comPortID = value;
+                    OnPropertyChanged("ComPortID");
+                }
+            }
+        }
+
+        private async void getPortNames()
+        {
+            ComSetup.COMPortsList.Clear();
+            int i, j;
+            string PortFilter = SerialDevice.GetDeviceSelector();
+            var Ports = await DeviceInformation.FindAllAsync(PortFilter);
+            j = 1;
+            if (Ports.Count > 0)
+            {
+                for (i = 0; i < Ports.Count; i++)
+                {
+                    if (Ports[i].Id.Contains("FTDI"))
+                    {
+                        ComSetup.COMPortsList.Add(new Properties.Settings.COMPortItem() { Index = i, ID = Ports[i].Id, Name = "COM " + j.ToString() });
+                        j++;
+                    }
+                }
+
+                if (ComSetup.COMPortsList.Count > 0)
+                {
+                    ComSetup.COMPortsList.ForEach(p => ComSetup.COMPorts.Add(p));
+                }
+                else
+                    ComPortID = "NO COM PORTS AVAIABLES";
+            }
+            else
+            {
+                ComPortID = "NO COM PORTS AVAIABLES";
+            }
+        }
+
+        #endregion
+
+        #region Connection
+
+        public COMPortManager Connection
+        {
+            get
+            {
+                return COMPortManager.Instance;
+            }
+        }
+
+        private string _connectionState;
+        public string ConnectionState
+        {
+            get { return _connectionState; }
+            set
+            {
+                if (value != _connectionState)
+                {
+                    _connectionState = value;
+                    OnPropertyChanged("ConnectionState");
+                }
+            }
+        }
+
+        private async void Connection_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+            {
+                switch (Connection.ConnectionStatus)
+                {
+                    case COMPortManager.ConnectionStates.Stop:
+                        ConnectionState = "Offline";                        
+                        ConnectionStateVis.Fill = new SolidColorBrush(Colors.Red);
+                        StartConnBtn.IsEnabled = true;
+                        StopConnBtn.IsEnabled = false;
+                        RestartConnBtn.IsEnabled = false;
+                        break;
+                    case COMPortManager.ConnectionStates.Ping:
+                        ConnectionState = "Ping...";                        
+                        ConnectionStateVis.Fill = new SolidColorBrush(Colors.Yellow);
+                        StartConnBtn.IsEnabled = false;
+                        StopConnBtn.IsEnabled = true;
+                        RestartConnBtn.IsEnabled = true;
+                        break;
+                    case COMPortManager.ConnectionStates.Retry:
+                    case COMPortManager.ConnectionStates.Working:
+                        ConnectionState = "Online";
+                        ConnectionStateVis.Fill = new SolidColorBrush(Colors.Green);
+                        StartConnBtn.IsEnabled = false;
+                        StopConnBtn.IsEnabled = true;
+                        RestartConnBtn.IsEnabled = true;
+                        break;
+                }
+            });
+        }
+
+        public ICommand StartConnCmd
+        {
+            get
+            {
+                return new RelayCommand((object args) =>
+                {
+                    StartComPort();
+                });
+            }
+        }
+
+        private void StartComPort()
+        {
+            if(Connection.IsOpen)
+            {
+                if(Connection.ConnectionStatus == COMPortManager.ConnectionStates.Stop)
+                {
+                    Connection.Start();
+                    StartConnBtn.IsEnabled = false;
+                    StopConnBtn.IsEnabled = true;
+                    RestartConnBtn.IsEnabled = true;
+                }
+            }
+            else
+            {
+                OpenCOM();
+            }
+        }
+
+        private void OpenCOM()
+        {
+            if (ComSetup.ComPort.ID == null)
+            {
+                ConnectionState = "No Com Port Selected";
+            }
+            else if (ComSetup.ComPort.ID.Contains("FTDI"))
+            {
+                Connection.Open();
+                StopConnBtn.IsEnabled = true;
+                RestartConnBtn.IsEnabled = true;
+            }
+            else
+                ConnectionState = "No FTDI Port";
+        }
+
+        public ICommand StopConnectionCmd
+        {
+            get
+            {
+                return new RelayCommand((object args) =>
+                {
+                    StopConnection();
+                });
+            }
+        }
+
+        private void StopConnection()
+        {
+            if ((Connection.ConnectionStatus == COMPortManager.ConnectionStates.Ping) ||
+            (Connection.ConnectionStatus == COMPortManager.ConnectionStates.Working))
+            {
+                Connection.Stop();
+                StartConnBtn.IsEnabled = true;
+                StopConnBtn.IsEnabled = false;
+                RestartConnBtn.IsEnabled = true;
+            }
+        }
+
+        #endregion
+
+        #region DataBase
+
+        public DataAccess Verificator
+        {
+            get
+            {
+                return DataAccess.Instance;
+            }
+        }
+
+        private void InitDatabase()
+        {
+            DataAccess.InitializeDatabase("MC_Suite_Database.db");
+
+            ReportVerificator LastReport = new ReportVerificator();
+            Verificator.ReportList = DataAccess.GetData("MC_Suite_Database.db");
+            if (Verificator.ReportList.Count != 0)
+            {
+                Verificator.ReportView.Clear();
+                Verificator.ReportList.ForEach(p => Verificator.ReportView.Add(p));
+            }
+        }
+        #endregion
+
+        #region ObservableObject
+
+        private void RaisePropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        private void Set<T>(ref T storage, T value, [CallerMemberName]string propertyName = null)
+        {
+            if (Equals(storage, value))
+            {
+                return;
+            }
+
+            storage = value;
+            OnPropertyChanged(propertyName);
+        }
+
+        private void OnPropertyChanged(string propertyName) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+
+        #endregion
+
+    }
+}

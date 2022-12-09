@@ -126,8 +126,60 @@
     <comment>Application description</comment>
   </data>
   <data name="Shell_Main.Content" xml:space="preserve">
-    <value>Main</value>
+    <value>Home</value>
     <comment>Navigation view item name for Main</comment>
+  </data>
+  <data name="Shell_ConfigMC406.Content" xml:space="preserve">
+    <value>CH406 Configuration</value>
+    <comment>Navigation view item name for Configuration</comment>
+  </data>
+  <data name="Shell_Graph.Content" xml:space="preserve">
+    <value>Battery Usage</value>
+    <comment>Navigation view item name for Graph</comment>
+  </data>
+  <data name="Shell_DataLog.Content" xml:space="preserve">
+    <value>Data Log</value>
+    <comment>Navigation view item name for Data Logs</comment>
+  </data>
+  <data name="Shell_FExplorer.Content" xml:space="preserve">
+    <value>File Explorer</value>
+    <comment>Navigation view item name for File Explorer</comment>
+  </data>
+  <data name="Shell_Verificator406.Content" xml:space="preserve">
+    <value>CH 406 Verificator</value>
+    <comment>Navigation view item name for Verificator Page</comment>
+  </data>
+  <data name="Shell_Verificator608.Content" xml:space="preserve">
+    <value>CH 608 Verificator</value>
+    <comment>Navigation view item name for Verificator Page</comment>
+  </data>
+  <data name="Shell_SensorOnly.Content" xml:space="preserve">
+    <value>Sensor Verificator</value>
+    <comment>Navigation view item name for Sensor Verifivator Page</comment>
+  </data>
+  <data name="Shell_Database.Content" xml:space="preserve">
+    <value>Report Database</value>
+    <comment>Navigation view item name for Report Database</comment>
+  </data>
+  <data name="Shell_Calibration.Content" xml:space="preserve">
+    <value>Calibration</value>
+    <comment>Navigation view item name for Calibration Viewer</comment>
+  </data>
+  <data name="Shell_IO.Content" xml:space="preserve">
+    <value>I/O</value>
+    <comment>Navigation view item name for I/O Viewer</comment>
+  </data>
+  <data name="Shell_Main406.Content" xml:space="preserve">
+    <value>CH406 Main</value>
+    <comment>Navigation view item name for CH406 Viewer</comment>
+  </data>
+  <data name="Shell_Main608.Content" xml:space="preserve">
+    <value>CH608 Main</value>
+    <comment>Navigation view item name for CH608 Viewer</comment>
+  </data>
+  <data name="Shell_ConfigMC608.Content" xml:space="preserve">
+    <value>CH608 Configuration</value>
+    <comment>Navigation view item name for CH608 Configuration</comment>
   </data>
   <data name="ExceptionSettingsStorageExtensionsFileNameIsNullOrEmpty" xml:space="preserve">
     <value>File name is null or empty. Specify a valid file name</value>
@@ -149,31 +201,71 @@
     <value>Light</value>
     <comment>Light theme text for Settings</comment>
   </data>
-  <data name="Settings_About.Text" xml:space="preserve">    
+  <data name="Settings_About.Text" xml:space="preserve">
     <value>About this application</value>
     <comment>About this application title for Settings</comment>
   </data>
-  <data name="Settings_AboutDescription.Text" xml:space="preserve">    
-    <value>Settings page placeholder text.  Your app description goes here.</value>
+  <data name="Settings_AboutDescription.Text" xml:space="preserve">
+    <value>Copiright © Chemitec Srl 2022</value>
     <comment>About this application description for Settings</comment>
   </data>
-  <data name="Settings_PrivacyTermsLink.Content" xml:space="preserve">    
-    <value>Privacy Statement</value>
+  <data name="Settings_PrivacyTermsLink.Content" xml:space="preserve">
+    <value>www.chemitec.it</value>
     <comment>Privacy Statement link content for Settings</comment>
   </data>
-  <data name="Settings_PrivacyTermsLink.NavigateUri" xml:space="preserve">  
-    <value>https://YourPrivacyUrlGoesHere/</value>
+  <data name="Settings_PrivacyTermsLink.NavigateUri" xml:space="preserve">
+    <value>https://www.euromag.com/</value>
     <comment>Here is your Privacy Statement url for Settings</comment>
   </data>
-  <data name="Settings_Personalization.Text" xml:space="preserve">   
+  <data name="Settings_DateTime.Text" xml:space="preserve">
+    <value>Date Time Settings</value>
+    <comment>Personalization text for Date Time Setting</comment>
+  </data>
+  <data name="Settings_MC406_Protocol.Text" xml:space="preserve">
+    <value>CH406 Communication Settings</value>
+    <comment>Personalization text for CH406 Communication Setting</comment>
+  </data>
+  <data name="Settings_MC608_Protocol.Text" xml:space="preserve">
+    <value>CH608 Communication Settings</value>
+    <comment>Personalization text for MC608 Communication Setting</comment>
+  </data>
+  <data name="Settings_Modbus.Text" xml:space="preserve">
+    <value>Modbus</value>
+    <comment>Personalization text for Modbus Settings</comment>
+  </data>
+  <data name="Verificator_info.Text" xml:space="preserve">
+    <value>Verificator</value>
+    <comment>Personalization text for Simulator Info</comment>
+  </data>
+  <data name="BatteryChartTitle.Text" xml:space="preserve">
+    <value>Battery Usage</value>
+    <comment>Personalization text for Battery Graph</comment>
+  </data>
+  <data name="Power_info.Text" xml:space="preserve">
+    <value>Power Source and Battery Info</value>
+    <comment>Personalization text for Power Info</comment>
+  </data>
+  <data name="Simulator_info.Text" xml:space="preserve">
+    <value>Simulator</value>
+    <comment>Personalization text for Simulator Info</comment>
+  </data>
+  <data name="Ethernet_info.Text" xml:space="preserve">
+    <value>Ethernet</value>
+    <comment>Personalization text for Ethernet Info</comment>
+  </data>
+  <data name="Settings_Devices.Text" xml:space="preserve">
+    <value>Devices</value>
+    <comment>Personalization text for Devices Settings</comment>
+  </data>
+  <data name="Settings_Personalization.Text" xml:space="preserve">
     <value>Personalization</value>
     <comment>Personalization text for Settings</comment>
   </data>
-  <data name="ExceptionEnumToBooleanConverterValueMustBeAnEnum" xml:space="preserve">   
+  <data name="ExceptionEnumToBooleanConverterValueMustBeAnEnum" xml:space="preserve">
     <value>value must be an Enum!</value>
     <comment>Value must be an Enum in enum to boolean converter</comment>
   </data>
-  <data name="ExceptionEnumToBooleanConverterParameterMustBeAnEnumName" xml:space="preserve">   
+  <data name="ExceptionEnumToBooleanConverterParameterMustBeAnEnumName" xml:space="preserve">
     <value>parameter must be an Enum name!</value>
     <comment>Parameter must be an Enum name in enum to boolean converter</comment>
   </data>

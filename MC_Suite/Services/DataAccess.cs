@@ -1,0 +1,758 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Collections.ObjectModel;
+using Microsoft.Data.Sqlite;
+
+namespace MC_Suite.Services
+{
+    public class DataAccess
+    {
+        private static DataAccess _instance;
+        public static DataAccess Instance
+        {
+            get
+            {
+                if (_instance == null)
+                    _instance = new DataAccess();
+                return _instance;
+            }
+        }
+
+        public static void InitializeDatabase(string DataBaseName)
+        {
+            using (SqliteConnection db =
+                new SqliteConnection("Filename=" + DataBaseName))
+            {
+                db.Open();
+
+                String tableCommand = "CREATE TABLE IF NOT " +
+                        "EXISTS MC_Suite_DataBase (Primary_Key INTEGER PRIMARY KEY, " +
+                        "ID int, " +
+                        "Data_Test DateTime," +
+                        "OperatoreTest string, " +
+                        "Modello_Sensore string, " +
+                        "Matricola_Sensore string, " +
+                        "Modello_Convertitore string, " +
+                        "Matricola_Convertitore string, " +
+                        "KA string, " +
+                        "FondoScala string, " +
+                        "Impulsi string, " +
+                        //Convertitore******************************************
+                        "AnalogOut string, " +
+                        "Simulation string, " +
+                        "Zero_read float," +
+                        "Hi_read float," +
+                        "LO_read float," +
+                        "EmptyPipe string," +
+                        "EnergyCoil string, " +
+                        "ICoil_Read float," +
+                        "IO string, " +
+                        "TempPCB string, " +
+                        //Sensore***********************************************
+                        "CoilResistance string, " +
+                        "IsolationAC string, " +
+                        "IsolationTC string, " +
+                        "IsolationDC string, " +
+                        "IsolationEC string, " +
+                        "TestType string, " +
+                        //******************************************************
+                        "Company string, " +
+                        "CompanyLocation string, " +
+                        "Customer string, " +
+                        "CustomerLocation string, " +
+                        "Note string, " +
+                        "SW_Ver_Verificator string, " +
+                        "SN_Verificator string, " +
+                        "DataCalibrazione string, " +
+                        "NuovaCalibrazione string " +
+                      ")";
+
+                SqliteCommand createTable = new SqliteCommand(tableCommand, db);
+
+                createTable.ExecuteReader();
+            }
+        }
+
+        public int ID { get; set; }
+        //public DateTime Data_Test { get; set; }
+        public string Data_Test { get; set; }
+        public string OperatoreTest { get; set; }
+        public string Modello_Sensore { get; set; }
+        public string Matricola_Sensore { get; set; }
+        public string Modello_Convertitore { get; set; }
+        public string Matricola_Convertitore { get; set; }
+        public string KA { get; set; }
+        public string FondoScala { get; set; }
+        public string Impulsi { get; set; }
+        //Convertitore******************************************
+        public string AnalogOut { get; set; }
+        public string Simulation { get; set; }
+        public double Zero_read { get; set; }
+        public double Hi_read { get; set; }
+        public double LO_read { get; set; }
+        public string EmptyPipe { get; set; }
+        public string EnergyCoil { get; set; }
+        public double ICoil_Read { get; set; }
+        public string IO { get; set; }
+        public string TempPCB { get; set; }
+        //Sensore***********************************************
+        public string CoilResistance { get; set; }
+        public string IsolationAC { get; set; }
+        public string IsolationTC { get; set; }
+        public string IsolationDC { get; set; }
+        public string IsolationEC { get; set; }
+        public string TestType { get; set; }
+        //******************************************************
+        public string Company { get; set; }
+        public string CompanyLocation { get; set; }
+        public string Customer { get; set; }
+        public string CustomerLocation { get; set; }
+        public string Note { get; set; }
+        public string SW_Ver_Verificator { get; set; }
+        public string SN_Verificator { get; set; }
+        public string DataCalibrazione { get; set; }
+        public string NuovaCalibrazione { get; set; }
+
+
+        public static void AddData(string DataBaseName, ReportLine newTest)
+        {
+            using (SqliteConnection db =
+                new SqliteConnection("Filename=" + DataBaseName))
+            {
+                db.Open();
+
+                SqliteCommand sqliteCommand = new SqliteCommand();
+                SqliteCommand insertCommand = sqliteCommand;
+                insertCommand.Connection = db;
+
+                // Use parameterized query to prevent SQL injection attacks
+                insertCommand.CommandText = "INSERT INTO MC_Suite_DataBase VALUES (NULL, " +
+                                            "@ID, " +
+                                            "@Data_Test," +
+                                            "@OperatoreTest, " +
+                                            "@Modello_Sensore, " +
+                                            "@Matricola_Sensore, " +
+                                            "@Modello_Convertitore, " +
+                                            "@Matricola_Convertitore, " +
+                                            "@KA, " +
+                                            "@FondoScala, " +
+                                            "@Impulsi, " +
+                                            //Convertitore******************************************
+                                            "@AnalogOut, " +
+                                            "@Simulation, " +
+                                            "@Zero_read," +
+                                            "@Hi_read," +
+                                            "@LO_read," +
+                                            "@EmptyPype," + 
+                                            "@EnergyCoil, " +
+                                            "@ICoil_Read, " +
+                                            "@IO, " +
+                                            "@TempPCB, " +
+                                            //Sensore***********************************************
+                                            "@CoilResistance, " +
+                                            "@IsolationAC, " +
+                                            "@IsolationTC, " +
+                                            "@IsolationDC, " +
+                                            "@IsolationEC, " +
+                                            "@TestType, " +
+                                            //******************************************************
+                                            "@Company, " +
+                                            "@CompanyLocation, " +
+                                            "@Customer, " +
+                                            "@CustomerLocation, " +
+                                            "@Note, " +
+                                            "@SW_Ver_Verificator, " +
+                                            "@SN_Verificator, " +
+                                            "@DataCalibrazione, " +
+                                            "@NuovaCalibrazione " +
+                                            ");";
+
+                        insertCommand.Parameters.AddWithValue("@ID", newTest.ID);
+                        insertCommand.Parameters.AddWithValue("@Data_Test", newTest.Data_Test);
+                        insertCommand.Parameters.AddWithValue("@OperatoreTest", newTest.OperatoreTest);
+                        insertCommand.Parameters.AddWithValue("@Modello_Sensore", newTest.Modello_Sensore);
+                        insertCommand.Parameters.AddWithValue("@Matricola_Sensore", newTest.Matricola_Sensore);
+                        insertCommand.Parameters.AddWithValue("@Modello_Convertitore", newTest.Modello_Convertitore);
+                        insertCommand.Parameters.AddWithValue("@Matricola_Convertitore", newTest.Matricola_Convertitore);
+                        insertCommand.Parameters.AddWithValue("@KA", newTest.KA);
+                        insertCommand.Parameters.AddWithValue("@FondoScala", newTest.FondoScala);
+                        insertCommand.Parameters.AddWithValue("@Impulsi", newTest.Impulsi);
+                        //Convertitore******************************************
+                        insertCommand.Parameters.AddWithValue("@AnalogOut", newTest.AnalogOut);
+                        insertCommand.Parameters.AddWithValue("@Simulation", newTest.Simulation);
+                        insertCommand.Parameters.AddWithValue("@Zero_read", newTest.Zero_read);
+                        insertCommand.Parameters.AddWithValue("@Hi_read", newTest.Hi_read);
+                        insertCommand.Parameters.AddWithValue("@LO_read", newTest.LO_read);
+                        insertCommand.Parameters.AddWithValue("@EmptyPype", newTest.EmptyPype);
+                        insertCommand.Parameters.AddWithValue("@EnergyCoil", newTest.EnergyCoil);
+                        insertCommand.Parameters.AddWithValue("@ICoil_Read", newTest.ICoil_Read);
+                        insertCommand.Parameters.AddWithValue("@IO", newTest.IO);
+                        insertCommand.Parameters.AddWithValue("@TempPCB", newTest.TempPCB);
+                        //Sensore***********************************************
+                        insertCommand.Parameters.AddWithValue("@CoilResistance", newTest.CoilResistance);
+                        insertCommand.Parameters.AddWithValue("@IsolationAC", newTest.IsolationAC);
+                        insertCommand.Parameters.AddWithValue("@IsolationTC", newTest.IsolationTC);
+                        insertCommand.Parameters.AddWithValue("@IsolationDC", newTest.IsolationDC);
+                        insertCommand.Parameters.AddWithValue("@IsolationEC", newTest.IsolationEC);
+                        insertCommand.Parameters.AddWithValue("@TestType", newTest.TestType);
+                        //******************************************************
+                        insertCommand.Parameters.AddWithValue("@Company", newTest.Company);
+                        insertCommand.Parameters.AddWithValue("@CompanyLocation", newTest.CompanyLocation);
+                        insertCommand.Parameters.AddWithValue("@Customer", newTest.Customer);
+                        insertCommand.Parameters.AddWithValue("@CustomerLocation", newTest.CustomerLocation);
+                        insertCommand.Parameters.AddWithValue("@Note", newTest.Note);
+                        insertCommand.Parameters.AddWithValue("@SW_Ver_Verificator", newTest.SW_Ver_Verificator);
+                        insertCommand.Parameters.AddWithValue("@SN_Verificator", newTest.SN_Verificator);
+                        insertCommand.Parameters.AddWithValue("@DataCalibrazione", newTest.DataCalibrazione);
+                        insertCommand.Parameters.AddWithValue("@NuovaCalibrazione", newTest.NuovaCalibrazione);        
+                        insertCommand.ExecuteReader();
+
+                        db.Close();
+            }
+        }
+
+        public static void DeleteData(string DataBaseName, int ID)
+        {
+            using (SqliteConnection db =
+                new SqliteConnection("Filename=" + DataBaseName))
+            {
+                db.Open();
+
+                SqliteCommand sqliteCommand = new SqliteCommand();
+                SqliteCommand deleteCommand = sqliteCommand;
+                deleteCommand.Connection = db;
+
+                // Use parameterized query to prevent SQL injection attacks
+                deleteCommand.CommandText = "DELETE FROM MC_Suite_DataBase WHERE ID=" + ID.ToString() + ";";
+                deleteCommand.ExecuteReader();
+                db.Close();
+            }
+        }
+
+        public static List<ReportLine> GetData( string DataBaseName )
+        {
+            List<int> ID_List = new List<int>();
+            List<string> Data_Test_List = new List<string>();
+            List<string> OperatoreTest_List = new List<string>();
+            List<string> Modello_Sensore_List = new List<string>();
+            List<string> Matricola_Sensore_List = new List<string>();
+            List<string> Modello_Convertitore_List = new List<string>();
+            List<string> Matricola_Convertitore_List = new List<string>();
+            List<string> KA_List = new List<string>();
+            List<string> FondoScala_List = new List<string>();
+            List<string> Impulsi_List = new List<string>();
+            //Convertitore******************************************
+            List<string> AnalogOut_List = new List<string>();
+            List<string> Simulation_List = new List<string>();
+            List<double> Zero_read_List = new List<double>();
+            List<double> Hi_read_List = new List<double>();
+            List<double> LO_read_List = new List<double>();
+            List<string> EmptyPype_List = new List<string>();
+            List<string> EnergyCoil_List = new List<string>();
+            List<double> ICoil_Read_List = new List<double>();            
+            List<string> IO_List = new List<string>();
+            List<string> TempPCB_List = new List<string>();
+            //Sensore***********************************************
+            List<string> CoilResistance_List = new List<string>();
+            List<string> IsolationAC_List = new List<string>();
+            List<string> IsolationTC_List = new List<string>();
+            List<string> IsolationDC_List = new List<string>();
+            List<string> IsolationEC_List = new List<string>();
+            List<string> TestType_List = new List<string>();
+            //******************************************************
+            List<string> Company_List = new List<string>();
+            List<string> CompanyLocation_List = new List<string>();
+            List<string> Customer_List = new List<string>();
+            List<string> CustomerLocation_List = new List<string>();
+            List<string> Note_List = new List<string>();
+            List<string> SW_Ver_Verificator_List = new List<string>();
+            List<string> SN_Verificator_List = new List<string>();
+            List<string> DataCalibrazione_List = new List<string>();
+            List<string> NuovaCalibrazione_List = new List<string>();
+
+            List<ReportLine> GetReports = new List<ReportLine>();
+
+            using (SqliteConnection db =
+                new SqliteConnection("Filename=" + DataBaseName))
+            {
+                db.Open();
+
+                #region ID
+                SqliteCommand selectIDCommand = new SqliteCommand
+                    ("SELECT ID from MC_Suite_DataBase", db);
+
+                SqliteDataReader selectIDCommand_query = selectIDCommand.ExecuteReader();
+
+                while (selectIDCommand_query.Read())
+                {
+                    ID_List.Add(selectIDCommand_query.GetInt32(0));
+                }
+                #endregion
+
+                #region Data_Test
+                SqliteCommand selectData_TestCommand = new SqliteCommand
+                   ("SELECT Data_Test from MC_Suite_DataBase", db);
+
+                SqliteDataReader selectData_TestCommand_query = selectData_TestCommand.ExecuteReader();
+
+                while (selectData_TestCommand_query.Read())
+                {
+                    Data_Test_List.Add(selectData_TestCommand_query.GetString(0));
+                }
+                #endregion
+
+                #region OperatoreTest
+                SqliteCommand selectOperatoreTestCommand = new SqliteCommand
+                    ("SELECT OperatoreTest from MC_Suite_DataBase", db);
+
+                SqliteDataReader selectOperatoreTestCommand_query = selectOperatoreTestCommand.ExecuteReader();
+
+                while (selectOperatoreTestCommand_query.Read())
+                {
+                    OperatoreTest_List.Add(selectOperatoreTestCommand_query.GetString(0));
+                }
+                #endregion
+
+                #region Modello_Sensore
+                SqliteCommand selectModello_SensoreCommand = new SqliteCommand
+                    ("SELECT Modello_Sensore from MC_Suite_DataBase", db);
+
+                SqliteDataReader selectModello_SensoreCommand_query = selectModello_SensoreCommand.ExecuteReader();
+
+                while (selectModello_SensoreCommand_query.Read())
+                {
+                    Modello_Sensore_List.Add(selectModello_SensoreCommand_query.GetString(0));
+                }
+                #endregion
+
+                #region Matricola_Sensore
+                SqliteCommand selectMatricola_SensoreCommand = new SqliteCommand
+                    ("SELECT Matricola_Sensore from MC_Suite_DataBase", db);
+
+                SqliteDataReader selectMatricola_SensoreCommand_query = selectMatricola_SensoreCommand.ExecuteReader();
+
+                while (selectMatricola_SensoreCommand_query.Read())
+                {
+                    Matricola_Sensore_List.Add(selectMatricola_SensoreCommand_query.GetString(0));
+                }
+                #endregion
+
+                #region Modello_Convertitore
+                SqliteCommand selectModello_ConvertitoreCommand = new SqliteCommand
+                    ("SELECT Modello_Convertitore from MC_Suite_DataBase", db);
+
+                SqliteDataReader selectModello_ConvertitoreCommand_query = selectModello_ConvertitoreCommand.ExecuteReader();
+
+                while (selectModello_ConvertitoreCommand_query.Read())
+                {
+                    Modello_Convertitore_List.Add(selectModello_ConvertitoreCommand_query.GetString(0));
+                }
+                #endregion
+
+                #region Matricola_Convertitore
+                SqliteCommand selectMatricola_ConvertitoreCommand = new SqliteCommand
+                    ("SELECT Matricola_Convertitore from MC_Suite_DataBase", db);
+
+                SqliteDataReader selectMatricola_ConvertitoreCommand_query = selectMatricola_ConvertitoreCommand.ExecuteReader();
+
+                while (selectMatricola_ConvertitoreCommand_query.Read())
+                {
+                    Matricola_Convertitore_List.Add(selectMatricola_ConvertitoreCommand_query.GetString(0));
+                }
+                #endregion
+
+                #region KA
+                SqliteCommand selectKACommand = new SqliteCommand
+                    ("SELECT KA from MC_Suite_DataBase", db);
+
+                SqliteDataReader selectKACommand_query = selectKACommand.ExecuteReader();
+
+                while (selectKACommand_query.Read())
+                {
+                    KA_List.Add(selectKACommand_query.GetString(0));
+                }
+                #endregion
+
+                #region FondoScala
+                SqliteCommand selectFondoScalaCommand = new SqliteCommand
+                    ("SELECT FondoScala from MC_Suite_DataBase", db);
+
+                SqliteDataReader selectFondoScalaCommand_query = selectFondoScalaCommand.ExecuteReader();
+
+                while (selectFondoScalaCommand_query.Read())
+                {
+                    FondoScala_List.Add(selectFondoScalaCommand_query.GetString(0));
+                }
+                #endregion
+
+                #region Impulsi
+                SqliteCommand selectImpulsiCommand = new SqliteCommand
+                    ("SELECT Impulsi from MC_Suite_DataBase", db);
+
+                SqliteDataReader selectImpulsiCommand_query = selectImpulsiCommand.ExecuteReader();
+
+                while (selectImpulsiCommand_query.Read())
+                {
+                    Impulsi_List.Add(selectImpulsiCommand_query.GetString(0));
+                }
+                #endregion
+
+                #region AnalogOut
+                SqliteCommand selectAnalogOutCommand = new SqliteCommand
+                    ("SELECT AnalogOut from MC_Suite_DataBase", db);
+
+                SqliteDataReader selectAnalogOutCommand_query = selectAnalogOutCommand.ExecuteReader();
+
+                while (selectAnalogOutCommand_query.Read())
+                {
+                    AnalogOut_List.Add(selectAnalogOutCommand_query.GetString(0));
+                }
+                #endregion
+
+                #region Simulation
+                SqliteCommand selectSimulationCommand = new SqliteCommand
+                    ("SELECT Simulation from MC_Suite_DataBase", db);
+
+                SqliteDataReader selectSimulationCommand_query = selectSimulationCommand.ExecuteReader();
+
+                while (selectSimulationCommand_query.Read())
+                {
+                    Simulation_List.Add(selectSimulationCommand_query.GetString(0));
+                }
+                #endregion
+
+                #region Zero_read
+                SqliteCommand selectZero_readCommand = new SqliteCommand
+                    ("SELECT Zero_read from MC_Suite_DataBase", db);
+
+                SqliteDataReader selectZero_readCommand_query = selectZero_readCommand.ExecuteReader();
+
+                while (selectZero_readCommand_query.Read())
+                {
+                    Zero_read_List.Add(selectZero_readCommand_query.GetDouble(0));
+                }
+                #endregion
+
+                #region Hi_read
+                SqliteCommand selectHi_readCommand = new SqliteCommand
+                    ("SELECT Hi_read from MC_Suite_DataBase", db);
+
+                SqliteDataReader selectHi_readCommand_query = selectHi_readCommand.ExecuteReader();
+
+                while (selectHi_readCommand_query.Read())
+                {
+                    Hi_read_List.Add(selectHi_readCommand_query.GetDouble(0));
+                }
+                #endregion
+
+                #region LO_read
+                SqliteCommand selectLO_readCommand = new SqliteCommand
+                    ("SELECT LO_read from MC_Suite_DataBase", db);
+
+                SqliteDataReader selectLO_readCommand_query = selectLO_readCommand.ExecuteReader();
+
+                while (selectLO_readCommand_query.Read())
+                {
+                    LO_read_List.Add(selectLO_readCommand_query.GetDouble(0));
+                }
+                #endregion
+
+                #region EmptyPipe
+                SqliteCommand selectEmptyPipeCommand = new SqliteCommand
+                    ("SELECT EmptyPipe from MC_Suite_DataBase", db);
+
+                SqliteDataReader selectEmptyPipeCommand_query = selectEmptyPipeCommand.ExecuteReader();
+
+                while (selectEmptyPipeCommand_query.Read())
+                {
+                    EmptyPype_List.Add(selectEmptyPipeCommand_query.GetString(0));
+                }
+                #endregion
+
+                #region EnergyCoil
+                SqliteCommand selectEnergyCoilCommand = new SqliteCommand
+                    ("SELECT EnergyCoil from MC_Suite_DataBase", db);
+
+                SqliteDataReader selectEnergyCoilCommand_query = selectEnergyCoilCommand.ExecuteReader();
+
+                while (selectEnergyCoilCommand_query.Read())
+                {
+                    EnergyCoil_List.Add(selectEnergyCoilCommand_query.GetString(0));
+                }
+                #endregion
+
+                #region ICoil_Read
+                SqliteCommand selectICoil_ReadCommand = new SqliteCommand
+                    ("SELECT ICoil_Read from MC_Suite_DataBase", db);
+
+                SqliteDataReader selectICoil_ReadCommand_query = selectICoil_ReadCommand.ExecuteReader();
+
+                while (selectICoil_ReadCommand_query.Read())
+                {
+                    ICoil_Read_List.Add(selectICoil_ReadCommand_query.GetDouble(0));
+                }
+                #endregion
+
+                #region IO
+                SqliteCommand selectIOCommand = new SqliteCommand
+                    ("SELECT IO from MC_Suite_DataBase", db);
+
+                SqliteDataReader selectIOCommand_query = selectIOCommand.ExecuteReader();
+
+                while (selectIOCommand_query.Read())
+                {
+                    IO_List.Add(selectIOCommand_query.GetString(0));
+                }
+                #endregion
+
+                #region TempPCB
+                SqliteCommand selectTempPCBCommand = new SqliteCommand
+                    ("SELECT TempPCB from MC_Suite_DataBase", db);
+
+                SqliteDataReader selectTempPCBCommand_query = selectTempPCBCommand.ExecuteReader();
+
+                while (selectTempPCBCommand_query.Read())
+                {
+                    TempPCB_List.Add(selectTempPCBCommand_query.GetString(0));
+                }
+                #endregion
+               
+                #region CoilResistance
+                SqliteCommand selectCoilResistanceCommand = new SqliteCommand
+                    ("SELECT CoilResistance from MC_Suite_DataBase", db);
+
+                SqliteDataReader selectCoilResistanceCommand_query = selectCoilResistanceCommand.ExecuteReader();
+
+                while (selectCoilResistanceCommand_query.Read())
+                {
+                    CoilResistance_List.Add(selectCoilResistanceCommand_query.GetString(0));
+                }
+                #endregion
+
+                #region IsolationAC
+                SqliteCommand selectIsolationACCommand = new SqliteCommand
+                    ("SELECT IsolationAC from MC_Suite_DataBase", db);
+
+                SqliteDataReader selectIsolationACCommand_query = selectIsolationACCommand.ExecuteReader();
+
+                while (selectIsolationACCommand_query.Read())
+                {
+                    IsolationAC_List.Add(selectIsolationACCommand_query.GetString(0));
+                }
+                #endregion
+
+                #region IsolationTC
+                SqliteCommand selectIsolationTCCommand = new SqliteCommand
+                    ("SELECT IsolationTC from MC_Suite_DataBase", db);
+
+                SqliteDataReader selectIsolationTCCommand_query = selectIsolationTCCommand.ExecuteReader();
+
+                while (selectIsolationTCCommand_query.Read())
+                {
+                    IsolationTC_List.Add(selectIsolationTCCommand_query.GetString(0));
+                }
+                #endregion
+
+                #region IsolationDC
+                SqliteCommand selectIsolationDCCommand = new SqliteCommand
+                    ("SELECT IsolationDC from MC_Suite_DataBase", db);
+
+                SqliteDataReader selectIsolationDCCommand_query = selectIsolationDCCommand.ExecuteReader();
+
+                while (selectIsolationDCCommand_query.Read())
+                {
+                    IsolationDC_List.Add(selectIsolationDCCommand_query.GetString(0));
+                }
+                #endregion
+
+                #region IsolationEC
+                SqliteCommand selectIsolationECCommand = new SqliteCommand
+                    ("SELECT IsolationEC from MC_Suite_DataBase", db);
+
+                SqliteDataReader selectIsolationECCommand_query = selectIsolationECCommand.ExecuteReader();
+
+                while (selectIsolationECCommand_query.Read())
+                {
+                    IsolationEC_List.Add(selectIsolationECCommand_query.GetString(0));
+                }
+                #endregion
+
+                #region TestType
+                SqliteCommand selectTestTypeCommand = new SqliteCommand
+                    ("SELECT TestType from MC_Suite_DataBase", db);
+
+                SqliteDataReader selectTestTypeCommand_query = selectTestTypeCommand.ExecuteReader();
+
+                while (selectTestTypeCommand_query.Read())
+                {
+                    TestType_List.Add(selectTestTypeCommand_query.GetString(0));
+                }
+                #endregion
+
+                #region Company
+                SqliteCommand selectCompanyCommand = new SqliteCommand
+                    ("SELECT Company from MC_Suite_DataBase", db);
+
+                SqliteDataReader selectCompanyCommand_query = selectCompanyCommand.ExecuteReader();
+
+                while (selectCompanyCommand_query.Read())
+                {
+                    Company_List.Add(selectCompanyCommand_query.GetString(0));
+                }
+                #endregion
+
+                #region CompanyLocation
+                SqliteCommand selectCompanyLocationCommand = new SqliteCommand
+                    ("SELECT CompanyLocation from MC_Suite_DataBase", db);
+
+                SqliteDataReader selectCompanyLocationCommand_query = selectCompanyLocationCommand.ExecuteReader();
+
+                while (selectCompanyLocationCommand_query.Read())
+                {
+                    CompanyLocation_List.Add(selectCompanyLocationCommand_query.GetString(0));
+                }
+                #endregion
+
+                #region Customer
+                SqliteCommand selectCustomerCommand = new SqliteCommand
+                    ("SELECT Customer from MC_Suite_DataBase", db);
+
+                SqliteDataReader selectCustomerCommand_query = selectCustomerCommand.ExecuteReader();
+
+                while (selectCustomerCommand_query.Read())
+                {
+                    Customer_List.Add(selectCustomerCommand_query.GetString(0));
+                }
+                #endregion
+
+                #region CustomerLocation
+                SqliteCommand selectCustomerLocationCommand = new SqliteCommand
+                    ("SELECT CustomerLocation from MC_Suite_DataBase", db);
+
+                SqliteDataReader selectCustomerLocationCommand_query = selectCustomerLocationCommand.ExecuteReader();
+
+                while (selectCustomerLocationCommand_query.Read())
+                {
+                    CustomerLocation_List.Add(selectCustomerLocationCommand_query.GetString(0));
+                }
+                #endregion
+
+                #region Note
+                SqliteCommand selectNoteCommand = new SqliteCommand
+                    ("SELECT Note from MC_Suite_DataBase", db);
+
+                SqliteDataReader selectNoteCommand_query = selectNoteCommand.ExecuteReader();
+
+                while (selectNoteCommand_query.Read())
+                {
+                    Note_List.Add(selectNoteCommand_query.GetString(0));
+                }
+                #endregion
+
+                #region SW_Ver_Verificator
+                SqliteCommand selectSW_Ver_VerificatorCommand = new SqliteCommand
+                    ("SELECT SW_Ver_Verificator from MC_Suite_DataBase", db);
+
+                SqliteDataReader selectSW_Ver_VerificatorCommand_query = selectSW_Ver_VerificatorCommand.ExecuteReader();
+
+                while (selectSW_Ver_VerificatorCommand_query.Read())
+                {
+                    SW_Ver_Verificator_List.Add(selectSW_Ver_VerificatorCommand_query.GetString(0));
+                }
+                #endregion
+
+                #region SN_Verificator
+                SqliteCommand selectSN_VerificatorCommand = new SqliteCommand
+                    ("SELECT SN_Verificator from MC_Suite_DataBase", db);
+
+                SqliteDataReader selectSN_VerificatorCommand_query = selectSN_VerificatorCommand.ExecuteReader();
+
+                while (selectSN_VerificatorCommand_query.Read())
+                {
+                    SN_Verificator_List.Add(selectSN_VerificatorCommand_query.GetString(0));
+                }
+                #endregion
+
+                #region DataCalibrazione
+                SqliteCommand selectDataCalibrazioneCommand = new SqliteCommand
+                    ("SELECT DataCalibrazione from MC_Suite_DataBase", db);
+
+                SqliteDataReader selectDataCalibrazioneCommand_query = selectDataCalibrazioneCommand.ExecuteReader();
+
+                while (selectDataCalibrazioneCommand_query.Read())
+                {
+                    DataCalibrazione_List.Add(selectDataCalibrazioneCommand_query.GetString(0));
+                }
+                #endregion
+
+                #region NuovaCalibrazione
+                SqliteCommand selectNuovaCalibrazioneCommand = new SqliteCommand
+                    ("SELECT NuovaCalibrazione from MC_Suite_DataBase", db);
+
+                SqliteDataReader selectNuovaCalibrazioneCommand_query = selectNuovaCalibrazioneCommand.ExecuteReader();
+
+                while (selectNuovaCalibrazioneCommand_query.Read())
+                {
+                    NuovaCalibrazione_List.Add(selectNuovaCalibrazioneCommand_query.GetString(0));
+                }
+                #endregion
+
+                db.Close();
+            }
+
+            for (int i=0; i < ID_List.Count; i++)
+            {
+                GetReports.Add(new ReportLine() {        ID = ID_List[i],
+                                                         Data_Test = Data_Test_List[i],
+                                                         OperatoreTest = OperatoreTest_List[i],                                                    
+                                                         Modello_Sensore = Modello_Sensore_List[i],
+                                                         Matricola_Sensore = Matricola_Sensore_List[i],
+                                                         Modello_Convertitore = Modello_Convertitore_List[i],
+                                                         Matricola_Convertitore = Matricola_Convertitore_List[i],
+                                                         KA = KA_List[i],
+                                                         FondoScala = FondoScala_List[i],
+                                                         Impulsi = Impulsi_List[i],
+                                                         //Convertitore******************************************
+                                                         AnalogOut = AnalogOut_List[i],
+                                                         Simulation = Simulation_List[i],
+                                                         Zero_read = Zero_read_List[i],
+                                                         Hi_read = Hi_read_List[i],
+                                                         LO_read = LO_read_List[i],
+                                                         EmptyPype = EmptyPype_List[i],
+                                                         EnergyCoil = EnergyCoil_List[i],
+                                                         ICoil_Read = ICoil_Read_List[i],
+                                                         IO = IO_List[i],
+                                                         TempPCB = TempPCB_List[i],
+                                                         //Sensore***********************************************
+                                                         CoilResistance = CoilResistance_List[i],
+                                                         IsolationAC = IsolationAC_List[i],
+                                                         IsolationTC = IsolationTC_List[i],
+                                                         IsolationDC = IsolationDC_List[i],
+                                                         IsolationEC = IsolationEC_List[i],
+                                                         TestType = TestType_List[i],
+                                                         //******************************************************
+                                                         Company = Company_List[i],
+                                                         CompanyLocation = CompanyLocation_List[i],
+                                                         Customer = Customer_List[i],
+                                                         CustomerLocation = CustomerLocation_List[i],
+                                                         Note = Note_List[i],
+                                                         SW_Ver_Verificator = SW_Ver_Verificator_List[i],
+                                                         SN_Verificator = SN_Verificator_List[i],
+                                                         DataCalibrazione = DataCalibrazione_List[i],
+                                                         NuovaCalibrazione = NuovaCalibrazione_List[i]
+                                                 });                
+            }
+
+            return GetReports;
+        }
+
+        public List<ReportLine> ReportList = new List<ReportLine>();
+        public ObservableCollection<ReportLine> ReportView = new ObservableCollection<ReportLine>();
+
+        public List<RisultatiTest.TestStep> TestList = new List<RisultatiTest.TestStep>();
+        public ObservableCollection<RisultatiTest.TestStep> TestView = new ObservableCollection<RisultatiTest.TestStep>();
+    }
+}

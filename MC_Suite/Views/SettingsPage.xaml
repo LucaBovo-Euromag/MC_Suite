@@ -4,70 +4,252 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:telerikChart="using:Telerik.UI.Xaml.Controls.Chart"
+    xmlns:Telerik="using:Telerik.UI.Xaml.Controls.Input"
     Style="{StaticResource PageStyle}"
     xmlns:helper="using:MC_Suite.Helpers"
     xmlns:xaml="using:Windows.UI.Xaml"
-    mc:Ignorable="d">
+    xmlns:local="using:MC_Suite.Views"
+    mc:Ignorable="d" Height="768">
     <Page.Resources>
         <helper:EnumToBooleanConverter x:Key="EnumToBooleanConverter" EnumType="ElementTheme" />
+        <local:COMPortItemItemConvert x:Key="COMPortItemItemConvert"/>
     </Page.Resources>
-    <Grid Margin="{StaticResource MediumLeftRightMargin}">
-        <StackPanel
-            x:Name="ContentArea">
-            <TextBlock
+    <Grid Margin="12,0,12,0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" MinHeight="0"/>
+            <RowDefinition Height="Auto" MinHeight="0"/>
+        </Grid.RowDefinitions>
+        <Pivot>
+            <PivotItem x:Name="SystemSettings" Header="System">
+                <StackPanel Margin="0,20,0,0" HorizontalAlignment="Left">
+                    <StackPanel.FocusVisualPrimaryBrush>
+                        <SolidColorBrush Color="{ThemeResource SystemChromeBlackLowColor}"/>
+                    </StackPanel.FocusVisualPrimaryBrush>
+                    <StackPanel.Background>
+                        <SolidColorBrush Color="{ThemeResource SystemChromeLowColor}"/>
+                    </StackPanel.Background>
+                    <TextBlock x:Name="DateTime_SettingsTitle"
+                x:Uid="Settings_DateTime"
+                Style="{StaticResource SubtitleTextBlockStyle}" Margin="10,10,10,0" />
+                    <StackPanel x:Name="DateTime_Setting"  Orientation="Horizontal" Margin="10,20,10,48">
+                        <Grid HorizontalAlignment="Stretch" Margin="0,0,0,0" VerticalAlignment="Stretch">
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <StackPanel Orientation="Horizontal" Grid.Row="1">
+                                <SymbolIcon Symbol="Clock" HorizontalAlignment="Stretch" Margin="0,0,10,0" Grid.RowSpan="2" VerticalAlignment="Stretch" Grid.Row="1"/>
+                                <DatePicker x:Name="SysDatePicker" DateChanged="SysDatePicker_DateChanged" Margin="0,0,10,0" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Grid.Row="1"/>
+                                <TimePicker x:Name="SysTimePicker" ClockIdentifier="24HourClock" TimeChanged="SysTimePicker_TimeChanged" Margin="0,0,10,0" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Grid.Row="1"/>
+                            </StackPanel>
+                        </Grid>
+                    </StackPanel>
+                    <TextBlock x:Name="ThemeSelection_Title"
                 x:Uid="Settings_Personalization"
-                Style="{StaticResource SubtitleTextBlockStyle}" />
-            <StackPanel Margin="{StaticResource SettingsSubheaderMargin}">
-                <TextBlock
+                Style="{StaticResource SubtitleTextBlockStyle}" Margin="10,0,10,0" />
+                    <StackPanel x:Name="ThemeSelection" Margin="10,20,10,10" >
+                        <TextBlock
                     x:Uid="Settings_Theme"
                     Style="{StaticResource BodyTextStyle}" />
 
-                <StackPanel Margin="{StaticResource EightTopMargin}">
-                    <RadioButton 
+                        <StackPanel Margin="{StaticResource EightTopMargin}">
+                            <RadioButton 
                         x:Uid="Settings_Theme_Light" 
                         GroupName="AppTheme" 
                         Checked="ThemeChanged_CheckedAsync" 
-                        IsChecked="{x:Bind ElementTheme, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Light, Mode=OneWay}">
-                        <RadioButton.CommandParameter>
-                            <xaml:ElementTheme>Light</xaml:ElementTheme>
-                        </RadioButton.CommandParameter> 
-                    </RadioButton>
-                    <RadioButton 
+                        IsChecked="{x:Bind Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Light, Mode=OneWay, Path=ElementTheme}">
+                                <RadioButton.CommandParameter>
+                                    <ElementTheme>Light</ElementTheme>
+                                </RadioButton.CommandParameter>
+                            </RadioButton>
+                            <RadioButton 
                         x:Uid="Settings_Theme_Dark" 
                         GroupName="AppTheme"
                         Checked="ThemeChanged_CheckedAsync" 
-                        IsChecked="{x:Bind ElementTheme, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Dark, Mode=OneWay}">
-                        <RadioButton.CommandParameter>
-                            <xaml:ElementTheme>Dark</xaml:ElementTheme>
-                        </RadioButton.CommandParameter>
-                    </RadioButton>
-                    <RadioButton 
+                        IsChecked="{x:Bind Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Dark, Mode=OneWay, Path=ElementTheme}">
+                                <RadioButton.CommandParameter>
+                                    <ElementTheme>Dark</ElementTheme>
+                                </RadioButton.CommandParameter>
+                            </RadioButton>
+                            <RadioButton 
                         x:Uid="Settings_Theme_Default"
                         GroupName="AppTheme"
                         Checked="ThemeChanged_CheckedAsync"
-                        IsChecked="{x:Bind ElementTheme, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Default, Mode=OneWay}">
-                        <RadioButton.CommandParameter>
-                            <xaml:ElementTheme>Default</xaml:ElementTheme>
-                        </RadioButton.CommandParameter>
-                    </RadioButton>
+                        IsChecked="{x:Bind Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Default, Mode=OneWay, Path=ElementTheme}">
+                                <RadioButton.CommandParameter>
+                                    <ElementTheme>Default</ElementTheme>
+                                </RadioButton.CommandParameter>
+                            </RadioButton>
+                        </StackPanel>
+                    </StackPanel>
+                    <StackPanel x:Name="PasswordInput" Orientation="Vertical" Margin="10,20,10,10">
+                        <TextBlock Text="Password"></TextBlock>
+                        <PasswordBox x:Name="passwordBox" Width="200" MaxLength="6" PasswordChanged="PasswordBox_PasswordChanged" HorizontalAlignment="Left"/>
+                        <TextBlock x:Name="passwordResultTxt" HorizontalAlignment="Left"></TextBlock>
+                    </StackPanel>
                 </StackPanel>
-            </StackPanel>
-
-            <TextBlock
+            </PivotItem>
+            <PivotItem x:Name="MC406Settings" Header="MC406">
+                <StackPanel Margin="0,20,0,0" HorizontalAlignment="Left">
+                    <StackPanel.Background>
+                        <SolidColorBrush Color="{ThemeResource SystemChromeLowColor}"/>
+                    </StackPanel.Background>
+                    <TextBlock x:Name="MC406_Com_SettingsTitle"
+                x:Uid="Settings_MC406_Protocol"
+                Style="{StaticResource SubtitleTextBlockStyle}" Margin="10,10,10,0" />
+                    <StackPanel x:Name="MC406_Com_Setting" Orientation="Vertical" Margin="10,20,10,48">
+                        <StackPanel HorizontalAlignment="Stretch" Orientation="Horizontal" Margin="0,0,0,5">
+                            <TextBlock Text="Protocol" VerticalAlignment="Center"/>
+                            <ComboBox x:Name="ProtocolBox" DisplayMemberPath="Value" SelectionChanged="ProtocolBox_SelectionChanged" ItemsSource="{x:Bind ComSetup.ProtocolList}" SelectedValuePath="Key" SelectedValue="{x:Bind ComSetup.Protocol}" HorizontalAlignment="Stretch" Margin="19,0,0,0"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                            <TextBlock Text="COM Port" VerticalAlignment="Center"/>
+                            <ComboBox 
+                        x:Name="ComPortComboBox" 
+                        SelectedItem="{x:Bind Converter={StaticResource COMPortItemItemConvert}, Mode=TwoWay, Path=ComSetup.ComPort}" 
+                        DisplayMemberPath="Name"
+                        SelectionChanged="ComPortComboBox_SelectionChanged"
+                        Margin="10,0,0,0" />
+                            <TextBlock x:Name="DeviceMessage" Text="{x:Bind Path=DeviceMsg}" Margin="10,0,0,0"/>
+                        </StackPanel>
+                    </StackPanel>
+                    <Button x:Name="SaveCfgBtn"  Content="Save" Command="{x:Bind SaveConfigCmd}"  Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,20,0,10"/>
+                </StackPanel>
+            </PivotItem>
+            <PivotItem x:Name="MC608Settings" Header="MC608">
+                <StackPanel Margin="0,20,0,0" HorizontalAlignment="Left">
+                    <StackPanel.Background>
+                        <SolidColorBrush Color="{ThemeResource SystemChromeLowColor}"/>
+                    </StackPanel.Background>
+                    <TextBlock
+                x:Uid="Settings_MC608_Protocol"
+                Style="{StaticResource SubtitleTextBlockStyle}" Margin="10,10,10,0" />
+                    <StackPanel x:Name="MC608_Com_Setting" Orientation="Vertical" Margin="10,20,10,48">
+                        <StackPanel HorizontalAlignment="Stretch" Orientation="Horizontal" Margin="0,0,0,5">
+                            <TextBlock Text="Protocol" VerticalAlignment="Center"/>
+                            <ComboBox x:Name="ProtocolBox608" DisplayMemberPath="Value" SelectionChanged="ProtocolBox608_SelectionChanged" ItemsSource="{x:Bind ComSetup.ProtocolList}" SelectedValuePath="Key" SelectedValue="{x:Bind ComSetup.Protocol608}" HorizontalAlignment="Stretch" Margin="19,0,0,0"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                            <TextBlock Text="COM Port" VerticalAlignment="Center"/>
+                            <ComboBox 
+                        x:Name="ComPortComboBox608" 
+                        SelectedItem="{x:Bind Converter={StaticResource COMPortItemItemConvert}, Mode=TwoWay, Path=ComSetup.ComPort608}" 
+                        DisplayMemberPath="Name"
+                        SelectionChanged="ComPortComboBox608_SelectionChanged"
+                        Margin="10,0,0,0" />
+                            <TextBlock x:Name="DeviceMessage608" Text="{x:Bind Path=DeviceMsg}" Margin="10,0,0,0"/>
+                        </StackPanel>
+                    </StackPanel>
+                    <TextBlock
+                x:Uid="Settings_Modbus"
+                Style="{StaticResource SubtitleTextBlockStyle}" Margin="10,0,10,0" />
+                    <StackPanel x:Name="Modbus_Settings" Margin="10,20,10,48" >
+                        <Grid HorizontalAlignment="Left">
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="Address:" VerticalAlignment="Center"/>
+                            <TextBox x:Name="AddressVal" Text="{x:Bind Path=ComSetup.Address}" TextChanged="AddressVal_TextChanged" VerticalAlignment="Center" Margin="5,0,0,0" Grid.Column="1" HorizontalAlignment="Stretch"/>
+                            <TextBlock Text="Baud Rate:" VerticalAlignment="Center" Grid.Row="1"/>
+                            <ComboBox x:Name="BaudRateBox" DisplayMemberPath="Value" SelectionChanged="BaudRateBox_SelectionChanged" ItemsSource="{x:Bind ComSetup.BaudRateList}" SelectedValuePath="Key" SelectedValue="{x:Bind ComSetup.BaudRate}" HorizontalAlignment="Stretch" Grid.Column="1" Margin="5,0,0,0" Grid.Row="1"/>
+                            <TextBlock Text="Parity:" VerticalAlignment="Center" Grid.Row="2"/>
+                            <ComboBox x:Name="ParityBox" DisplayMemberPath="Value" SelectionChanged="ParityBox_SelectionChanged" ItemsSource="{x:Bind ComSetup.ParityList}" SelectedValuePath="Key" SelectedValue="{x:Bind ComSetup.Parity}" HorizontalAlignment="Stretch" Grid.Column="1" Margin="5,0,0,0" Grid.Row="2"/>
+                            <TextBlock Text="Data Bits:" VerticalAlignment="Center" Grid.Row="3"/>
+                            <ComboBox x:Name="DataBitsBox" DisplayMemberPath="Value" SelectionChanged="DataBitsBox_SelectionChanged" ItemsSource="{x:Bind ComSetup.DataBitsList}" SelectedValuePath="Key" SelectedValue="{x:Bind ComSetup.DataBits}" HorizontalAlignment="Stretch" Grid.Column="1" Margin="5,0,0,0" Grid.Row="3"/>
+                            <TextBlock Text="Stop Bits:" VerticalAlignment="Center" Grid.Row="4"/>
+                            <ComboBox x:Name="StopBitsBox" DisplayMemberPath="Value" SelectionChanged="StopBitsBox_SelectionChanged" ItemsSource="{x:Bind ComSetup.StopBitsList}" SelectedValuePath="Key" SelectedValue="{x:Bind ComSetup.StopBits}" HorizontalAlignment="Stretch" Grid.Column="1" Margin="5,0,0,0" Grid.Row="4"/>
+                        </Grid>
+                    </StackPanel>
+                    <Button x:Name="SaveCfgBtn1" Content="Save" Command="{x:Bind SaveConfigCmd}"  Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,10"/>
+                </StackPanel>
+            </PivotItem>
+            <PivotItem x:Name="InfoPage" Header="Info" HorizontalAlignment="Left">
+                <StackPanel Margin="0,20,0,0">
+                    <StackPanel.Background>
+                        <SolidColorBrush Color="{ThemeResource SystemChromeLowColor}"/>
+                    </StackPanel.Background>
+                    <TextBlock
+                x:Uid="Verificator_info"
+                Style="{StaticResource SubtitleTextBlockStyle}" Margin="10,10,10,0" />
+                    <StackPanel Margin="{StaticResource EightTopMargin}" Orientation="Horizontal">
+                        <TextBlock  Text="Serial Number: " Margin="10,0,0,0"/>
+                        <TextBlock  Text="{x:Bind Mode=OneWay, Path=RAM_VerifConfiguration.SN_Verificator}" Margin="10,0,0,0"/>
+                    </StackPanel>
+                    <StackPanel Margin="{StaticResource EightTopMargin}" Orientation="Horizontal">
+                        <TextBlock  Text="Calibration Expiring Date: " Margin="10,0,0,0"/>
+                        <TextBlock  Text="{x:Bind Mode=OneWay, Path=RAM_VerifConfiguration.DataNextTaratura}" Margin="10,0,0,0"/>
+                    </StackPanel>
+                    <TextBlock
+                x:Uid="Simulator_info"
+                Style="{StaticResource SubtitleTextBlockStyle}" Margin="10,10,10,0" />
+                    <StackPanel Orientation="Horizontal" Margin="10,20,10,48">
+                        <TextBlock Text="Com Port: "/>
+                        <TextBlock Text="{x:Bind ComSetup.SimulatorComPort.Name}" Margin="10,0,0,0"/>
+                    </StackPanel>
+                    <TextBlock
+                x:Uid="Ethernet_info"
+                Style="{StaticResource SubtitleTextBlockStyle}" Margin="10,0,10,0" />
+                    <StackPanel Orientation="Horizontal" Margin="10,20,10,48">
+                        <TextBlock Text="IPV4: "/>
+                        <TextBlock x:Name="IPAddress" Margin="10,0,0,0"/>
+                    </StackPanel>
+                    <TextBlock
                     x:Uid="Settings_About"
-                    Style="{StaticResource SubtitleTextBlockStyle}"/>
-
-            <StackPanel Margin="{StaticResource EightTopMargin}">
-                <TextBlock
-                    Text="{x:Bind VersionDescription, Mode=OneWay}" />
-                <TextBlock
+                    Style="{StaticResource SubtitleTextBlockStyle}" Margin="10,0,10,0"/>
+                    <StackPanel Margin="10,20,10,10" >
+                        <TextBlock
+                    Text="{x:Bind Mode=OneWay, Path=VersionDescription}" />
+                        <TextBlock
                     x:Uid="Settings_AboutDescription"
                     Margin="{StaticResource EightTopMargin}" />
 
-                <HyperlinkButton
+                        <HyperlinkButton
                     x:Uid="Settings_PrivacyTermsLink" 
                     Margin="{StaticResource EightTopMargin}" />
-            </StackPanel>
-        </StackPanel>
+                    </StackPanel>
+                </StackPanel>
+            </PivotItem>
+            <PivotItem x:Name="PowerBattery" Header="Power/Battery" HorizontalAlignment="Left" >
+                <StackPanel Margin="0,20,0,0">
+                    <StackPanel.Background>
+                        <SolidColorBrush Color="{ThemeResource SystemChromeLowColor}"/>
+                    </StackPanel.Background>
+                    <TextBlock x:Uid="Power_info" Style="{StaticResource SubtitleTextBlockStyle}" Margin="10,10,10,0" />
+                    <StackPanel x:Name="ValimSelection" Orientation="Horizontal" Margin="10,20,10,10" Visibility="Visible">
+                        <TextBlock  Text="View Battery %: " Margin="10,0,10,0" VerticalAlignment="Center"/>
+                        <ToggleSwitch x:Name="VAlimToggle" Toggled="VAlimToggle_Toggled"></ToggleSwitch>
+                    </StackPanel>
+                    <TextBlock x:Name="BatteryChart_SettingsTitle" x:Uid="BatteryChartTitle" Style="{StaticResource SubtitleTextBlockStyle}" Margin="10,10,10,0" />
+                    <telerikChart:RadCartesianChart PaletteName="DefaultDark" x:Name="BatteryChart" Grid.Row="1" HorizontalAlignment="Stretch" Margin="0,0,0,0" VerticalAlignment="Stretch" Width="1000" Height="400">
+                        <telerikChart:RadCartesianChart.VerticalAxis>
+                            <telerikChart:LinearAxis ShowLabels="True" />
+                        </telerikChart:RadCartesianChart.VerticalAxis>
+                        <telerikChart:RadCartesianChart.HorizontalAxis>
+                            <telerikChart:DateTimeContinuousAxis ShowLabels="True" LabelFitMode="Rotate"/>
+                        </telerikChart:RadCartesianChart.HorizontalAxis>
+                        <telerikChart:RadCartesianChart.Series>
+                            <telerikChart:LineSeries ItemsSource="{Binding BatteryGraphDataCollection}" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch">
+                                <telerikChart:LineSeries.ValueBinding>
+                                    <telerikChart:PropertyNameDataPointBinding PropertyName="Value"/>
+                                </telerikChart:LineSeries.ValueBinding>
+                                <telerikChart:LineSeries.CategoryBinding>
+                                    <telerikChart:PropertyNameDataPointBinding PropertyName="Time"/>
+                                </telerikChart:LineSeries.CategoryBinding>
+                            </telerikChart:LineSeries>
+                        </telerikChart:RadCartesianChart.Series>
+                    </telerikChart:RadCartesianChart>
+                    <TextBlock Text="{Binding GraphStatus}" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                </StackPanel>
+            </PivotItem>
+        </Pivot>
     </Grid>
 </Page>
