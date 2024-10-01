@@ -9,6 +9,7 @@ using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using MC_Suite.Properties;
 using MC_Suite.Modbus;
+using Windows.UI.Xaml.Controls;
 
 
 namespace MC_Suite.Services
@@ -83,7 +84,13 @@ namespace MC_Suite.Services
         {
             if ((Port == null) || (Port.ID == String.Empty))
             {
-                var dialog = new MessageDialog("Please select COM port: OPTIONS->Settings->Connection", "COM Port not selected");
+                ContentDialog dialog = new ContentDialog()
+                {
+                    Title = "COM Port not selected",
+                    Content = "Please select COM port: OPTIONS->Settings->Connection",
+                    CloseButtonText = "OK",
+                };
+                
                 await dialog.ShowAsync();
                 return false;
             }
@@ -93,17 +100,21 @@ namespace MC_Suite.Services
             }
             else
             {
-                portHandler = new commPortHandler(Port.ID, Settings.Instance.BaudRate,
+                portHandler = new commPortHandler(Port.ID, Port.BaudRate,
                                                   Settings.Instance.Parity, Settings.Instance.DataBits,
                                                   Settings.Instance.StopBits, Settings.Instance.TimeOut);
                 if (await portHandler.open())
-                {
-                    MbConnectionStatus = MbConnectionStates.Ready;
+                {                    
                     return true;
                 }
                 else
                 {
-                    var dialog = new MessageDialog("Error Opening " + Port.Name + " Port");
+                    ContentDialog dialog = new ContentDialog()
+                    {
+                        Title = "COM Port Error",
+                        Content = "Error Opening " + Port.Name + " Port",
+                        CloseButtonText = "OK",
+                    };
                     await dialog.ShowAsync();
                     return false;
                 }
@@ -113,13 +124,14 @@ namespace MC_Suite.Services
         public bool Close()
         {
             if (this.IsOpen)
-            {
                 portHandler.close();
-                MbConnectionStatus = MbConnectionStates.Stop;
-                return true;
-            }
-            return false;
+
+            portHandler = null;
+            MbConnectionStatus = MbConnectionStates.Stop;
+
+            return true;
         }
+
 
         public bool IsOpen
         {

@@ -34,7 +34,6 @@
                 </AppBarButton.Icon>
             </AppBarButton>
         </CommandBar>
-        <ProgressRing x:Name="ConncetionRing" IsActive="True" Grid.ColumnSpan="2" Width="40" Height="40" HorizontalAlignment="Center" Margin="0,0,0,0" Grid.Row="1" VerticalAlignment="Center" Grid.RowSpan="2"/>
         <Grid x:Name="HeadGrid" Grid.Row="1" Grid.ColumnSpan="3" Margin="0,0,0,0" HorizontalAlignment="Stretch">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition MinWidth="0" Width="Auto"/>
@@ -119,6 +118,7 @@
                             <RowDefinition/>
                             <RowDefinition/>
                             <RowDefinition/>
+                            <RowDefinition/>
                         </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition/>
@@ -139,6 +139,10 @@
                         <TextBlock Text="Next Calib." Grid.Row="3" HorizontalAlignment="Left" VerticalAlignment="Center"/>
                         <Border Grid.Column="1" Grid.Row="3" Background="Transparent" Margin="0,0,10,0" Height="32">
                             <TextBlock Text="{x:Bind Mode=OneWay, Path=RAM_VerifConfiguration.DataNextTaratura}" Grid.Column="1" Grid.Row="4" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                        </Border>
+                        <TextBlock Text="Connection" Grid.Row="4" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                        <Border Grid.Column="1" Grid.Row="4" Background="Transparent" Margin="0,0,10,0" Height="32">
+                            <TextBlock x:Name="RunningProtocolTxt" Grid.Column="1" Grid.Row="4" HorizontalAlignment="Left" VerticalAlignment="Center"/>
                         </Border>
                     </Grid>
                 </PivotItem>
@@ -162,7 +166,7 @@
                 </Grid.ColumnDefinitions>
                 <StackPanel Grid.ColumnSpan="2" Orientation="Horizontal">
                     <TextBlock Text="REPORT INFO" FontWeight="Normal" FontSize="20" Margin="0,0,4,5" />
-                    <Button Command="{x:Bind Path=SaveConfigCmd}" Background="{x:Null}">
+                    <Button x:Name="SaveInfoBtn" Command="{x:Bind Path=SaveConfigCmd}" Background="{x:Null}">
                         <Button.Content>
                             <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE74E;"/>
                         </Button.Content>
@@ -228,8 +232,8 @@
                         <RowDefinition Height="Auto" MinHeight="0"/>
                     </Grid.RowDefinitions>
                     <StackPanel Orientation="Horizontal" Grid.ColumnSpan="3">
-                        <Button Content="Clear" Command="{x:Bind Path=ClearLogCmd}" HorizontalAlignment="Stretch" Margin="0,5,0,5"/>
-                        <Button Content="Save" Command="{x:Bind Path=SaveLogCmd}" HorizontalAlignment="Stretch" Margin="10,5,0,5"/>
+                        <Button Content="Clear Log" Command="{x:Bind Path=ClearLogCmd}" HorizontalAlignment="Stretch" Margin="0,5,0,5"/>
+                        <Button Content="Save Log" Command="{x:Bind Path=SaveLogCmd}" HorizontalAlignment="Stretch" Margin="10,5,0,5"/>
                     </StackPanel>
                     <Custom:DataGrid x:Name="ReportTestGrid"  ItemsSource="{x:Bind Path=Verificator.TestView}" AutoGenerateColumns="False" IsReadOnly="True" Margin="0,0,10,10" Grid.Row="1">
                         <Custom:DataGrid.Columns>
@@ -314,7 +318,7 @@
                         <TextBlock Text="Simulation" Grid.Row="2" Margin="0,5,10,5"/>
                         <TextBlock Text="Icoil" Grid.Row="3" Margin="0,5,0,5"/>
                         <TextBlock Text="VAlim" Grid.Row="4" Margin="0,5,0,5"/>
-                        
+
                         <TextBlock x:Name="Out420mA_Meas" Grid.Row="1" Grid.Column="1" Margin="0,0,0,0" HorizontalAlignment="Center"/>
                         <TextBlock x:Name="Simulation_Read" Grid.Row="2" Grid.Column="1" Margin="0,0,0,0" HorizontalAlignment="Center"/>
                         <TextBlock x:Name="Icoil_Meas" Grid.Row="3" Grid.Column="1" Margin="0,0,0,0" HorizontalAlignment="Center"/>
@@ -450,7 +454,15 @@
                         <ProgressRing x:Name="IOTestTestRing" IsActive="True" Visibility="Collapsed" HorizontalAlignment="Center" Margin="0,0,0,0" VerticalAlignment="Center"/>
                     </Grid>
                 </Border>
-                <Button x:Name="AllTestBtn" Content="Start All Tests"  Command="{x:Bind StartAllTestCmd}"  Grid.Row="5" Grid.ColumnSpan="6" HorizontalAlignment="Stretch" Margin="0,0,157,0" VerticalAlignment="Stretch" Background="#FF0069B4"/>
+                <Button x:Name="AllTestBtn"
+                        Content="Start All Tests"
+                        Command="{x:Bind StartAllTestCmd}"
+                        Grid.Row="5"
+                        Grid.ColumnSpan="6"
+                        HorizontalAlignment="Stretch"
+                        Margin="0,0,157,0"
+                        VerticalAlignment="Stretch"
+                        Background="#FF0069B4"/>
                 <Button x:Name="AbortConvTestBtn" Content="Abort"  Command="{x:Bind AbortTestCmd}" Grid.Row="5" Grid.Column="5" HorizontalAlignment="Right" Margin="10,0,0,0" Width="157" VerticalAlignment="Stretch" Background="#FF0069B4"/>
                 <ProgressBar x:Name="ReadingProgress" Grid.Row="6" Minimum="0" Maximum="5" Height="10" Grid.ColumnSpan="6" Margin="0,0,-0,0" VerticalAlignment="Top" />
             </Grid>
@@ -502,14 +514,44 @@
                 <Button x:Name="AbortSensTestBtn" Content="Abort" Grid.Row="2" Grid.Column="5" HorizontalAlignment="Stretch" Margin="10,0,0,0" Background="#FF0069B4"/>
             </Grid>
         </StackPanel>
-        <Button Content="SAVE REPORT" Command="{x:Bind Path=AddReportCmd}" HorizontalAlignment="Stretch" Margin="10,0,10,0" VerticalAlignment="Center" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2"/>
-        <Image x:Name="MainLogo" HorizontalAlignment="Left" VerticalAlignment="Center" Source="/Images/Logo Euromag Alfa Complete.png" Margin="1,0,0,0" Opacity="0.5" Width="300" Grid.Row="3" Grid.ColumnSpan="2">
-            <Image.FocusVisualPrimaryBrush>
-                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-                    <GradientStop Color="Black"/>
-                    <GradientStop Color="White" Offset="1"/>
-                </LinearGradientBrush>
-            </Image.FocusVisualPrimaryBrush>
-        </Image>
+        <Button x:Name="SaveReportBtn"
+                Content="SAVE REPORT"
+                Command="{x:Bind Path=AddReportCmd}"
+                HorizontalAlignment="Stretch"
+                Margin="10,0,10,10"
+                VerticalAlignment="Center"
+                Grid.Row="3"
+                Grid.Column="1"
+                Grid.ColumnSpan="2"/>
+
+        <StackPanel x:Name="ConnectionStatus"
+                    Background="Black"
+                    BorderBrush="#FF0069B4"
+                    BorderThickness="1"
+                    Orientation="Horizontal"
+                    Grid.Row="1"
+                    Grid.ColumnSpan="2"
+                    Grid.RowSpan="2"
+                    VerticalAlignment="Center"
+                    HorizontalAlignment="Center">
+            <ProgressRing x:Name="ConncetionRing"
+                      IsActive="True"
+                      Grid.ColumnSpan="2"
+                      Width="40"
+                      Height="40"
+                      HorizontalAlignment="Center"
+                      Margin="10"
+                      Grid.Row="1"
+                      VerticalAlignment="Center"
+                      Grid.RowSpan="2"/>
+            <TextBlock    x:Name="ConnectionMessage"
+                      FontSize="24"                      
+                      Grid.ColumnSpan="2"
+                      HorizontalAlignment="Center"
+                      Margin="10"
+                      Grid.Row="1"
+                      VerticalAlignment="Center"
+                      Grid.RowSpan="2"/>
+        </StackPanel>
     </Grid>
 </Page>

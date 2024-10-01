@@ -101,7 +101,15 @@
                     <StackPanel x:Name="MC406_Com_Setting" Orientation="Vertical" Margin="10,20,10,48">
                         <StackPanel HorizontalAlignment="Stretch" Orientation="Horizontal" Margin="0,0,0,5">
                             <TextBlock Text="Protocol" VerticalAlignment="Center"/>
-                            <ComboBox x:Name="ProtocolBox" DisplayMemberPath="Value" SelectionChanged="ProtocolBox_SelectionChanged" ItemsSource="{x:Bind ComSetup.ProtocolList}" SelectedValuePath="Key" SelectedValue="{x:Bind ComSetup.Protocol}" HorizontalAlignment="Stretch" Margin="19,0,0,0"/>
+                            <ComboBox x:Name="ProtocolBox"
+                                      IsEnabled="False"
+                                      DisplayMemberPath="Value"
+                                      SelectionChanged="ProtocolBox_SelectionChanged"
+                                      ItemsSource="{x:Bind ComSetup.ProtocolList}"
+                                      SelectedValuePath="Key"
+                                      SelectedValue="{x:Bind ComSetup.Protocol}"
+                                      HorizontalAlignment="Stretch"
+                                      Margin="19,0,0,0"/>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
                             <TextBlock Text="COM Port" VerticalAlignment="Center"/>
@@ -133,11 +141,11 @@
                         <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
                             <TextBlock Text="COM Port" VerticalAlignment="Center"/>
                             <ComboBox 
-                        x:Name="ComPortComboBox608" 
-                        SelectedItem="{x:Bind Converter={StaticResource COMPortItemItemConvert}, Mode=TwoWay, Path=ComSetup.ComPort608}" 
-                        DisplayMemberPath="Name"
-                        SelectionChanged="ComPortComboBox608_SelectionChanged"
-                        Margin="10,0,0,0" />
+                                x:Name="ComPortComboBox608" 
+                                SelectedItem="{x:Bind Converter={StaticResource COMPortItemItemConvert}, Mode=TwoWay, Path=ComSetup.ComPort608}" 
+                                DisplayMemberPath="Name"
+                                SelectionChanged="ComPortComboBox608_SelectionChanged"
+                                Margin="10,0,0,0" />
                             <TextBlock x:Name="DeviceMessage608" Text="{x:Bind Path=DeviceMsg}" Margin="10,0,0,0"/>
                         </StackPanel>
                     </StackPanel>

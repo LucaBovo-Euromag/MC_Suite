@@ -204,7 +204,19 @@ namespace MC_Suite.Services
             }
         }
 
-        #endregion // RAM others vars
+        private HW_INFO _hW_Version;
+        public HW_INFO HW_Version
+        {
+            get
+            {
+                if (_hW_Version == null)
+                {
+                    _hW_Version = new HW_INFO();
+                    //AddVarToBundle(ref _ramOthersBundleCmd, _hW_Version);
+                }
+                return _hW_Version;
+            }
+        }
 
         private ICOIL_MA _icoil_ma;
         public ICOIL_MA ICoil_ma
@@ -213,11 +225,13 @@ namespace MC_Suite.Services
             {
                 if (_icoil_ma == null)
                 {
-                    _icoil_ma = new ICOIL_MA();                    
+                    _icoil_ma = new ICOIL_MA();
                 }
                 return _icoil_ma;
             }
-        }        
+        }
+
+        #endregion // RAM others vars
 
         #region RAM Temperature & Pressure Vars
 
@@ -596,6 +610,20 @@ namespace MC_Suite.Services
             }
         }
 
+        private BLUETOOTH_STATE _bluetooth_Connection_State;
+        public BLUETOOTH_STATE Bluetooth_Connection_State
+        {
+            get
+            {
+                if (_bluetooth_Connection_State == null)
+                {
+                    _bluetooth_Connection_State = new BLUETOOTH_STATE();
+                    AddVarToBundle(ref _ioVariablesBundleCmd, _bluetooth_Connection_State);
+                }
+                return _bluetooth_Connection_State;
+            }
+        }
+
         #endregion
 
         #region EEPROM parameters
@@ -613,174 +641,6 @@ namespace MC_Suite.Services
                 return _pulseLength;
             }
 
-        }
-
-        private TIMEOUT_TO_MAIN _timeoutToMain;
-        public TIMEOUT_TO_MAIN TimeoutToMain
-        {
-            get
-            {
-                if (_timeoutToMain == null)
-                {
-                    _timeoutToMain = new TIMEOUT_TO_MAIN();
-                    AddVarToBundle(ref _eepParamsPageBundleCmd, _timeoutToMain);
-                }
-                return _timeoutToMain;
-            }
-        }
-
-        private BATT_AUTOSAVE _batteryAutosave;
-        public BATT_AUTOSAVE BatteryAutosave
-        {
-            get
-            {
-                if (_batteryAutosave == null)
-                {
-                    _batteryAutosave = new BATT_AUTOSAVE();
-                    AddVarToBundle(ref _eepParamsPageBundleCmd, _batteryAutosave);
-                }
-                return _batteryAutosave;
-            }
-        }
-
-        private PWD_TIMEOUT _passwordTimeout;
-        public PWD_TIMEOUT PasswordTimeout
-        {
-            get
-            {
-                if (_passwordTimeout == null)
-                {
-                    _passwordTimeout = new PWD_TIMEOUT();
-                    AddVarToBundle(ref _eepParamsPageBundleCmd, _passwordTimeout);
-                }
-                return _passwordTimeout;
-            }
-        }
-
-        private WAKEUP_SEC _wakeupPoweroff;
-        public WAKEUP_SEC WakeupPoweroff
-        {
-            get
-            {
-                if (_wakeupPoweroff == null)
-                {
-                    _wakeupPoweroff = new WAKEUP_SEC();
-                    AddVarToBundle(ref _eepParamsPageBundleCmd, _wakeupPoweroff);
-                }
-                return _wakeupPoweroff;
-            }
-        }
-
-        private CALIBR_VOLT _calibrationVoltage;
-        public CALIBR_VOLT CalibrationVoltage
-        {
-            get
-            {
-                if (_calibrationVoltage == null)
-                {
-                    _calibrationVoltage = new CALIBR_VOLT();
-                    AddVarToBundle(ref _eepParamsPageBundleCmd, _calibrationVoltage);
-                }
-                return _calibrationVoltage;
-            }
-        }
-
-        private CALIBR_TEMP _calibrationTemperature;
-        public CALIBR_TEMP CalibrationTemperature
-        {
-            get
-            {
-                if (_calibrationTemperature == null)
-                {
-                    _calibrationTemperature = new CALIBR_TEMP();
-                    AddVarToBundle(ref _eepParamsPageBundleCmd, _calibrationTemperature);
-                }
-                return _calibrationTemperature;
-            }
-        }
-
-        private PLOG_TIME _processLogPeriod;
-        public PLOG_TIME ProcessLogPeriod
-        {
-            get
-            {
-                if (_processLogPeriod == null)
-                {
-                    _processLogPeriod = new PLOG_TIME();
-                    AddVarToBundle(ref _eepParamsPageBundleCmd, _processLogPeriod);
-                }
-                return _processLogPeriod;
-            }
-        }
-
-        private PRESS_OPTION _pressureOption;
-        public PRESS_OPTION PressureOption
-        {
-            get
-            {
-                if (_pressureOption == null)
-                {
-                    _pressureOption = new PRESS_OPTION();
-                    AddVarToBundle(ref _eepParamsPageBundleCmd, _pressureOption);
-                }
-                return _pressureOption;
-            }
-        }
-
-        private ENERGY_OPTION _energyOption;
-        public ENERGY_OPTION EnergyOption
-        {
-            get
-            {
-                if (_energyOption == null)
-                {
-                    _energyOption = new ENERGY_OPTION();
-                    AddVarToBundle(ref _eepParamsPageBundleCmd, _energyOption);
-                }
-                return _energyOption;
-            }
-        }
-
-        private PMEAS_TIME _pressureMeasurePeriod;
-        public PMEAS_TIME PressureMeasurePeriod
-        {
-            get
-            {
-                if (_pressureMeasurePeriod == null)
-                {
-                    _pressureMeasurePeriod = new PMEAS_TIME();
-                    AddVarToBundle(ref _eepParamsPageBundleCmd, _pressureMeasurePeriod);
-                }
-                return _pressureMeasurePeriod;
-            }
-        }
-
-        private TMEAS_TIME _temperatureMeasurePeriod;
-        public TMEAS_TIME TemperatureMeasurePeriod
-        {
-            get
-            {
-                if (_temperatureMeasurePeriod == null)
-                {
-                    _temperatureMeasurePeriod = new TMEAS_TIME();
-                    AddVarToBundle(ref _eepParamsPageBundleCmd, _temperatureMeasurePeriod);
-                }
-                return _temperatureMeasurePeriod;
-            }
-        }
-
-        private DTMIN _deltaTempMin;
-        public DTMIN DeltaTempMin
-        {
-            get
-            {
-                if (_deltaTempMin == null)
-                {
-                    _deltaTempMin = new DTMIN();
-                    AddVarToBundle(ref _eepParamsPageBundleCmd, _deltaTempMin);
-                }
-                return _deltaTempMin;
-            }
         }
 
         private OFFSET_TEMP _temperatureOffset;
@@ -894,7 +754,7 @@ namespace MC_Suite.Services
                 return _densityCoeffC;
             }
         }
-        
+
         private DENSITY_cD _densityCoeffD;
         public DENSITY_cD DensityCoeffD
         {
@@ -909,16 +769,199 @@ namespace MC_Suite.Services
             }
         }
 
-        private GSMinstalled _gsm_Installed;
-        public GSMinstalled GSM_Installed
+        private DTMIN _deltaTempMin;
+        public DTMIN DeltaTempMin
         {
             get
             {
-                if (_gsm_Installed == null)
+                if (_deltaTempMin == null)
                 {
-                    _gsm_Installed = new GSMinstalled();                    
+                    _deltaTempMin = new DTMIN();
+                    AddVarToBundle(ref _eepParamsPageBundleCmd, _deltaTempMin);
                 }
-                return _gsm_Installed;
+                return _deltaTempMin;
+            }
+        }
+
+        private TMEAS_TIME _temperatureMeasurePeriod;
+        public TMEAS_TIME TemperatureMeasurePeriod
+        {
+            get
+            {
+                if (_temperatureMeasurePeriod == null)
+                {
+                    _temperatureMeasurePeriod = new TMEAS_TIME();
+                    AddVarToBundle(ref _eepParamsPageBundleCmd, _temperatureMeasurePeriod);
+                }
+                return _temperatureMeasurePeriod;
+            }
+        }
+
+        private PMEAS_TIME _pressureMeasurePeriod;
+        public PMEAS_TIME PressureMeasurePeriod
+        {
+            get
+            {
+                if (_pressureMeasurePeriod == null)
+                {
+                    _pressureMeasurePeriod = new PMEAS_TIME();
+                    AddVarToBundle(ref _eepParamsPageBundleCmd, _pressureMeasurePeriod);
+                }
+                return _pressureMeasurePeriod;
+            }
+        }
+
+        private ENERGY_OPTION _energyOption;
+        public ENERGY_OPTION EnergyOption
+        {
+            get
+            {
+                if (_energyOption == null)
+                {
+                    _energyOption = new ENERGY_OPTION();
+                    AddVarToBundle(ref _eepParamsPageBundleCmd, _energyOption);
+                }
+                return _energyOption;
+            }
+        }
+
+        private PRESS_OPTION _pressureOption;
+        public PRESS_OPTION PressureOption
+        {
+            get
+            {
+                if (_pressureOption == null)
+                {
+                    _pressureOption = new PRESS_OPTION();
+                    AddVarToBundle(ref _eepParamsPageBundleCmd, _pressureOption);
+                }
+                return _pressureOption;
+            }
+        }
+
+        private PLOG_TIME _processLogPeriod;
+        public PLOG_TIME ProcessLogPeriod
+        {
+            get
+            {
+                if (_processLogPeriod == null)
+                {
+                    _processLogPeriod = new PLOG_TIME();
+                    AddVarToBundle(ref _eepParamsPageBundleCmd, _processLogPeriod);
+                }
+                return _processLogPeriod;
+            }
+        }
+
+        private CALIBR_TEMP _calibrationTemperature;
+        public CALIBR_TEMP CalibrationTemperature
+        {
+            get
+            {
+                if (_calibrationTemperature == null)
+                {
+                    _calibrationTemperature = new CALIBR_TEMP();
+                    AddVarToBundle(ref _eepParamsPageBundleCmd, _calibrationTemperature);
+                }
+                return _calibrationTemperature;
+            }
+        }
+
+        private CALIBR_VOLT _calibrationVoltage;
+        public CALIBR_VOLT CalibrationVoltage
+        {
+            get
+            {
+                if (_calibrationVoltage == null)
+                {
+                    _calibrationVoltage = new CALIBR_VOLT();
+                    AddVarToBundle(ref _eepParamsPageBundleCmd, _calibrationVoltage);
+                }
+                return _calibrationVoltage;
+            }
+        }
+
+        private WAKEUP_SEC _wakeupPoweroff;
+        public WAKEUP_SEC WakeupPoweroff
+        {
+            get
+            {
+                if (_wakeupPoweroff == null)
+                {
+                    _wakeupPoweroff = new WAKEUP_SEC();
+                    AddVarToBundle(ref _eepParamsPageBundleCmd, _wakeupPoweroff);
+                }
+                return _wakeupPoweroff;
+            }
+        }
+
+        private PWD_TIMEOUT _passwordTimeout;
+        public PWD_TIMEOUT PasswordTimeout
+        {
+            get
+            {
+                if (_passwordTimeout == null)
+                {
+                    _passwordTimeout = new PWD_TIMEOUT();
+                    AddVarToBundle(ref _eepParamsPageBundleCmd, _passwordTimeout);
+                }
+                return _passwordTimeout;
+            }
+        }
+
+        private BATT_AUTOSAVE _batteryAutosave;
+        public BATT_AUTOSAVE BatteryAutosave
+        {
+            get
+            {
+                if (_batteryAutosave == null)
+                {
+                    _batteryAutosave = new BATT_AUTOSAVE();
+                    AddVarToBundle(ref _eepParamsPageBundleCmd, _batteryAutosave);
+                }
+                return _batteryAutosave;
+            }
+        }
+
+        private TIMEOUT_TO_MAIN _timeoutToMain;
+        public TIMEOUT_TO_MAIN TimeoutToMain
+        {
+            get
+            {
+                if (_timeoutToMain == null)
+                {
+                    _timeoutToMain = new TIMEOUT_TO_MAIN();
+                    AddVarToBundle(ref _eepParamsPageBundleCmd, _timeoutToMain);
+                }
+                return _timeoutToMain;
+            }
+        }
+        
+        private PRESS_PROBE_CAL _pressProbeCalFact;
+        public PRESS_PROBE_CAL PressProbeCalFact
+        {
+            get
+            {
+                if (_pressProbeCalFact == null)
+                {
+                    _pressProbeCalFact = new PRESS_PROBE_CAL();
+                    AddVarToBundle(ref _eepParamsPageBundleCmd, _pressProbeCalFact);
+                }
+                return _pressProbeCalFact;
+            }
+        }
+        
+        private PRESS_CURRENT_CAL _pressCurrCalFact;
+        public PRESS_CURRENT_CAL PressCurrCalFact
+        {
+            get
+            {
+                if (_pressCurrCalFact == null)
+                {
+                    _pressProbeCalFact = new PRESS_PROBE_CAL();
+                    AddVarToBundle(ref _eepParamsPageBundleCmd, _pressCurrCalFact);
+                }
+                return _pressCurrCalFact;
             }
         }
 
@@ -935,48 +978,6 @@ namespace MC_Suite.Services
                 return _specialVisualization;
             }
         }
-        
-        private PRODUCT_VARIANT _productVariant;
-        public PRODUCT_VARIANT ProductVariant
-        {
-            get
-            {
-                if (_productVariant == null)
-                {
-                    _productVariant = new PRODUCT_VARIANT();
-                    AddVarToBundle(ref _eepParamsPageBundleCmd, _productVariant);
-                }
-                return _productVariant;
-            }
-        }
-
-        private PRESS_PROBE_CAL_OFFSET _pressProbeCalOffset;
-        public PRESS_PROBE_CAL_OFFSET PressProbeCalOffset
-        {
-            get
-            {
-                if (_pressProbeCalOffset == null)
-                {
-                    _pressProbeCalOffset = new PRESS_PROBE_CAL_OFFSET();
-                    AddVarToBundle(ref _eepParamsPageBundleCmd, _pressProbeCalOffset);
-                }
-                return _pressProbeCalOffset;
-            }
-        }
-
-        private PRESS_PROBE_CAL _pressProbeCalGain;
-        public PRESS_PROBE_CAL PressProbeCalGain
-        {
-            get
-            {
-                if (_pressProbeCalGain == null)
-                {
-                    _pressProbeCalGain = new PRESS_PROBE_CAL();
-                    AddVarToBundle(ref _eepParamsPageBundleCmd, _pressProbeCalGain);
-                }
-                return _pressProbeCalGain;
-            }
-        }
 
         private CAL_LEV_4MA _calLev4mA;
         public CAL_LEV_4MA CalLev4mA
@@ -991,7 +992,7 @@ namespace MC_Suite.Services
                 return _calLev4mA;
             }
         }
-        
+
         private CAL_LEV_20MA _calLev20mA;
         public CAL_LEV_20MA CalLev20mA
         {
@@ -1005,7 +1006,7 @@ namespace MC_Suite.Services
                 return _calLev20mA;
             }
         }
-        
+
         private MEAS_FOR_4_20_MA _measFor420mA;
         public MEAS_FOR_4_20_MA MeasFor420mA
         {
@@ -1061,7 +1062,21 @@ namespace MC_Suite.Services
                 return _velLevFor20mA;
             }
         }
-        
+
+        private PRESS_PROBE_CAL_OFFSET _pressProbeCalOffset;
+        public PRESS_PROBE_CAL_OFFSET PressProbeCalOffset
+        {
+            get
+            {
+                if (_pressProbeCalOffset == null)
+                {
+                    _pressProbeCalOffset = new PRESS_PROBE_CAL_OFFSET();
+                    AddVarToBundle(ref _eepParamsPageBundleCmd, _pressProbeCalOffset);
+                }
+                return _pressProbeCalOffset;
+            }
+        }
+
         private ENABLE_BOARD_4_20_MA _enableBoard420mA;
         public ENABLE_BOARD_4_20_MA EnableBoard420mA
         {
@@ -1132,21 +1147,6 @@ namespace MC_Suite.Services
             }
         }
 
-        
-        private NEG_PULSE_OUTPUT_MODE _negpulseOutMode;
-        public NEG_PULSE_OUTPUT_MODE NegPulseOutMode
-        {
-            get
-            {
-                if (_negpulseOutMode == null)
-                {
-                    _negpulseOutMode = new NEG_PULSE_OUTPUT_MODE();
-                    AddVarToBundle(ref _eepParamsPageBundleCmd, _negpulseOutMode);
-                }
-                return _negpulseOutMode;
-            }
-        }
-
         private OUT_LOWER_LIMIT_4_20MA _outLowerLimit420mA;
         public OUT_LOWER_LIMIT_4_20MA OutLowerLimit420mA
         {
@@ -1175,7 +1175,108 @@ namespace MC_Suite.Services
             }
         }
 
+        private NEG_PULSE_OUTPUT_MODE _negpulseOutMode;
+        public NEG_PULSE_OUTPUT_MODE NegPulseOutMode
+        {
+            get
+            {
+                if (_negpulseOutMode == null)
+                {
+                    _negpulseOutMode = new NEG_PULSE_OUTPUT_MODE();
+                    AddVarToBundle(ref _eepParamsPageBundleCmd, _negpulseOutMode);
+                }
+                return _negpulseOutMode;
+            }
+        }
+        
+        private PRESS_PROBE_CAL _pressProbeCalGain;
+        public PRESS_PROBE_CAL PressProbeCalGain
+        {
+            get
+            {
+                if (_pressProbeCalGain == null)
+                {
+                    _pressProbeCalGain = new PRESS_PROBE_CAL();
+                    AddVarToBundle(ref _eepParamsPageBundleCmd, _pressProbeCalGain);
+                }
+                return _pressProbeCalGain;
+            }
+        }
+
+        private PULSE_VOL _pulseOutputVolume;
+        public PULSE_VOL PulseOutputVolume
+        {
+            get
+            {
+                if (_pulseOutputVolume == null)
+                {
+                    _pulseOutputVolume = new PULSE_VOL();
+                    AddVarToBundle(ref _eepParamsPageBundleCmd, _pulseOutputVolume);
+                }
+                return _pulseOutputVolume;
+            }
+
+        }
+
+        private UT_PULSE _pulseOutputTechUnit;
+        public UT_PULSE PulseOutputTechUnit
+        {
+            get
+            {
+                if (_pulseOutputTechUnit == null)
+                {
+                    _pulseOutputTechUnit = new UT_PULSE();
+                    AddVarToBundle(ref _eepParamsPageBundleCmd, _pulseOutputTechUnit);
+                }
+                return _pulseOutputTechUnit;
+            }
+
+        }
+        
+        private PROTOCOL_V _protocolVersion;
+        public PROTOCOL_V ProtocolVersion
+        {
+            get
+            {
+                if (_protocolVersion == null)
+                {
+                    _protocolVersion = new PROTOCOL_V();
+                    AddVarToBundle(ref _eepParamsPageBundleCmd, _protocolVersion);
+                }
+                return _protocolVersion;
+            }
+
+        }
+        
+        private PROTOCOL_R _protocolRevision;
+        public PROTOCOL_R ProtocolRevision
+        {
+            get
+            {
+                if (_protocolRevision == null)
+                {
+                    _protocolVersion = new PROTOCOL_V();
+                    AddVarToBundle(ref _eepParamsPageBundleCmd, _protocolRevision);
+                }
+                return _protocolRevision;
+            }
+
+        }
+
         #endregion // EEPROM parameters
+
+        private GSMinstalled _gsm_Installed;
+        public GSMinstalled GSM_Installed
+        {
+            get
+            {
+                if (_gsm_Installed == null)
+                {
+                    _gsm_Installed = new GSMinstalled();
+                }
+                return _gsm_Installed;
+            }
+        }
 
         #region Custom Info
 
@@ -1252,17 +1353,32 @@ namespace MC_Suite.Services
 
         #region EEPROM info
 
-        private CONV_SN _conSN;
-        public CONV_SN ConverterSerialNumber
+        private SENSOR_MODEL _sensorModel;
+        public SENSOR_MODEL SensorModel
         {
             get
             {
-                if (_conSN == null)
+                if (_sensorModel == null)
                 {
-                    _conSN = new CONV_SN();
-                    AddVarToBundle(ref _eepInfoPageBundleCmd, _conSN);
+                    _sensorModel = new SENSOR_MODEL();
+                    AddVarToBundle(ref _eepInfoPageBundleCmd, _sensorModel);
                 }
-                return _conSN;
+                return _sensorModel;
+            }
+        }
+
+        private OTHER_FEAT _otherFeat;
+        public OTHER_FEAT OtherFeatures
+        {
+            get
+            {
+                if (_otherFeat == null)
+                {
+                    _otherFeat = new OTHER_FEAT();
+                    AddVarToBundle(ref _eepInfoPageBundleCmd, _otherFeat);
+
+                }
+                return _otherFeat;
             }
         }
 
@@ -1277,6 +1393,49 @@ namespace MC_Suite.Services
                     AddVarToBundle(ref _eepInfoPageBundleCmd, _convId);
                 }
                 return _convId;
+            }
+        }
+
+        private SENSOR_ID _sensorId;
+        public SENSOR_ID SensorId
+        {
+            get
+            {
+                if (_sensorId == null)
+                {
+                    _sensorId = new SENSOR_ID();
+                    AddVarToBundle(ref _eepInfoPageBundleCmd, _sensorId);
+                }
+                return _sensorId;
+            }
+        }
+
+
+        private CONV_SN _conSN;
+        public CONV_SN ConverterSerialNumber
+        {
+            get
+            {
+                if (_conSN == null)
+                {
+                    _conSN = new CONV_SN();
+                    AddVarToBundle(ref _eepInfoPageBundleCmd, _conSN);
+                }
+                return _conSN;
+            }
+        }
+
+        private CAL_DATE _calibrationDate;
+        public CAL_DATE CalibrationDate
+        {
+            get
+            {
+                if (_calibrationDate == null)
+                {
+                    _calibrationDate = new CAL_DATE();
+                    AddVarToBundle(ref _eepInfoPageBundleCmd, _calibrationDate);
+                }
+                return _calibrationDate;
             }
         }
 
@@ -1308,60 +1467,17 @@ namespace MC_Suite.Services
             }
         }
 
-        private SENSOR_MODEL _sensorModel;
-        public SENSOR_MODEL SensorModel
+        private PRODUCT_VARIANT _productVariant;
+        public PRODUCT_VARIANT ProductVariant
         {
             get
             {
-                if (_sensorModel == null)
+                if (_productVariant == null)
                 {
-                    _sensorModel = new SENSOR_MODEL();
-                    AddVarToBundle(ref _eepInfoPageBundleCmd, _sensorModel);
+                    _productVariant = new PRODUCT_VARIANT();
+                    AddVarToBundle(ref _eepInfoPageBundleCmd, _productVariant);
                 }
-                return _sensorModel;
-            }
-        }
-
-        private SENSOR_ID _sensorId;
-        public SENSOR_ID SensorId
-        {
-            get
-            {
-                if (_sensorId == null)
-                {
-                    _sensorId = new SENSOR_ID();
-                    AddVarToBundle(ref _eepInfoPageBundleCmd, _sensorId);
-                }
-                return _sensorId;
-            }
-        }
-
-        private OTHER_FEAT _otherFeat;
-        public OTHER_FEAT OtherFeatures
-        {
-            get
-            {
-                if (_otherFeat == null)
-                {
-                    _otherFeat = new OTHER_FEAT();
-                    AddVarToBundle(ref _eepInfoPageBundleCmd, _otherFeat);
-
-                }
-                return _otherFeat;
-            }
-        }
-
-        private CAL_DATE _calibrationDate;
-        public CAL_DATE CalibrationDate
-        {
-            get
-            {
-                if (_calibrationDate == null)
-                {
-                    _calibrationDate = new CAL_DATE();
-                    AddVarToBundle(ref _eepInfoPageBundleCmd, _calibrationDate);
-                }
-                return _calibrationDate;
+                return _productVariant;
             }
         }
 
@@ -1457,6 +1573,132 @@ namespace MC_Suite.Services
 
         #region EEPROM calibration
 
+        private KA _kaRatio;
+        public KA KaRatio
+        {
+            get
+            {
+                if (_kaRatio == null)
+                {
+                    _kaRatio = new KA();
+                    AddVarToBundle(ref _eepCalibPageBundleCmd, _kaRatio);
+                }
+                return _kaRatio;
+            }
+        }
+
+        private DIAMETER _sensorDiameter;
+        public DIAMETER SensorDiameter
+        {
+            get
+            {
+                if (_sensorDiameter == null)
+                {
+                    _sensorDiameter = new DIAMETER();
+                    AddVarToBundle(ref _eepCalibPageBundleCmd, _sensorDiameter);
+                }
+                return _sensorDiameter;
+            }
+        }
+
+        private SENSOR_OFFSET _sensorOffset;
+        public SENSOR_OFFSET SensorOffset
+        {
+            get
+            {
+                if (_sensorOffset == null)
+                {
+                    _sensorOffset = new SENSOR_OFFSET();
+                    AddVarToBundle(ref _eepCalibPageBundleCmd, _sensorOffset);
+                }
+                return _sensorOffset;
+            }
+        }
+
+        private EXC_PAUSE _excitationPause;
+        public EXC_PAUSE ExcitationPause
+        {
+            get
+            {
+                if (_excitationPause == null)
+                {
+                    _excitationPause = new EXC_PAUSE();
+                    AddVarToBundle(ref _eepCalibPageBundleCmd, _excitationPause);
+                }
+                return _excitationPause;
+            }
+        }
+
+        private KALIGN _alignmentCalibrationFactor;
+        public KALIGN AlignmentCalibrationFactor
+        {
+            get
+            {
+                if (_alignmentCalibrationFactor == null)
+                {
+                    _alignmentCalibrationFactor = new KALIGN();
+                    AddVarToBundle(ref _eepCalibPageBundleCmd, _alignmentCalibrationFactor);
+                }
+                return _alignmentCalibrationFactor;
+            }
+        }
+
+        private OFFALIGN _alignmentOffset;
+        public OFFALIGN AlignmentOffset
+        {
+            get
+            {
+                if (_alignmentOffset == null)
+                {
+                    _alignmentOffset = new OFFALIGN();
+                    AddVarToBundle(ref _eepCalibPageBundleCmd, _alignmentOffset);
+                }
+                return _alignmentOffset;
+            }
+        }
+
+        private CUTOFF _cutoff;
+        public CUTOFF Cutoff
+        {
+            get
+            {
+                if (_cutoff == null)
+                {
+                    _cutoff = new CUTOFF();
+                    AddVarToBundle(ref _eepCalibPageBundleCmd, _cutoff);
+                }
+                return _cutoff;
+            }
+        }
+
+        private MEAS_FREQ _lowPowerMeasurePeriod;
+        public MEAS_FREQ LowPowerMeasurePeriod
+        {
+            get
+            {
+                if (_lowPowerMeasurePeriod == null)
+                {
+                    _lowPowerMeasurePeriod = new MEAS_FREQ();
+                    AddVarToBundle(ref _eepCalibPageBundleCmd, _lowPowerMeasurePeriod);
+                }
+                return _lowPowerMeasurePeriod;
+            }
+        }
+
+        private DAMPING _damping;
+        public DAMPING Damping
+        {
+            get
+            {
+                if (_damping == null)
+                {
+                    _damping = new DAMPING();
+                    AddVarToBundle(ref _eepCalibPageBundleCmd, _damping);
+                }
+                return _damping;
+            }
+        }
+
         private UT_FLOW _flowrateTechUnit;
         public UT_FLOW FlowrateTechUnit
         {
@@ -1502,160 +1744,17 @@ namespace MC_Suite.Services
 
         }
 
-        private UT_PULSE _pulseOutputTechUnit;
-        public UT_PULSE PulseOutputTechUnit
+        private EPIPE_TH _emptyPipeThreshold;
+        public EPIPE_TH EmptyPipeThreshold
         {
             get
             {
-                if (_pulseOutputTechUnit == null)
+                if (_emptyPipeThreshold == null)
                 {
-                    _pulseOutputTechUnit = new UT_PULSE();
-                    //AddVarToBundle(ref _eepCalibPageBundleCmd, _pulseOutputTechUnit);
+                    _emptyPipeThreshold = new EPIPE_TH();
+                    AddVarToBundle(ref _eepCalibPageBundleCmd, _emptyPipeThreshold);
                 }
-                return _pulseOutputTechUnit;
-            }
-
-        }
-
-        private PULSE_VOL _pulseOutputVolume;
-        public PULSE_VOL PulseOutputVolume
-        {
-            get
-            {
-                if (_pulseOutputVolume == null)
-                {
-                    _pulseOutputVolume = new PULSE_VOL();
-                    //AddVarToBundle(ref _eepCalibPageBundleCmd, _pulseOutputVolume);
-                }
-                return _pulseOutputVolume;
-            }
-
-        }
-
-        private LINE_FREQ _mainsLineFrequency;
-        public LINE_FREQ MainsLineFrequency
-        {
-            get
-            {
-                if (_mainsLineFrequency == null)
-                {
-                    _mainsLineFrequency = new LINE_FREQ();
-                    AddVarToBundle(ref _eepCalibPageBundleCmd, _mainsLineFrequency);
-                }
-                return _mainsLineFrequency;
-            }
-
-        }
-
-        private KA _kaRatio;
-        public KA KaRatio
-        {
-	        get
-	        {
-		        if (_kaRatio == null)
-		        {
-			        _kaRatio = new KA();
-			        AddVarToBundle(ref _eepCalibPageBundleCmd, _kaRatio);
-		        }
-		        return _kaRatio;
-	        }
-        }
-
-        private DIAMETER _sensorDiameter;
-        public DIAMETER SensorDiameter
-        {
-            get
-            {
-                if (_sensorDiameter == null)
-                {
-                    _sensorDiameter = new DIAMETER();
-                    AddVarToBundle(ref _eepCalibPageBundleCmd, _sensorDiameter);
-                }
-                return _sensorDiameter;
-            }
-        }
-
-        private SENSOR_OFFSET _sensorOffset;
-        public SENSOR_OFFSET SensorOffset
-        {
-            get
-            {
-                if (_sensorOffset == null)
-                {
-                    _sensorOffset = new SENSOR_OFFSET();
-                    AddVarToBundle(ref _eepCalibPageBundleCmd, _sensorOffset);
-                }
-                return _sensorOffset;
-            }
-        }
-
-        private DAMPING_SLOW _dampingSlow;
-        public DAMPING_SLOW DampingSlow
-        {
-            get
-            {
-                if (_dampingSlow == null)
-                {
-                    _dampingSlow = new DAMPING_SLOW();
-                    AddVarToBundle(ref _eepCalibPageBundleCmd, _dampingSlow);
-                }
-                return _dampingSlow;
-            }
-        }
-
-        private INPUT_STAGE_STAB _inputStageStabTime;
-        public INPUT_STAGE_STAB InputStageStabTime
-        {
-            get
-            {
-                if (_inputStageStabTime == null)
-                {
-                    _inputStageStabTime = new INPUT_STAGE_STAB();
-                    AddVarToBundle(ref _eepCalibPageBundleCmd, _inputStageStabTime);
-                }
-                return _inputStageStabTime;
-            }
-        }
-
-        private EPIPE_FREQ_FAST _emptyPipeFreqFast;
-        public EPIPE_FREQ_FAST EmptyPipeFreqFast
-        {
-            get
-            {
-                if (_emptyPipeFreqFast == null)
-                {
-                    _emptyPipeFreqFast = new EPIPE_FREQ_FAST();
-                    AddVarToBundle(ref _eepCalibPageBundleCmd, _emptyPipeFreqFast);
-                }
-                return _emptyPipeFreqFast;
-            }
-        }
-
-        private EPIPE_RELEASE _emptyPipeRelease;
-        public EPIPE_RELEASE EmptyPipeRelease
-        {
-            get
-            {
-                if (_emptyPipeRelease == null)
-                {
-                    _emptyPipeRelease = new EPIPE_RELEASE();
-                    AddVarToBundle(ref _eepCalibPageBundleCmd, _emptyPipeRelease);
-                }
-                return _emptyPipeRelease;
-            }
-        }
-
-        private EPIPE_FREQ _emptyPipeFreq;
-        public EPIPE_FREQ EmptyPipeFreq
-        {
-            get
-            {
-                if (_emptyPipeFreq == null)
-                {
-                    _emptyPipeFreq = new EPIPE_FREQ();
-                    AddVarToBundle(ref _eepCalibPageBundleCmd, _emptyPipeFreq);
-                }
-                return _emptyPipeFreq;
+                return _emptyPipeThreshold;
             }
         }
 
@@ -1673,115 +1772,101 @@ namespace MC_Suite.Services
             }
         }
 
-        private EPIPE_TH _emptyPipeThreshold;
-        public EPIPE_TH EmptyPipeThreshold
+        private NDEC_INST _flowrateNdigit;
+        public NDEC_INST FlowrateNdigit
         {
             get
             {
-                if (_emptyPipeThreshold == null)
+                if (_flowrateNdigit == null)
                 {
-                    _emptyPipeThreshold = new EPIPE_TH();
-                    AddVarToBundle(ref _eepCalibPageBundleCmd, _emptyPipeThreshold);
+                    _flowrateNdigit = new NDEC_INST();
+                    AddVarToBundle(ref _eepCalibPageBundleCmd, _flowrateNdigit);
                 }
-                return _emptyPipeThreshold;
+                return _flowrateNdigit;
             }
         }
 
-        private MEAS_AWAKE_MS _awakeMeasurePeriod;
-        public MEAS_AWAKE_MS AwakeMeasurePeriod
+        private NDEC_ACC _accumulatorNdigit;
+        public NDEC_ACC AccumulatorNdigit
         {
             get
             {
-                if (_awakeMeasurePeriod == null)
+                if (_accumulatorNdigit == null)
                 {
-                    _awakeMeasurePeriod = new MEAS_AWAKE_MS();
-                    AddVarToBundle(ref _eepCalibPageBundleCmd, _awakeMeasurePeriod);
+                    _accumulatorNdigit = new NDEC_ACC();
+                    AddVarToBundle(ref _eepCalibPageBundleCmd, _accumulatorNdigit);
                 }
-                return _awakeMeasurePeriod;
+                return _accumulatorNdigit;
             }
         }
 
-        private MEAS_FREQ _lowPowerMeasurePeriod;
-        public MEAS_FREQ LowPowerMeasurePeriod
+        private FS_MS _flowrateFullscale;
+        public FS_MS FlowrateFullscale
         {
             get
             {
-                if (_lowPowerMeasurePeriod == null)
+                if (_flowrateFullscale == null)
                 {
-                    _lowPowerMeasurePeriod = new MEAS_FREQ();
-                    AddVarToBundle(ref _eepCalibPageBundleCmd, _lowPowerMeasurePeriod);
+                    _flowrateFullscale = new FS_MS();
+                    AddVarToBundle(ref _eepCalibPageBundleCmd, _flowrateFullscale);
                 }
-                return _lowPowerMeasurePeriod;
+                return _flowrateFullscale;
             }
         }
 
-        private EXC_PAUSE _excitationPause;
-        public EXC_PAUSE ExcitationPause
+        private BYPASS _bypass;
+        public BYPASS Bypass
         {
             get
             {
-                if (_excitationPause == null)
+                if (_bypass == null)
                 {
-                    _excitationPause = new EXC_PAUSE();
-                    AddVarToBundle(ref _eepCalibPageBundleCmd, _excitationPause);
+                    _bypass = new BYPASS();
+                    AddVarToBundle(ref _eepCalibPageBundleCmd, _bypass);
                 }
-                return _excitationPause;
+                return _bypass;
             }
         }
 
-        private TMEAS_SD24 _sD24SamplingIndex;
-        public TMEAS_SD24 SD24SamplingIndex
+        private PEAK_CUT _peakcut;
+        public PEAK_CUT Peakcut
         {
             get
             {
-                if (_sD24SamplingIndex == null)
+                if (_peakcut == null)
                 {
-                    _sD24SamplingIndex = new TMEAS_SD24();
-                    AddVarToBundle(ref _eepCalibPageBundleCmd, _sD24SamplingIndex);
+                    _peakcut = new PEAK_CUT();
+                    AddVarToBundle(ref _eepCalibPageBundleCmd, _peakcut);
                 }
-                return _sD24SamplingIndex;
+                return _peakcut;
             }
         }
 
-        private ADC_GAIN _adcGain;
-        public ADC_GAIN AdcGain
+        private BYPASS_COUNT _bypassCount;
+        public BYPASS_COUNT BypassCount
         {
             get
             {
-                if (_adcGain == null)
+                if (_bypassCount == null)
                 {
-                    _adcGain = new ADC_GAIN();
-                    AddVarToBundle(ref _eepCalibPageBundleCmd, _adcGain);
+                    _bypassCount = new BYPASS_COUNT();
+                    AddVarToBundle(ref _eepCalibPageBundleCmd, _bypassCount);
                 }
-                return _adcGain;
+                return _bypassCount;
             }
         }
 
-        private OFFALIGN _alignmentOffset;
-        public OFFALIGN AlignmentOffset
+        private PEAKCUT_COUNT _peakcutCount;
+        public PEAKCUT_COUNT PeakcutCount
         {
             get
             {
-                if (_alignmentOffset == null)
+                if (_peakcutCount == null)
                 {
-                    _alignmentOffset = new OFFALIGN();
-                    AddVarToBundle(ref _eepCalibPageBundleCmd, _alignmentOffset);
+                    _peakcutCount = new PEAKCUT_COUNT();
+                    AddVarToBundle(ref _eepCalibPageBundleCmd, _peakcutCount);
                 }
-                return _alignmentOffset;
-            }
-        }
-
-        private KALIGN _alignmentCalibrationFactor;
-        public KALIGN AlignmentCalibrationFactor
-        {
-            get
-            {
-                if (_alignmentCalibrationFactor == null)
-                {
-                    _alignmentCalibrationFactor = new KALIGN();
-                    AddVarToBundle(ref _eepCalibPageBundleCmd, _alignmentCalibrationFactor);
-                }
-                return _alignmentCalibrationFactor;
+                return _peakcutCount;
             }
         }
 
@@ -1799,6 +1884,90 @@ namespace MC_Suite.Services
             }
         }
 
+        private TMEAS_SD24 _sD24SamplingIndex;
+        public TMEAS_SD24 SD24SamplingIndex
+        {
+            get
+            {
+                if (_sD24SamplingIndex == null)
+                {
+                    _sD24SamplingIndex = new TMEAS_SD24();
+                    AddVarToBundle(ref _eepCalibPageBundleCmd, _sD24SamplingIndex);
+                }
+                return _sD24SamplingIndex;
+            }
+        }
+
+        private EPIPE_FREQ _emptyPipeFreq;
+        public EPIPE_FREQ EmptyPipeFreq
+        {
+            get
+            {
+                if (_emptyPipeFreq == null)
+                {
+                    _emptyPipeFreq = new EPIPE_FREQ();
+                    AddVarToBundle(ref _eepCalibPageBundleCmd, _emptyPipeFreq);
+                }
+                return _emptyPipeFreq;
+            }
+        }
+
+        private EPIPE_RELEASE _emptyPipeRelease;
+        public EPIPE_RELEASE EmptyPipeRelease
+        {
+            get
+            {
+                if (_emptyPipeRelease == null)
+                {
+                    _emptyPipeRelease = new EPIPE_RELEASE();
+                    AddVarToBundle(ref _eepCalibPageBundleCmd, _emptyPipeRelease);
+                }
+                return _emptyPipeRelease;
+            }
+        }
+
+        private MEAS_WD_EN _waterDetectMeasThreshold;
+        public MEAS_WD_EN WaterDetectMeasThreshold
+        {
+            get
+            {
+                if (_waterDetectMeasThreshold == null)
+                {
+                    _waterDetectMeasThreshold = new MEAS_WD_EN();
+                    AddVarToBundle(ref _eepCalibPageBundleCmd, _waterDetectMeasThreshold);
+                }
+                return _waterDetectMeasThreshold;
+            }
+        }
+        
+        private MEAS_WD_EN _waterDetectMeasEnable;
+        public MEAS_WD_EN WaterDetectMeasEnable
+        {
+            get
+            {
+                if (_waterDetectMeasEnable == null)
+                {
+                    _waterDetectMeasEnable = new MEAS_WD_EN();
+                    AddVarToBundle(ref _eepCalibPageBundleCmd, _waterDetectMeasEnable);
+                }
+                return _waterDetectMeasEnable;
+            }
+        }
+
+        private ADC_GAIN _adcGain;
+        public ADC_GAIN AdcGain
+        {
+            get
+            {
+                if (_adcGain == null)
+                {
+                    _adcGain = new ADC_GAIN();
+                    AddVarToBundle(ref _eepCalibPageBundleCmd, _adcGain);
+                }
+                return _adcGain;
+            }
+        }
+
         private INSERTION _sensorIsInsertion;
         public INSERTION SensorIsInsertion
         {
@@ -1811,6 +1980,77 @@ namespace MC_Suite.Services
                 }
                 return _sensorIsInsertion;
             }
+        }
+
+        private MEAS_AWAKE_MS _awakeMeasurePeriod;
+        public MEAS_AWAKE_MS AwakeMeasurePeriod
+        {
+            get
+            {
+                if (_awakeMeasurePeriod == null)
+                {
+                    _awakeMeasurePeriod = new MEAS_AWAKE_MS();
+                    AddVarToBundle(ref _eepCalibPageBundleCmd, _awakeMeasurePeriod);
+                }
+                return _awakeMeasurePeriod;
+            }
+        }
+
+        private EPIPE_FREQ_FAST _emptyPipeFreqFast;
+        public EPIPE_FREQ_FAST EmptyPipeFreqFast
+        {
+            get
+            {
+                if (_emptyPipeFreqFast == null)
+                {
+                    _emptyPipeFreqFast = new EPIPE_FREQ_FAST();
+                    AddVarToBundle(ref _eepCalibPageBundleCmd, _emptyPipeFreqFast);
+                }
+                return _emptyPipeFreqFast;
+            }
+        }
+
+        private INPUT_STAGE_STAB _inputStageStabTime;
+        public INPUT_STAGE_STAB InputStageStabTime
+        {
+            get
+            {
+                if (_inputStageStabTime == null)
+                {
+                    _inputStageStabTime = new INPUT_STAGE_STAB();
+                    AddVarToBundle(ref _eepCalibPageBundleCmd, _inputStageStabTime);
+                }
+                return _inputStageStabTime;
+            }
+        }
+
+        private DAMPING_SLOW _dampingSlow;
+        public DAMPING_SLOW DampingSlow
+        {
+            get
+            {
+                if (_dampingSlow == null)
+                {
+                    _dampingSlow = new DAMPING_SLOW();
+                    AddVarToBundle(ref _eepCalibPageBundleCmd, _dampingSlow);
+                }
+                return _dampingSlow;
+            }
+        }
+
+        private LINE_FREQ _mainsLineFrequency;
+        public LINE_FREQ MainsLineFrequency
+        {
+            get
+            {
+                if (_mainsLineFrequency == null)
+                {
+                    _mainsLineFrequency = new LINE_FREQ();
+                    AddVarToBundle(ref _eepCalibPageBundleCmd, _mainsLineFrequency);
+                }
+                return _mainsLineFrequency;
+            }
+
         }
 
         private INTERP_sA_LO _insertion_sA_LO;
@@ -1939,160 +2179,6 @@ namespace MC_Suite.Services
             }
         }
 
-        private MEAS_WD_TH _waterDetectMeasThreshold;
-        public MEAS_WD_TH WaterDetectMeasThreshold
-        {
-            get
-            {
-                if (_waterDetectMeasThreshold == null)
-                {
-                    _waterDetectMeasThreshold = new MEAS_WD_TH();
-                    AddVarToBundle(ref _eepCalibPageBundleCmd, _waterDetectMeasThreshold);
-                }
-                return _waterDetectMeasThreshold;
-            }
-        }
-
-        private MEAS_WD_EN _waterDetectMeasEnable;
-        public MEAS_WD_EN WaterDetectMeasEnable
-        {
-            get
-            {
-                if (_waterDetectMeasEnable == null)
-                {
-                    _waterDetectMeasEnable = new MEAS_WD_EN();
-                    AddVarToBundle(ref _eepCalibPageBundleCmd, _waterDetectMeasEnable);
-                }
-                return _waterDetectMeasEnable;
-            }
-        }
-
-        private PEAKCUT_COUNT _peakcutCount;
-        public PEAKCUT_COUNT PeakcutCount
-        {
-            get
-            {
-                if (_peakcutCount == null)
-                {
-                    _peakcutCount = new PEAKCUT_COUNT();
-                    AddVarToBundle(ref _eepCalibPageBundleCmd, _peakcutCount);
-                }
-                return _peakcutCount;
-            }
-        }
-
-        private BYPASS_COUNT _bypassCount;
-        public BYPASS_COUNT BypassCount
-        {
-            get
-            {
-                if (_bypassCount == null)
-                {
-                    _bypassCount = new BYPASS_COUNT();
-                    AddVarToBundle(ref _eepCalibPageBundleCmd, _bypassCount);
-                }
-                return _bypassCount;
-            }
-        }
-
-        private PEAK_CUT _peakcut;
-        public PEAK_CUT Peakcut
-        {
-            get
-            {
-                if (_peakcut == null)
-                {
-                    _peakcut = new PEAK_CUT();
-                    AddVarToBundle(ref _eepCalibPageBundleCmd, _peakcut);
-                }
-                return _peakcut;
-            }
-        }
-
-        private BYPASS _bypass;
-        public BYPASS Bypass
-        {
-            get
-            {
-                if (_bypass == null)
-                {
-                    _bypass = new BYPASS();
-                    AddVarToBundle(ref _eepCalibPageBundleCmd, _bypass);
-                }
-                return _bypass;
-            }
-        }
-
-        private DAMPING _damping;
-        public DAMPING Damping
-        {
-            get
-            {
-                if (_damping == null)
-                {
-                    _damping = new DAMPING();
-                    AddVarToBundle(ref _eepCalibPageBundleCmd, _damping);
-                }
-                return _damping;
-            }
-        }
-
-        private CUTOFF _cutoff;
-        public CUTOFF Cutoff
-        {
-            get
-            {
-                if (_cutoff == null)
-                {
-                    _cutoff = new CUTOFF();
-                    AddVarToBundle(ref _eepCalibPageBundleCmd, _cutoff);
-                }
-                return _cutoff;
-            }
-        }
-
-        private FS_MS _flowrateFullscale;
-        public FS_MS FlowrateFullscale
-        {
-            get
-            {
-                if (_flowrateFullscale == null)
-                {
-                    _flowrateFullscale = new FS_MS();
-                    AddVarToBundle(ref _eepCalibPageBundleCmd, _flowrateFullscale);
-                }
-                return _flowrateFullscale;
-            }
-        }
-
-        private NDEC_ACC _accumulatorNdigit;
-        public NDEC_ACC AccumulatorNdigit
-        {
-            get
-            {
-                if (_accumulatorNdigit == null)
-                {
-                    _accumulatorNdigit = new NDEC_ACC();
-                    AddVarToBundle(ref _eepCalibPageBundleCmd, _accumulatorNdigit);
-                }
-                return _accumulatorNdigit;
-            }
-        }
-
-        private NDEC_INST _flowrateNdigit;
-        public NDEC_INST FlowrateNdigit
-        {
-            get
-            {
-                if (_flowrateNdigit == null)
-                {
-                    _flowrateNdigit = new NDEC_INST();
-                    AddVarToBundle(ref _eepCalibPageBundleCmd, _flowrateNdigit);
-                }
-                return _flowrateNdigit;
-            }
-        }
-
         #endregion // EEPROM calibration
 
         #region Bluetooth/Modbus
@@ -2122,20 +2208,6 @@ namespace MC_Suite.Services
                     AddVarToBundle(ref _eepBluetoothModbusDeviceInfoCmd, _bluetoothOnInterval);
                 }
                 return _bluetoothOnInterval;
-            }
-        }
-
-        private BT_ON_INTERVAL_ULP _bluetoothOnIntervalUlp;
-        public BT_ON_INTERVAL_ULP BluetoothOnIntervalUlp
-        {
-            get
-            {
-                if (_bluetoothOnIntervalUlp == null)
-                {
-                    _bluetoothOnIntervalUlp = new BT_ON_INTERVAL_ULP();
-                    //AddVarToBundle(ref _eepBluetoothModbusDeviceInfoCmd, _bluetoothOnIntervalUlp);
-                }
-                return _bluetoothOnIntervalUlp;
             }
         }
 
@@ -2294,249 +2366,7 @@ namespace MC_Suite.Services
             }
         }
         #endregion
-
-        #region IO Parameters
-
-        private RS485_IO_DATA_LENGHT _rS485_io_DataLenght;
-        public RS485_IO_DATA_LENGHT RS485_IO_DataLenght
-        {
-            get
-            {
-                if (_rS485_io_DataLenght == null)
-                {
-                    _rS485_io_DataLenght = new RS485_IO_DATA_LENGHT();
-                    AddVarToBundle(ref _ioParamsBundleCmd, _rS485_io_DataLenght);
-                }
-                return _rS485_io_DataLenght;
-            }
-        }
-
-        private RS485_IO_STOP_BITS _rS485_io_StopBits;
-        public RS485_IO_STOP_BITS RS485_IO_StopBits
-        {
-            get
-            {
-                if (_rS485_io_StopBits == null)
-                {
-                    _rS485_io_StopBits = new RS485_IO_STOP_BITS();
-                    AddVarToBundle(ref _ioParamsBundleCmd, _rS485_io_StopBits);
-                }
-                return _rS485_io_StopBits;
-            }
-        }
-
-        private RS485_IO_PARITY _rS485_io_Parity;
-        public RS485_IO_PARITY RS485_IO_Parity
-        {
-            get
-            {
-                if (_rS485_io_Parity == null)
-                {
-                    _rS485_io_Parity = new RS485_IO_PARITY();
-                    AddVarToBundle(ref _ioParamsBundleCmd, _rS485_io_Parity);
-                }
-                return _rS485_io_Parity;
-            }
-        }
-
-        private RS485_IO_BAUDRATE _rS485_io_Baudrate;
-        public RS485_IO_BAUDRATE RS485_IO_Baudrate
-        {
-            get
-            {
-                if (_rS485_io_Baudrate == null)
-                {
-                    _rS485_io_Baudrate = new RS485_IO_BAUDRATE();
-                    AddVarToBundle(ref _ioParamsBundleCmd, _rS485_io_Baudrate);
-                }
-                return _rS485_io_Baudrate;
-            }
-        }
-
-        private RS485_IO_DATA_MODE _rS485_io_DataMode;
-        public RS485_IO_DATA_MODE RS485_IO_DataMode
-        {
-            get
-            {
-                if (_rS485_io_DataMode == null)
-                {
-                    _rS485_io_DataMode = new RS485_IO_DATA_MODE();
-                    AddVarToBundle(ref _ioParamsBundleCmd, _rS485_io_DataMode);
-                }
-                return _rS485_io_DataMode;
-            }
-        }
-
-        private RS485_IO_ADDRESS _rS485_io_Address;
-        public RS485_IO_ADDRESS RS485_IO_Address
-        {
-            get
-            {
-                if (_rS485_io_Address == null)
-                {
-                    _rS485_io_Address = new RS485_IO_ADDRESS();
-                    AddVarToBundle(ref _ioParamsBundleCmd, _rS485_io_Address);
-                }
-                return _rS485_io_Address;
-            }
-        }
-
-        private USB_MODE _uSB_mode;
-        public USB_MODE USB_mode
-        {
-            get
-            {
-                if (_uSB_mode == null)
-                {
-                    _uSB_mode = new USB_MODE();
-                    AddVarToBundle(ref _ioParamsBundleCmd, _uSB_mode);
-                }
-                return _uSB_mode;
-            }
-        }
-
-        private uSD_MODE _usd_mode;
-        public uSD_MODE uSD_mode
-        {
-            get
-            {
-                if (_usd_mode == null)
-                {
-                    _usd_mode = new uSD_MODE();
-                    AddVarToBundle(ref _ioParamsBundleCmd, _usd_mode);
-                }
-                return _usd_mode;
-            }
-        }
-
-        private uSD_GRAPH_PERIOD _usd_GraphPeriod;
-        public uSD_GRAPH_PERIOD uSD_GraphPeriod
-        {
-            get
-            {
-                if (_usd_GraphPeriod == null)
-                {
-                    _usd_GraphPeriod = new uSD_GRAPH_PERIOD();
-                    AddVarToBundle(ref _ioParamsBundleCmd, _usd_GraphPeriod);
-                }
-                return _usd_GraphPeriod;
-            }
-        }
-
-        private uSD_GRAPH_ENABLE _usd_GraphEnable;
-        public uSD_GRAPH_ENABLE uSD_GraphEnable
-        {
-            get
-            {
-                if (_usd_GraphEnable == null)
-                {
-                    _usd_GraphEnable = new uSD_GRAPH_ENABLE();
-                    AddVarToBundle(ref _ioParamsBundleCmd, _usd_GraphEnable);
-                }
-                return _usd_GraphEnable;
-            }
-        }
-
-        private uSD_LOGS_SAVE _usd_LogsSave;
-        public uSD_LOGS_SAVE uSD_LogsSave
-        {
-            get
-            {
-                if (_usd_LogsSave == null)
-                {
-                    _usd_LogsSave = new uSD_LOGS_SAVE();
-                    AddVarToBundle(ref _ioParamsBundleCmd, _usd_LogsSave);
-                }
-                return _usd_LogsSave;
-            }
-        }
-
-        private uSD_EVENTS_SAVE _usd_EventsSave;
-        public uSD_EVENTS_SAVE uSD_EventsSave
-        {
-            get
-            {
-                if (_usd_EventsSave == null)
-                {
-                    _usd_EventsSave = new uSD_EVENTS_SAVE();
-                    AddVarToBundle(ref _ioParamsBundleCmd, _usd_EventsSave);
-                }
-                return _usd_EventsSave;
-            }
-        }
-
-        private UTILITY_TASK_RESET _utility_TaskReset;
-        public UTILITY_TASK_RESET Utility_TaskReset
-        {
-            get
-            {
-                if (_utility_TaskReset == null)
-                {
-                    _utility_TaskReset = new UTILITY_TASK_RESET();
-                    AddVarToBundle(ref _ioParamsBundleCmd, _utility_TaskReset);
-                }
-                return _utility_TaskReset;
-            }
-        }
-
-        private UTILITY_SYS_FLAGS _utility_SysFlags;
-        public UTILITY_SYS_FLAGS Utility_SysFlags
-        {
-            get
-            {
-                if (_utility_SysFlags == null)
-                {
-                    _utility_SysFlags = new UTILITY_SYS_FLAGS();
-                    AddVarToBundle(ref _ioParamsBundleCmd, _utility_SysFlags);
-                }
-                return _utility_SysFlags;
-            }
-        }
-
-        private UTILITY_VIRTUAL_KEYS _utility_VirtualKeys;
-        public UTILITY_VIRTUAL_KEYS Utility_VirtualKeys
-        {
-            get
-            {
-                if (_utility_VirtualKeys == null)
-                {
-                    _utility_VirtualKeys = new UTILITY_VIRTUAL_KEYS();
-                    AddVarToBundle(ref _ioParamsBundleCmd, _utility_VirtualKeys);
-                }
-                return _utility_VirtualKeys;
-            }
-        }
-
-        private DAC161_OUT_MIN_mA _dac161_OutMin_mA;
-        public DAC161_OUT_MIN_mA DAC161_OutMin_mA
-        {
-            get
-            {
-                if (_dac161_OutMin_mA == null)
-                {
-                    _dac161_OutMin_mA = new DAC161_OUT_MIN_mA();
-                    AddVarToBundle(ref _ioParamsBundleCmd, _dac161_OutMin_mA);
-                }
-                return _dac161_OutMin_mA;
-            }
-        }
-
-        private DAC161_OUT_MAX_mA _dac161_OutMax_mA;
-        public DAC161_OUT_MAX_mA DAC161_OutMax_mA
-        {
-            get
-            {
-                if (_dac161_OutMax_mA == null)
-                {
-                    _dac161_OutMax_mA = new DAC161_OUT_MAX_mA();
-                    AddVarToBundle(ref _ioParamsBundleCmd, _dac161_OutMax_mA);
-                }
-                return _dac161_OutMax_mA;
-            }
-        }
-
-        #endregion
-    
+                  
         #region GSM Parameters
 
         #region GSM Variables
@@ -3752,7 +3582,10 @@ namespace MC_Suite.Services
             _eepCustomizedDeviceInfoCmd.BundleId = ReadVarBundle.EEPROM_BUNDLE_BASE + 101;
 
             _eepCalibPageBundleCmd = new ReadVarBundle();
-            _eepCalibPageBundleCmd.BundleId = ReadVarBundle.EEPROM_BUNDLE_BASE + 512;            
+            _eepCalibPageBundleCmd.BundleId = ReadVarBundle.EEPROM_BUNDLE_BASE + 512;
+
+            _eepCoilStabilizationCmd = new ReadVarBundle();
+            _eepCoilStabilizationCmd.BundleId = ReadVarBundle.EEPROM_BUNDLE_BASE + 521;
 
             _ioParamsBundleCmd = new ReadVarBundle();
             _ioParamsBundleCmd.BundleId = ReadVarBundle.IO_PARAMS_BUNDLE_BASE;
@@ -3972,6 +3805,22 @@ namespace MC_Suite.Services
                 if (value != _eepBluetoothModbusDeviceInfoCmd)
                 {
                     _eepBluetoothModbusDeviceInfoCmd = value;
+                }
+            }
+        }
+        
+        private ReadVarBundle _eepCoilStabilizationCmd;
+        public ReadVarBundle EEPCoilStabilizationCmd
+        {
+            get
+            {
+                return _eepCoilStabilizationCmd;
+            }
+            set
+            {
+                if (value != _eepCoilStabilizationCmd)
+                {
+                    _eepCoilStabilizationCmd = value;
                 }
             }
         }

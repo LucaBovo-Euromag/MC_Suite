@@ -74,10 +74,10 @@ namespace MC_Suite.Services.Printing
 
             Signature.Text =    "Signature   ___________________\n";
 
-            FooterLine1.Text =  "Chemitec srl\t" + "web: www.chemitec.it";
-            FooterLine2.Text =  "Via Isaac Newton, 28 - 50018\t" + "e-mail: sales@chemitec.it";
-            FooterLine3.Text =  "Scandicci\t\t\t" + "phone: +39/055.7576801";
-            FooterLine4.Text =  "FIRENZE-ITALY\t\t" + "fax: +39/055.756697\t\t" + "Rev 2.0";
+            FooterLine1.Text =  "Euromag International Srl\t" + "web: www.euromag.com";
+            FooterLine2.Text =  "Via della Tecnica, 20 -35035\t" + "e-mail: info@euromag.com";
+            FooterLine3.Text =  "Mestrino\t\t\t" + "phone: +39/049.9005064";
+            FooterLine4.Text =  "PADOVA-ITALY\t\t" + "fax: +39/049.9007764\t\t" + "Rev 2.0";
         }
 
         private ReportLine DataToPrint

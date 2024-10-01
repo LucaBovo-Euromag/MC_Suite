@@ -184,6 +184,22 @@ namespace MC_Suite.Services
             return Color;
         }
 
+        public GPinState GetLowBatteryOutState()
+        {
+            GPinState State;
+            if (LowBatteryOut.Read() == GpioPinValue.High)
+            {
+                State.value = true;
+                State.color = new SolidColorBrush(Colors.LimeGreen);
+            }
+            else
+            {
+                State.value = false;
+                State.color = new SolidColorBrush(Colors.Yellow);
+            }
+            return State;
+        }
+
         public GPinState GetPulseOut()
         {
             GPinState State;

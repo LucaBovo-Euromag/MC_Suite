@@ -134,11 +134,11 @@
                         </Border>
                         <TextBlock Text="Calibration" Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Center"/>
                         <Border Grid.Row="2" Background="Transparent" Margin="0,0,10,0" Height="32" Grid.Column="1">
-                            <TextBlock Text="{x:Bind Mode=OneWay, Path=RAM_VerifConfiguration.DataLastTaratura}" Grid.Column="1" Grid.Row="3" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Center"/>
+                            <TextBlock Text="{x:Bind Mode=OneWay, Path=RAM_VerifConfiguration.DataLastTaratura.ToShortDateString()}" Grid.Column="1" Grid.Row="3" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Center"/>
                         </Border>
                         <TextBlock Text="Next Calib." Grid.Row="3" HorizontalAlignment="Left" VerticalAlignment="Center"/>
                         <Border Grid.Column="1" Grid.Row="3" Background="Transparent" Margin="0,0,10,0" Height="32">
-                            <TextBlock Text="{x:Bind Mode=OneWay, Path=RAM_VerifConfiguration.DataNextTaratura}" Grid.Column="1" Grid.Row="4" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                            <TextBlock Text="{x:Bind Mode=OneWay, Path=RAM_VerifConfiguration.DataNextTaratura.ToShortDateString()}" Grid.Column="1" Grid.Row="4" HorizontalAlignment="Left" VerticalAlignment="Center"/>
                         </Border>
                     </Grid>
                 </PivotItem>
@@ -342,7 +342,7 @@
             </PivotItem>
         </Pivot>
         <StackPanel x:Name="TestPanel" Grid.Row="2" Grid.RowSpan="2" Margin="0,0,4,0">
-            <Button x:Name="ClearAllButton" Content="New Test" Command="{x:Bind ClearAllTestCmd}" Margin="10,10,0,0" Background="#FFAB0534" HorizontalAlignment="Stretch"></Button>
+            <Button x:Name="ClearAllButton" Content="New Test" Command="{x:Bind ClearAllTestCmd}" Margin="10,10,0,0" Background="#FF0069B4" HorizontalAlignment="Stretch"></Button>
             <Grid x:Name="ConverterTestGrid" Margin="10,0,0,0"  Grid.Row="2" VerticalAlignment="Top">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
@@ -365,7 +365,7 @@
                     <TextBlock Text="CONVERTER" FontWeight="Normal" FontSize="20" Margin="0,0,4,5" />
                     <TextBlock x:Name="TestInfo" Margin="20,0,0,5" VerticalAlignment="Center"/>
                 </StackPanel>
-                <Button x:Name="Test420mABtn" Command="{x:Bind Test420mACmd}" Grid.Row="1" Content="Test 4/20 mA" Margin="0,0,10,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="#FFAB0534"/>
+                <Button x:Name="Test420mABtn" Command="{x:Bind Test420mACmd}" Grid.Row="1" Content="Test 4/20 mA" Margin="0,0,10,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="#FF0069B4"/>
                 <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal">
                     <Ellipse x:Name="Check4mA" Width="20" Height="20" Fill="Gray"/>
                     <TextBlock Text="4 mA" VerticalAlignment="Center" Margin="10,0,0,0" />
@@ -385,7 +385,7 @@
                         <ProgressRing x:Name="Test420mARing" IsActive="True" Visibility="Collapsed"/>
                     </Grid>
                 </Border>
-                <Button x:Name="SimulationBtn" Grid.Row="2" Command="{x:Bind Path=StartTestSimulation}" Content="SIMULATION" Margin="0,0,10,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="#FFAB0534"/>
+                <Button x:Name="SimulationBtn" Grid.Row="2" Command="{x:Bind Path=StartTestSimulation}" Content="SIMULATION" Margin="0,0,10,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="#FF0069B4"/>
                 <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal">
                     <Ellipse x:Name="ZeroCheck" Width="20" Height="20" Fill="Gray"/>
                     <TextBlock Text="Zero" VerticalAlignment="Center" Margin="10,0,0,0" />
@@ -408,7 +408,7 @@
                         <ProgressRing x:Name="SimulationTestRing" IsActive="True" Visibility="Collapsed"/>
                     </Grid>
                 </Border>
-                <Button x:Name="ECoilTestbtn" Command="{x:Bind StartECoilTestCmd}" Grid.Row="3" Content="TEST Energ.Coil" Margin="0,0,10,0" VerticalAlignment="Stretch" Background="#FFAB0534"/>
+                <Button x:Name="ECoilTestbtn" Command="{x:Bind StartECoilTestCmd}" Grid.Row="3" Content="TEST Energ.Coil" Margin="0,0,10,0" VerticalAlignment="Stretch" Background="#FF0069B4"/>
                 <StackPanel Grid.Row="3" Grid.Column="1" Orientation="Horizontal">
                     <Ellipse x:Name="ZeroEnergyCheck" Width="20" Height="20" Fill="Gray"/>
                     <TextBlock Text="Zero" VerticalAlignment="Center" Margin="10,0,0,0" />
@@ -427,7 +427,7 @@
                         <ProgressRing x:Name="ECoilTestRing" IsActive="True" Visibility="Collapsed"/>
                     </Grid>
                 </Border>
-                <Button x:Name="TestIObtn" Grid.Row="4" Content="TEST I/O" Command="{x:Bind StartIOTestCmd}" Margin="0,0,10,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="#FFAB0534"/>
+                <Button x:Name="TestIObtn" Grid.Row="4" Content="TEST I/O" Command="{x:Bind StartIOTestCmd}" Margin="0,0,10,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="#FF0069B4"/>
                 <StackPanel Grid.Row="4" Grid.Column="1" Orientation="Horizontal">
                     <Ellipse x:Name="ProgInCheck" Width="20" Height="20" Fill="Gray"/>
                     <TextBlock Text="Prog In" VerticalAlignment="Center" Margin="10,0,0,0" />
@@ -450,8 +450,8 @@
                         <ProgressRing x:Name="IOTestTestRing" IsActive="True" Visibility="Collapsed" HorizontalAlignment="Center" Margin="0,0,0,0" VerticalAlignment="Center"/>
                     </Grid>
                 </Border>
-                <Button x:Name="AllTestBtn" Content="Start All Tests"  Command="{x:Bind StartAllTestCmd}"  Grid.Row="5" Grid.ColumnSpan="6" HorizontalAlignment="Stretch" Margin="0,0,157,0" VerticalAlignment="Stretch" Background="#FFAB0534"/>
-                <Button x:Name="AbortConvTestBtn" Content="Abort"  Command="{x:Bind AbortTestCmd}" Grid.Row="5" Grid.Column="5" HorizontalAlignment="Right" Margin="10,0,0,0" Width="157" VerticalAlignment="Stretch" Background="#FFAB0534"/>
+                <Button x:Name="AllTestBtn" Content="Start All Tests"  Command="{x:Bind StartAllTestCmd}"  Grid.Row="5" Grid.ColumnSpan="6" HorizontalAlignment="Stretch" Margin="0,0,157,0" VerticalAlignment="Stretch" Background="#FF0069B4"/>
+                <Button x:Name="AbortConvTestBtn" Content="Abort"  Command="{x:Bind AbortTestCmd}" Grid.Row="5" Grid.Column="5" HorizontalAlignment="Right" Margin="10,0,0,0" Width="157" VerticalAlignment="Stretch" Background="#FF0069B4"/>
                 <ProgressBar x:Name="ReadingProgress" Grid.Row="6" Minimum="0" Maximum="5" Height="10" Grid.ColumnSpan="6" Margin="0,0,-0,0" VerticalAlignment="Top" />
             </Grid>
 
@@ -469,7 +469,7 @@
                     <ColumnDefinition Width="156*"/>
                 </Grid.ColumnDefinitions>
                 <TextBlock Text="SENSOR" Grid.ColumnSpan="2" FontWeight="Normal" FontSize="20" Margin="0,0,4,5"  HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
-                <Button x:Name="TestDryBtn"  Grid.Row="1" Grid.Column="0" Content="TEST Dry" Command="{x:Bind Path=StartTestSensorDry}"  HorizontalAlignment="Stretch" Margin="0,0,0,0" VerticalAlignment="Center" Background="#FFAB0534"/>
+                <Button x:Name="TestDryBtn"  Grid.Row="1" Grid.Column="0" Content="TEST Dry" Command="{x:Bind Path=StartTestSensorDry}"  HorizontalAlignment="Stretch" Margin="0,0,0,0" VerticalAlignment="Center" Background="#FF0069B4"/>
                 <StackPanel Grid.Column="1" Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                     <Border x:Name="ResistanceVauleBorder" Margin="5,0,0,0">
                         <TextBlock x:Name="ResistanceValue" Foreground="Black" VerticalAlignment="Center" HorizontalAlignment="Center" Width="75" Margin="0,0,0,0"/>
@@ -480,7 +480,7 @@
                     <Ellipse x:Name="IsolationTCCheck" Width="20" Height="20" Fill="Gray" Margin="10,0,0,0"/>
                     <TextBlock Text="Isolation T-C" VerticalAlignment="Center" Margin="10,0,0,0" />
                 </StackPanel>
-                <Button x:Name="TestWetBtn" Grid.Row="2" Grid.Column="0" Content="TEST Wet" Command="{x:Bind Path=StartTestSensorWet}"  HorizontalAlignment="Stretch" Margin="0,0,0,0" VerticalAlignment="Center" Background="#FFAB0534"/>
+                <Button x:Name="TestWetBtn" Grid.Row="2" Grid.Column="0" Content="TEST Wet" Command="{x:Bind Path=StartTestSensorWet}"  HorizontalAlignment="Stretch" Margin="0,0,0,0" VerticalAlignment="Center" Background="#FF0069B4"/>
                 <StackPanel Grid.Column="2" Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                     <Ellipse x:Name="IsolationACCheck" Width="20"  Height="20" Fill="Gray" Margin="10,0,0,0"/>
                     <TextBlock Text="Coil Isolation A-C" VerticalAlignment="Center" Margin="10,0,0,0"/>
@@ -499,11 +499,11 @@
                         <ProgressRing x:Name="SensorTestRing" IsActive="True" Visibility="Collapsed"/>
                     </Grid>
                 </Border>
-                <Button x:Name="AbortSensTestBtn" Content="Abort" Grid.Row="2" Grid.Column="5" HorizontalAlignment="Stretch" Margin="10,0,0,0" Background="#FFAB0534"/>
+                <Button x:Name="AbortSensTestBtn" Content="Abort" Grid.Row="2" Grid.Column="5" HorizontalAlignment="Stretch" Margin="10,0,0,0" Background="#FF0069B4"/>
             </Grid>
         </StackPanel>
         <Button Content="SAVE REPORT" Command="{x:Bind Path=AddReportCmd}" HorizontalAlignment="Stretch" Margin="10,0,10,0" VerticalAlignment="Center" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2"/>
-        <Image x:Name="MainLogo" HorizontalAlignment="Left" VerticalAlignment="Center" Source="/Images/Logo Chemitec Alfa Complete.png" Margin="1,0,0,0" Width="300" Grid.Row="3" Grid.ColumnSpan="2">
+        <Image x:Name="MainLogo" HorizontalAlignment="Left" VerticalAlignment="Center" Source="/Images/Logo Euromag Alfa Complete.png" Margin="1,0,0,0" Opacity="0.5" Width="300" Grid.Row="3" Grid.ColumnSpan="2">
             <Image.FocusVisualPrimaryBrush>
                 <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
                     <GradientStop Color="Black"/>

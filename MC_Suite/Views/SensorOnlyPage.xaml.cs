@@ -75,7 +75,13 @@ namespace MC_Suite.Views
             //Apro comunicazione con il Simulatore
             if (ComSetup.SimulatorComPort.ID == null)
             {
-                var dialog = new MessageDialog("Simulator COM Port Not Found", "COM Port Error");
+                ContentDialog dialog = new ContentDialog()
+                {
+                    Title = "COM Port Error",
+                    Content = "Simulator COM Port Not Found",
+                    CloseButtonText = "OK",
+                };
+
                 await dialog.ShowAsync();
                 DisableSensorTest();
             }
@@ -242,14 +248,26 @@ namespace MC_Suite.Views
         {
             if (ComSetup.SimulatorComPort.ID == null)
             {
-                var dialog = new MessageDialog("Simulator COM Port Not Found", "COM Port Error");
+                ContentDialog dialog = new ContentDialog()
+                {
+                    Title = "COM Port Error",
+                    Content = "Simulator COM Port Not Found",
+                    CloseButtonText = "OK",
+                };
+
                 await dialog.ShowAsync();
             }
             else
             {
                 if (await Simulator.Open())
                 {
-                    var dialog = new MessageDialog("Simulator COM Port Opened", "COM Port State");
+                    ContentDialog dialog = new ContentDialog()
+                    {
+                        Title = "COM Port State",
+                        Content = "Simulator COM Port Opened",
+                        CloseButtonText = "OK",
+                    };
+
                     await dialog.ShowAsync();
 
                     Simulator.SendCommand(Simulator.portHandler, SimulatorCOMPortManager.CMD.Ping, 5);
@@ -257,6 +275,36 @@ namespace MC_Suite.Views
                     STestStep = SensorTestStep.Ping;
                 }
             }
+
+            if (ComSetup.SimulatorComPort.ID == null)
+            {
+                ContentDialog dialog = new ContentDialog()
+                {
+                    Title = "COM Port Error",
+                    Content = "SensorSimulator COM Port Not Found",
+                    CloseButtonText = "OK",
+                };
+                await dialog.ShowAsync();
+            }
+            else
+            {
+                if (await Simulator.Open())
+                {
+                    ContentDialog dialog = new ContentDialog()
+                    {
+                        Title = "COM Port State",
+                        Content = "Simulator COM Port Opened",
+                        CloseButtonText = "OK",
+                    };
+
+                    await dialog.ShowAsync();
+
+                    Simulator.SendCommand(Simulator.portHandler, SimulatorCOMPortManager.CMD.Ping, 5);
+                    Simulator.CommandCompleted += Sensor_CommandCompleted;
+                    STestStep = SensorTestStep.Ping;
+                }
+            }
+
         }
 
         private ICommand _startTestSensorDry;
@@ -809,12 +857,19 @@ namespace MC_Suite.Views
 
         private async void ClearLog()
         {
-            var logdialog = new MessageDialog("Are you sure?", "Clear Logs");
-            logdialog.Commands.Add(new UICommand { Label = "Yes", Id = 0 });
-            logdialog.Commands.Add(new UICommand { Label = "Cancel", Id = 1 });
-            var logres = await logdialog.ShowAsync();
+            ContentDialog logdialog = new ContentDialog()
+            {
+                Title = "Clear Logs",
+                Content = "Are you sure?",
+                PrimaryButtonText = "Yes",
+                CloseButtonText = "Cancel",
+                IsSecondaryButtonEnabled = false,
+                DefaultButton = ContentDialogButton.Primary
+            };
 
-            if ((int)logres.Id == 0)
+            ContentDialogResult logres = await logdialog.ShowAsync();
+
+            if (logres == ContentDialogResult.Primary)
             {
                 Verificator.TestView.Clear();
                 Verificator.TestList.Clear();
@@ -864,7 +919,12 @@ namespace MC_Suite.Views
                     await BinaryStorage.Append(FileName, FileManager.CurrentFolder.Path, LogLineArray);
                 }
 
-                var dialog = new MessageDialog("Log File saved", "Log File");
+                ContentDialog dialog = new ContentDialog()
+                {
+                    Title = "Log File",
+                    Content = "Log File saved:\n" + FileName,
+                    CloseButtonText = "OK"
+                };
                 await dialog.ShowAsync();
             }
         }
@@ -998,10 +1058,14 @@ namespace MC_Suite.Views
             Verificator.ReportView.Clear();
             Verificator.ReportList.ForEach(p => Verificator.ReportView.Add(p));
 
-            var dialog = new MessageDialog("Report #" + NewReport.ID.ToString() + " added to Database\n" +
-                                           "Sensor ID: " + NewReport.Matricola_Sensore + "\n" +
-                                           "Converter ID : " + NewReport.Matricola_Convertitore
-                                           , "Report Saved");
+            ContentDialog dialog = new ContentDialog()
+            {
+                Title = "Report Saved",
+                Content = "Report #" + NewReport.ID.ToString() + " added to Database\n" +
+                          "Sensor ID: " + NewReport.Matricola_Sensore + "\n" +
+                          "Converter ID : " + NewReport.Matricola_Convertitore,
+                CloseButtonText = "OK",
+            };
             await dialog.ShowAsync();
         }
 
@@ -1044,7 +1108,7 @@ namespace MC_Suite.Views
             }
         }
 
-        private void SaveConfig()
+        private async void SaveConfig()
         {
             //Salvo la Configurazione
             RAM_Configuration.Operator = OperatorName.Text;
@@ -1056,7 +1120,28 @@ namespace MC_Suite.Views
 
             List<Configuration> NewCfg = new List<Configuration>();
             NewCfg.Add(RAM_Configuration);
-            SerializableStorage<Configuration>.Save(FileManager.ConfigFile, FileManager.MainFolder.Path, NewCfg);
+            if (await SerializableStorage<Configuration>.Save(FileManager.ConfigFile, FileManager.MainFolder.Path, NewCfg))
+            {
+                ContentDialog dialog = new ContentDialog()
+                {
+                    Title = "Report Info Save",
+                    Content = "Report Info Saved",
+                    CloseButtonText = "OK",
+                };
+
+                await dialog.ShowAsync();
+            }
+            else
+            {
+                ContentDialog dialog = new ContentDialog()
+                {
+                    Title = "Report Info Save",
+                    Content = "Report Info Saving Error",
+                    CloseButtonText = "OK",
+                };
+
+                await dialog.ShowAsync();
+            }
         }
 
         #region ObservableObject

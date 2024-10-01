@@ -250,6 +250,7 @@ namespace MC_Suite.Properties
             public string ID { get; set; }
             public string Name { get; set; }
             public string Description { get; set; }
+            public uint BaudRate { get; set; }
         }
 
         public ObservableCollection<Settings.COMPortItem> COMPorts = new ObservableCollection<Settings.COMPortItem>();
@@ -311,6 +312,26 @@ namespace MC_Suite.Properties
                 if (value != _simulatorComPort)
                 {
                     _simulatorComPort = value;
+                }
+            }
+        }
+
+        private COMPortItem _comPortSlave;
+        public COMPortItem ComPortSlave
+        {
+            get
+            {
+                if (_comPortSlave == null)
+                {
+                    _comPortSlave = new COMPortItem();
+                }
+                return _comPortSlave;
+            }
+            set
+            {
+                if (value != _comPortSlave)
+                {
+                    _comPortSlave = value;
                 }
             }
         }

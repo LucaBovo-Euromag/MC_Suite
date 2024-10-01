@@ -22,7 +22,6 @@ using MC_Suite.Euromag.Protocols.StdCommands;
 using System.Text.RegularExpressions;
 using Microsoft.Toolkit.Uwp;
 
-
 namespace MC_Suite.Views
 {
 
@@ -42,7 +41,7 @@ namespace MC_Suite.Views
 
             //Sys Clock Refresh*********************************************************************
             DispatcherTimer RefreshTimer = new DispatcherTimer();
-            RefreshTimer.Interval = TimeSpan.FromMilliseconds(5000);
+            RefreshTimer.Interval = TimeSpan.FromMilliseconds(1000);
             RefreshTimer.Tick += RefreshTimer_Tick;
             RefreshTimer.Start();
             SysDate = DateTime.Now.ToString("dd MMMM yyyy");
@@ -105,8 +104,6 @@ namespace MC_Suite.Views
                 }
             }
         }
-
-
         private void RefreshTimer_Tick(object sender, object e)
         {
             SysDate = DateTime.Now.ToString("dd MMMM yyyy");
@@ -314,6 +311,10 @@ namespace MC_Suite.Views
 
         private void MC406Select_Click(object sender, RoutedEventArgs e)
         {
+            MC608Select.IsEnabled = false;
+            MC406Select.IsEnabled = false;
+            SensorSelect.IsEnabled = false;
+
             Config.ConverterSelection.MC406.Connected = true;
             Config.ConverterSelection.MC608.Connected = false;
             ComSetup.SensorOnly                       = false;
@@ -338,6 +339,10 @@ namespace MC_Suite.Views
 
         private void MC608Select_Click(object sender, RoutedEventArgs e)
         {
+            MC608Select.IsEnabled = false;
+            MC406Select.IsEnabled = false;
+            SensorSelect.IsEnabled = false;
+
             Config.ConverterSelection.MC406.Connected = false;
             Config.ConverterSelection.MC608.Connected = true;
             ComSetup.SensorOnly                       = false;
@@ -346,20 +351,30 @@ namespace MC_Suite.Views
             LoadingBar.Visibility = Visibility.Collapsed;
             Config.SensorOnly = false;
 
-            if (SensorSimulator.IsOpen)
-                SensorSimulator.Close();
-
-            if (IrConnection.IsOpen)
-                IrConnection.Close();
-
-            if (MbConnection.IsOpen)
-                MbConnection.Close();
+            SensorSimulator.Close();                
+            IrConnection.Close();
+            MbConnection.Close();
 
             ComSetup.Verificator608PageReady = false;
-            StartComPort( ComSetup.Protocol608, ComSetup.ComPort608 );
+            StartComPort608( ComSetup.Protocol608, ComSetup.ComPort608 );
         }
 
         #region Start Connection
+
+        private void StartComPort608(byte _protocol, Settings.COMPortItem _ComPort)
+        {
+            switch (_protocol)
+            {
+                default:
+                case 0: //Modbus via IrCOM
+                    _ComPort.BaudRate = 78600;
+                    break;
+                case 1: //Modbus
+                    _ComPort.BaudRate = Settings.Instance.BaudRate;
+                    break;
+            }
+            StartModbus(_ComPort);
+        }
 
         private void StartComPort(byte _protocol, Settings.COMPortItem _ComPort)
         {
@@ -392,6 +407,10 @@ namespace MC_Suite.Views
                 if (AnalogMeasures.ADC_ModuleIsReady == false)
                     await AnalogMeasures.ADC_Module_Open();
 
+                MC608Select.IsEnabled = true;
+                MC406Select.IsEnabled = true;
+                SensorSelect.IsEnabled = true;
+
                 this.Frame.Navigate(typeof(VerificatorPage));
             }
             else
@@ -404,7 +423,14 @@ namespace MC_Suite.Views
         {
             if (_port.ID == null)
             {
-                var dialog = new MessageDialog("NO Com Port");
+                
+                ContentDialog dialog = new ContentDialog()
+                {
+                    Title = "IrCOM Connection",
+                    Content = "No IrCom Port selected",
+                    CloseButtonText = "OK",
+                };
+
                 await dialog.ShowAsync();
                 LoadingBox.Visibility = Visibility.Collapsed;
             }
@@ -469,6 +495,8 @@ namespace MC_Suite.Views
                 if (BundleIndex < BundleIndexMax)
                 {
                     BundleIndex++;
+                    BundleAutoRead();
+                    BundleReaded = false;
                 }
                 else
                 {
@@ -481,9 +509,9 @@ namespace MC_Suite.Views
                         await AnalogMeasures.ADC_Module_Open();
 
                     this.Frame.Navigate(typeof(VerificatorPage));
+
+                    ReadTimer.Stop();
                 }
-                BundleAutoRead();
-                BundleReaded = false;
             }
             else
                 BundleAutoRead();
@@ -495,9 +523,20 @@ namespace MC_Suite.Views
         {
             if (_port.ID == null)
             {
-                var dialog = new MessageDialog("NO Com Port");
+                ContentDialog dialog = new ContentDialog()
+                {
+                    Title = "Modbus Connection",
+                    Content = "No Modbus Port selected",
+                    CloseButtonText = "OK",
+                };
+
                 await dialog.ShowAsync();
                 LoadingBox.Visibility = Visibility.Collapsed;
+
+                MC608Select.IsEnabled = true;
+                MC406Select.IsEnabled = true;
+                SensorSelect.IsEnabled = true;
+
             }
             else
             {
@@ -512,6 +551,12 @@ namespace MC_Suite.Views
 
                     if (AnalogMeasures.ADC_ModuleIsReady == false)
                         await AnalogMeasures.ADC_Module_Open();
+
+                    MC608Select.IsEnabled = true;
+                    MC406Select.IsEnabled = true;
+                    SensorSelect.IsEnabled = true;
+
+                    MbConnection.MbConnectionStatus = MbCOMPortManager.MbConnectionStates.Ready;
 
                     this.Frame.Navigate(typeof(VerificatorPage608));
                 }
@@ -574,6 +619,11 @@ namespace MC_Suite.Views
         private void SetDatePicker_DateChanged(object sender, DatePickerValueChangedEventArgs e)
         {
             newDate = e.NewDate.UtcDateTime;            
+        }
+
+        private void DriCalibration_select_Click(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }

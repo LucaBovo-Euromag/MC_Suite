@@ -186,10 +186,10 @@ namespace MC_Suite.Views
 
                 Signature.Text = "Signature   ___________________\n";
 
-                FooterLine1.Text = "Chemitec srl\t\t" + "web: www.chemitec.it";
-                FooterLine2.Text = "Via Isaac Newton, 28 - 50018\t" + "e-mail: sales@chemitec.it";
-                FooterLine3.Text = "Scandicci\t\t\t" + "phone: +39/055.7576801";
-                FooterLine4.Text = "FIRENZE-ITALY\t\t" + "fax: +39/055.756697\t\t" + "Rev 2.0";
+                FooterLine1.Text = "Euromag International Srl\t" + "web: www.euromag.com";
+                FooterLine2.Text = "Via della Tecnica, 20 -35035\t" + "e-mail: euromag@euromag.com";
+                FooterLine3.Text = "Mestrino\t\t\t" + "phone: +39/049.9005064";
+                FooterLine4.Text = "PADOVA-ITALY\t\t" + "fax: +39/049.9007764\t\t" + "Rev 2.0";
             }                  
         }
 
@@ -231,7 +231,7 @@ namespace MC_Suite.Views
                 ReportLine ReportToSave = ReportDB.SelectedItem as ReportLine;
 
                 string ReportLine = ReportToSave.ID.ToString() + ";" +
-                                    ReportToSave.Data_Test + ";" +
+                                    ReportToSave.Data_Test.ToShortDateString() + ";" +
                                     ReportToSave.OperatoreTest.ToString() + ";" +
                                     ReportToSave.Modello_Sensore.ToString() + ";" +
                                     ReportToSave.Matricola_Sensore.ToString() + ";" +
@@ -273,7 +273,7 @@ namespace MC_Suite.Views
                 FileManager.SavedFileName = "Report_" + ReportToSave.Customer.ToString() + "_" +
                                             ReportToSave.Matricola_Convertitore + "_" +
                                             ReportToSave.Matricola_Sensore + "_" +
-                                            DateTime.Now.ToString("dd_MM_yyyy_hh_mm") + ".tmp";
+                                            ReportToSave.Data_Test.ToString("MM_dd_yyyy_hh_mm") + ".tmp";
 
                 await BinaryStorage.Append(FileManager.SavedFileName, FileManager.CurrentFolder.Path, ReportLineArray);                
             }
@@ -314,7 +314,7 @@ namespace MC_Suite.Views
             for(int i = 0; i < Verificator.ReportList.Count; i++)
             {
                 string ReportLine = Verificator.ReportList[i].ID.ToString() + ";" +
-                                    Verificator.ReportList[i].Data_Test + ";" +
+                                    Verificator.ReportList[i].Data_Test.ToShortDateString() + ";" +
                                     Verificator.ReportList[i].OperatoreTest.ToString() + ";" +
                                     Verificator.ReportList[i].Modello_Sensore.ToString() + ";" +
                                     Verificator.ReportList[i].Matricola_Sensore.ToString() + ";" +

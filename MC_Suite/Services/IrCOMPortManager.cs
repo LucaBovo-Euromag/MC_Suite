@@ -241,7 +241,13 @@ namespace MC_Suite.Services
         {
             if ((Port == null) || (Port.ID == String.Empty))
             {
-                var dialog = new MessageDialog("Please select COM port: OPTIONS->Settings->Connection", "COM Port not selected");
+                ContentDialog dialog = new ContentDialog()
+                {
+                    Title = "COM Port not selected",
+                    Content = "Please select COM port: OPTIONS->Settings->Connection",
+                    CloseButtonText = "OK",
+                };
+                
                 await dialog.ShowAsync();
             }
             else
@@ -264,7 +270,12 @@ namespace MC_Suite.Services
                 }
                 else
                 {
-                    var dialog = new MessageDialog("Error Opening " + Port.Name + " Port");
+                    ContentDialog dialog = new ContentDialog()
+                    {
+                        Title = "COM Port Error",
+                        Content = "Error Opening " + Port.Name + " Port",
+                        CloseButtonText = "OK",
+                    };
                     await dialog.ShowAsync();
                 }
             }
@@ -276,7 +287,9 @@ namespace MC_Suite.Services
                 (IrConnectionStatus == IrConnectionStates.Connected))
             {
                 //Stop();
-                portHandler.close();
+                if(portHandler != null)
+                    portHandler.close();
+                portHandler = null;
             }
         }
 

@@ -10,6 +10,7 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Storage.Streams;
 using Windows.UI.Popups;
+using Microsoft.Toolkit.Uwp.UI.Controls;
 
 namespace MC_Suite.Services
 {
@@ -391,7 +392,8 @@ namespace MC_Suite.Services
         {
             IrMode,
             ModbusMode,
-            SimulatorMode
+            SimulatorMode,
+            SlaveMode
         }
 
         /// <summary>
@@ -421,6 +423,10 @@ namespace MC_Suite.Services
                     case ReadMode.SimulatorMode:
                         ReadBufferLength = 38;
                         Timeout = 10;
+                        break;
+                    case ReadMode.SlaveMode:
+                        ReadBufferLength = 14;
+                        Timeout = 1;
                         break;
                     default:
                         ReadBufferLength = 524;
@@ -458,7 +464,7 @@ namespace MC_Suite.Services
                             break;
                     }
 
-                    if (ReadDataBuffer[0] != FirstChar)
+                    if ((ReadDataBuffer[0] != FirstChar) && (Mode != ReadMode.SlaveMode))
                     {
                         this.dataReceived = false;
                         for (int i = 0; i < bytesRead; i++)

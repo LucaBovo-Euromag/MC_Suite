@@ -25,7 +25,7 @@
     <AppxBundlePlatforms>arm</AppxBundlePlatforms>
     <AppInstallerUpdateFrequency>0</AppInstallerUpdateFrequency>
     <AppInstallerCheckForUpdateFrequency>OnApplicationRun</AppInstallerCheckForUpdateFrequency>
-    <PackageCertificateThumbprint>D855A2D42FB8C3001DFA89918984C2CA6A8B721F</PackageCertificateThumbprint>
+    <PackageCertificateThumbprint>012EE419AA8BE65C9D2470288C64CA8A059E47CE</PackageCertificateThumbprint>
     <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
     <AppxPackageSigningTimestampDigestAlgorithm>SHA256</AppxPackageSigningTimestampDigestAlgorithm>
     <GenerateTestArtifacts>True</GenerateTestArtifacts>
@@ -118,9 +118,6 @@
       <Version>5.0.0</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.Toolkit.Uwp.UI.Controls.DataGrid">
-      <Version>5.0.0</Version>
-    </PackageReference>
-    <PackageReference Include="Microsoft.Toolkit.Uwp.UI.Controls.Graph">
       <Version>5.0.0</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.Xaml.Behaviors.Uwp.Managed">
@@ -227,6 +224,7 @@
     <Compile Include="Services\ReportLine.cs" />
     <Compile Include="Services\RisultatiTest.cs" />
     <Compile Include="Services\SimulatorCOMPortManager.cs" />
+    <Compile Include="Services\SlaveCOMPortManager.cs" />
     <Compile Include="Services\SSM1_Com.cs" />
     <Compile Include="Services\Storage.cs" />
     <Compile Include="Services\VerificatorConfig.cs" />
@@ -234,6 +232,7 @@
     <Compile Include="Views\Calibration.xaml.cs">
       <DependentUpon>Calibration.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\CommonResources.cs" />
     <Compile Include="Views\ConfigurationPage.xaml.cs">
       <DependentUpon>ConfigurationPage.xaml</DependentUpon>
     </Compile>
@@ -242,6 +241,10 @@
       <DependentUpon>DataLogPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\DataLogPageViewModel.cs" />
+    <Compile Include="Views\DryCalibrationPage.xaml.cs">
+      <DependentUpon>DryCalibrationPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\DryCalibrationPageViewModel.cs" />
     <Compile Include="Views\FileBrowser.xaml.cs">
       <DependentUpon>FileBrowser.xaml</DependentUpon>
     </Compile>
@@ -338,6 +341,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\DataLogPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\DryCalibrationPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -470,15 +477,22 @@
     <Content Include="Images\BatteryEmpty-32.png" />
     <Content Include="Images\BatteryLow-32.png" />
     <Content Include="Images\euromag-logo-2.png" />
-    <Content Include="Images\Frontalino_406.PNG" />
-    <Content Include="Images\Frontalino_406_Big.PNG" />
-    <Content Include="Images\Frontalino_608.PNG" />
-    <Content Include="Images\Logo Chemitec Alfa Complete.png">
+    <Content Include="Images\Frontalino_406.PNG">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Images\Logo Chemitec Alfa.png" />
+    <Content Include="Images\Frontalino_406_Big.PNG" />
+    <Content Include="Images\Frontalino_608.PNG" />
+    <Content Include="Images\Frontalino_608_Neutro.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\Logo Euromag Alfa Complete.png" />
     <Content Include="Images\Logo Euromag Alfa.png" />
-    <Content Include="Images\LogoChemitecCertificato.png" />
+    <Content Include="Images\Logo Euromag Certificato.jpg" />
+    <Content Include="Images\Logo Euromag Colorato.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\Logo Euromag Nero.jpg" />
+    <Content Include="Images\LogoBermadAlfa.png" />
     <Content Include="Images\LogoEuromagCertificato.png" />
     <Content Include="Images\Mail-32.png" />
     <Content Include="Images\MC406.PNG" />
@@ -533,6 +547,12 @@
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>MC_Suite_TemporaryKey.pfx</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v$(VisualStudioVersion)\Microsoft.Windows.UI.Xaml.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

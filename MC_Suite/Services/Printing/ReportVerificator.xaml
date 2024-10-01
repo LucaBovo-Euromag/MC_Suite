@@ -17,7 +17,7 @@
             <RowDefinition Height="Auto" MinHeight="0"/>
         </Grid.RowDefinitions>
         <StackPanel x:Name="Header" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-            <Image HorizontalAlignment="Stretch" Height="80" Margin="0,20,0,0" VerticalAlignment="Stretch" Source="/Images/LogoChemitecCertificato.png" Width="383" />
+            <Image HorizontalAlignment="Stretch" Height="80" Margin="0,20,0,0" VerticalAlignment="Stretch" Source="/Images/LogoEuromagCertificato.png" Width="383" />
         </StackPanel>
 
         <RichTextBlock Foreground="Black" x:Name="TextSelection" FontSize="16" Grid.Row="1"  Grid.ColumnSpan="2" OverflowContentTarget="{Binding ElementName=FirstLinkedContainer}"

@@ -48,45 +48,54 @@ namespace MC_Suite.Services
             Windows.Storage.StorageFolder _folder = await StorageFolder.GetFolderFromPathAsync(Folder.Path);
             IReadOnlyList<StorageFile> FileList = await _folder.GetFilesAsync();
 
-            if (FileList != null && ((FileList.Count != 0) && (FileList.Count != mem_count)))
+            if (FileList != null && FileList.Count != 0) 
+            {
+                if(FileList.Count != mem_count)
+                { 
+                    this.AllFileList.Clear();
+                    this.CfgFileList.Clear();
+                    this.UserFileList.Clear();
+                    this.ViewFiles.Clear();
+
+                    FileData F;
+                    Windows.Storage.FileProperties.BasicProperties Fproperties;
+                    foreach (StorageFile File in FileList)
+                    {
+                        F = new FileData();
+                        F.Name = File.Name;
+                        F.Path = Folder.Name;
+                        F.FullPath = _folder.Path;
+                        F.Date = File.DateCreated.DateTime;
+                        Fproperties = await File.GetBasicPropertiesAsync();
+                        F.Size = Fproperties.Size.ToString();
+                        this.AllFileList.Add(F);
+                        string path = Path.GetExtension(File.Name);
+                        if ((path == ".cfg") || (path == ".xml") || (path == ".db") || (path == ".key"))
+                            this.CfgFileList.Add(F);
+                        else
+                            this.UserFileList.Add(F);
+                    }
+
+                    switch(this.ViewFileFilter)
+                    {
+                        case ViewFilesTypes.All:
+                            this.AllFileList.ForEach(p => this.ViewFiles.Add(p));
+                            break;
+                        case ViewFilesTypes.User:
+                            this.UserFileList.ForEach(p => this.ViewFiles.Add(p));
+                            break;
+                        case ViewFilesTypes.Cfg:
+                            this.CfgFileList.ForEach(p => this.ViewFiles.Add(p));
+                            break;
+                    }
+                }
+            }
+            else
             {
                 this.AllFileList.Clear();
                 this.CfgFileList.Clear();
                 this.UserFileList.Clear();
                 this.ViewFiles.Clear();
-
-                FileData F;
-                Windows.Storage.FileProperties.BasicProperties Fproperties;
-                foreach (StorageFile File in FileList)
-                {
-                    F = new FileData();
-                    F.Name = File.Name;
-                    F.Path = Folder.Name;
-                    F.FullPath = _folder.Path;
-                    F.Date = File.DateCreated.DateTime;
-                    Fproperties = await File.GetBasicPropertiesAsync();
-                    F.Size = Fproperties.Size.ToString();
-                    this.AllFileList.Add(F);
-                    string path = Path.GetExtension(File.Name);
-                    if ((path == ".cfg") || (path == ".xml") || (path == ".db") || (path == ".key"))
-                        this.CfgFileList.Add(F);
-                    else
-                        this.UserFileList.Add(F);
-                }
-
-                switch(this.ViewFileFilter)
-                {
-                    case ViewFilesTypes.All:
-                        this.AllFileList.ForEach(p => this.ViewFiles.Add(p));
-                        break;
-                    case ViewFilesTypes.User:
-                        this.UserFileList.ForEach(p => this.ViewFiles.Add(p));
-                        break;
-                    case ViewFilesTypes.Cfg:
-                        this.CfgFileList.ForEach(p => this.ViewFiles.Add(p));
-                        break;
-                }
-
             }
             return true;
         }
@@ -154,25 +163,31 @@ namespace MC_Suite.Services
         public async Task<bool> GetUSBDrives()
         {
             IReadOnlyList<StorageFolder> UsbDrivesList = (await KnownFolders.RemovableDevices.GetFoldersAsync());
+
             USBDriversList.Clear();
+            UsbFolder = null;
 
-            if ((UsbDrivesList != null)&&(UsbDrivesList.Count != 0))
-            {                
-                for (int i=0; i< UsbDrivesList.Count; i++)
-                {
-                    FolderData Drive = new FolderData();
-                    Drive.Name = UsbDrivesList[i].Name;
-                    Drive.DisplayName = UsbDrivesList[i].DisplayName;
-                    Drive.DisplayType = UsbDrivesList[i].DisplayType;
-                    Drive.Path = UsbDrivesList[i].Path;                    
-                    USBDriversList.Add(Drive);
-                }
-                UsbFolder = new FolderData();
-                UsbFolder = USBDriversList[0];
+            /*foreach (StorageFolder folder in UsbDrivesList)
+            {
+                FolderData Drive = new FolderData();
+                Drive.Name = folder.Name;
+                Drive.DisplayName = folder.DisplayName;
+                Drive.DisplayType = folder.DisplayType;
+                Drive.Path = folder.Path;
+                USBDriversList.Add(Drive);
+            }*/
+
+            if(UsbDrivesList.Count > 0)
+            {
+                FolderData Drive = new FolderData();
+                Drive.Name = UsbDrivesList[0].Name;
+                Drive.DisplayName = UsbDrivesList[0].DisplayName;
+                Drive.DisplayType = UsbDrivesList[0].DisplayType;
+                Drive.Path = UsbDrivesList[0].Path;
+                USBDriversList.Add(Drive);
+                UsbFolder = Drive;
             }
-            else
-                UsbFolder = null;
-
+                
             return true;
         }
 
@@ -418,23 +433,31 @@ namespace MC_Suite.Services
     /// <typeparam name="T">Type parameter to be serialize</typeparam>
     public static class SerializableStorage<T> where T : new()
     {
-        public static async void Save(string FileName, string Folder, List<T> _Data)
+        public static async Task<bool> Save(string FileName, string Folder, List<T> _Data)
         {
-            MemoryStream _MemoryStream = new MemoryStream();
-            DataContractSerializer Serializer = new DataContractSerializer(typeof(List<T>));
-            Serializer.WriteObject(_MemoryStream, _Data);
+            try
+            { 
+                MemoryStream _MemoryStream = new MemoryStream();
+                DataContractSerializer Serializer = new DataContractSerializer(typeof(List<T>));
+                Serializer.WriteObject(_MemoryStream, _Data);
 
-            Task.WaitAll();
+                Task.WaitAll();
 
-            Windows.Storage.StorageFolder _folder = await StorageFolder.GetFolderFromPathAsync(Folder);
-            StorageFile _file = await _folder.CreateFileAsync(FileName, CreationCollisionOption.ReplaceExisting);
+                Windows.Storage.StorageFolder _folder = await StorageFolder.GetFolderFromPathAsync(Folder);
+                StorageFile _file = await _folder.CreateFileAsync(FileName, CreationCollisionOption.ReplaceExisting);
 
-            using (Stream fileStream = await _file.OpenStreamForWriteAsync())
+                using (Stream fileStream = await _file.OpenStreamForWriteAsync())
+                {
+                    _MemoryStream.Seek(0, SeekOrigin.Begin);
+                    await _MemoryStream.CopyToAsync(fileStream);
+                    await fileStream.FlushAsync();
+                    fileStream.Dispose();
+                }
+                return true;
+            }
+            catch
             {
-                _MemoryStream.Seek(0, SeekOrigin.Begin);
-                await _MemoryStream.CopyToAsync(fileStream);
-                await fileStream.FlushAsync();
-                fileStream.Dispose();
+                return false;
             }
         }
 
@@ -492,8 +515,8 @@ namespace MC_Suite.Services
         {
             StorageFile _File;
 
-            Windows.Storage.StorageFolder _folder = await StorageFolder.GetFolderFromPathAsync(Folder);
-            Windows.Storage.StorageFolder _destFolder = await StorageFolder.GetFolderFromPathAsync(DestFolder);
+            StorageFolder _folder = await StorageFolder.GetFolderFromPathAsync(Folder);
+            StorageFolder _destFolder = await StorageFolder.GetFolderFromPathAsync(DestFolder);
 
             try
             {
@@ -501,14 +524,24 @@ namespace MC_Suite.Services
                 _File = await _folder.GetFileAsync(FileName);
                 await _File.CopyAsync(_destFolder, FileName, NameCollisionOption.ReplaceExisting);
 
-                var dialog = new MessageDialog("File Copy Success");
+                ContentDialog dialog = new ContentDialog()
+                {
+                    Title = "Copy File",
+                    Content = "File Copy Success",
+                    CloseButtonText = "OK",
+                };
                 await dialog.ShowAsync();
 
                 return true;
             }
             catch ( Exception e )
             {
-                var dialog = new MessageDialog("File Copy Failed: " + e.ToString());
+                ContentDialog dialog = new ContentDialog()
+                {
+                    Title = "Copy File",
+                    Content = "File Copy Error: " + e.Message,
+                    CloseButtonText = "OK",
+                };
                 await dialog.ShowAsync();
                 return false;
             }
@@ -528,17 +561,27 @@ namespace MC_Suite.Services
 
                 if(ShowResultDlg)
                 { 
-                    var dialog = new MessageDialog("File Deleting Success");
+                    ContentDialog dialog = new ContentDialog()
+                    {
+                        Title = "Delete File",
+                        Content = "File Deleting Success",
+                        CloseButtonText = "OK",
+                    };
                     await dialog.ShowAsync();
                 }
 
                 return true;
             }
-            catch
+            catch (Exception e)
             {
                 if(ShowResultDlg)
-                { 
-                    var dialog = new MessageDialog("File Deleting Failed");
+                {
+                    ContentDialog dialog = new ContentDialog()
+                    {
+                        Title = "Delete File",
+                        Content = "File Deleting Error: " + e.Message,
+                        CloseButtonText = "OK",
+                    };
                     await dialog.ShowAsync();
                 }
                 return false;

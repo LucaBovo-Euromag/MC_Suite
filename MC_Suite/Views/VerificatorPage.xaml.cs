@@ -20,6 +20,7 @@ using Windows.Devices.Enumeration;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
+using MC_Suite.Modbus;
 
 
 
@@ -69,6 +70,8 @@ namespace MC_Suite.Views
             ReadingProgress.Visibility  = Visibility.Collapsed;
             ReadingProgress.Value       = 0;
 
+            LoadingBox.Visibility       = Visibility.Collapsed;
+
             DisableConverterTest();
             DisableSensorTest();
             AbortSensTestBtn.IsEnabled = false;
@@ -90,7 +93,7 @@ namespace MC_Suite.Views
                 InterfacciaConv.Write(Parametri.Simul.DAC_Zero);
                 EPipeStatus.Fill = GPIO_Control.SetEPipe();
 
-                CheckDatabaseTest(true);
+                //CheckDatabaseTest(true);
 
                 ComSetup.Verificator406PageReady = true;
             }
@@ -123,9 +126,7 @@ namespace MC_Suite.Views
                 RefreshAnalogsStart();
             }
 
-            Simulation_Read.Text = "-.-- m/s";
-
-            ClearAllButton.IsEnabled = false;
+            Simulation_Read.Text = "-.-- m/s";            
         }
 
         private static int OldTestIndex;
@@ -135,7 +136,7 @@ namespace MC_Suite.Views
         {
             if((ConverterTestIsEnabled == false) && (TestRunning == VerificatorTests.None))
             {
-                CheckDatabaseTest(true);
+                //CheckDatabaseTest(true);
             }
         }
 
@@ -157,22 +158,34 @@ namespace MC_Suite.Views
                 LastTestInfo.Text = "Last saved test on " + Verificator.ReportList[OldTestIndex].Data_Test;
 
             if (IsStartup)
-            { 
+            {
                 if (OldTestFound)
                 {
-                    var dialog = new MessageDialog("Converter " + Fields.ConverterId.Value + " Found\n" +
-                                                   "Last test on " + Verificator.ReportList[OldTestIndex].Data_Test, "Old Report");
+                    ContentDialog dialog = new ContentDialog()
+                    {
+                        Title = "Report Database",
+                        Content = "Converter " + Fields.ConverterId.Value + " Found\n" +
+                                  "Last test on " + Verificator.ReportList[OldTestIndex].Data_Test,
+                        CloseButtonText = "OK",
+                    };
+
                     await dialog.ShowAsync();
                 }
                 else
                 {
-                    var dialog = new MessageDialog("Converter " + Fields.ConverterId.Value + " Not Found\n" +
-                                                   "No test data, default parameters will be used", "Old Report");
+                    ContentDialog dialog = new ContentDialog()
+                    {
+                        Title = "Report Database",
+                        Content = "Converter " + Fields.ConverterId.Value + " Not Found\n" +
+                                  "No test data, default parameters will be used",
+                        CloseButtonText = "OK",
+                    };
+
                     await dialog.ShowAsync();
                 }
             }
 
-            
+
             ConverterState.Fill = new SolidColorBrush(Colors.LimeGreen);
             EnableConverterTest();
             ConncetionRing.Visibility = Visibility.Collapsed;
@@ -231,11 +244,12 @@ namespace MC_Suite.Views
             if(TestRunning == VerificatorTests.None)
                 ConverterTestIsEnabled  = false;
             ClearAllButton.IsEnabled    = false;
-
-            TestDryBtn.IsEnabled = false;
-            TestWetBtn.IsEnabled = false;
-            AbortSensTestBtn.IsEnabled = false;
-            ClearAllButton.IsEnabled = false;
+            SaveReportBtn.IsEnabled     = false;
+            OpenComBtn.IsEnabled        = false;
+            TestDryBtn.IsEnabled        = false;
+            TestWetBtn.IsEnabled        = false;
+            AbortSensTestBtn.IsEnabled  = false;
+            SaveInfoBtn.IsEnabled       = false;
         }
 
         private void EnableConverterTest()
@@ -247,11 +261,12 @@ namespace MC_Suite.Views
             AbortConvTestBtn.IsEnabled  = false;
             ConverterTestIsEnabled      = true;
             ClearAllButton.IsEnabled    = true;
-
-            TestDryBtn.IsEnabled = true;
-            TestWetBtn.IsEnabled = true;
-            AbortSensTestBtn.IsEnabled = false;
-            ClearAllButton.IsEnabled = true;
+            SaveReportBtn.IsEnabled     = true;
+            OpenComBtn.IsEnabled        = true;
+            TestDryBtn.IsEnabled        = true;
+            TestWetBtn.IsEnabled        = true;
+            AbortSensTestBtn.IsEnabled  = false;
+            SaveInfoBtn.IsEnabled       = true;
         }
 
         private void DisableSensorTest()
@@ -263,12 +278,14 @@ namespace MC_Suite.Views
             AbortConvTestBtn.IsEnabled = false;
             if (TestRunning == VerificatorTests.None)
                 ConverterTestIsEnabled = false;
-            ClearAllButton.IsEnabled = false;
 
             TestDryBtn.IsEnabled        = false;
             TestWetBtn.IsEnabled        = false;
             AbortSensTestBtn.IsEnabled  = true;
             ClearAllButton.IsEnabled    = false;
+            SaveReportBtn.IsEnabled     = false;
+            SaveInfoBtn.IsEnabled       = false;
+            OpenComBtn.IsEnabled        = false;
         }
 
         private void EnableSensorTest()
@@ -277,14 +294,18 @@ namespace MC_Suite.Views
             ECoilTestbtn.IsEnabled = true;
             TestIObtn.IsEnabled = true;
             AllTestBtn.IsEnabled = true;
+            ClearAllButton.IsEnabled = true;
+            OpenComBtn.IsEnabled = true;
+            SaveReportBtn.IsEnabled = true;
+
             AbortConvTestBtn.IsEnabled = false;
             ConverterTestIsEnabled = true;
-            ClearAllButton.IsEnabled = true;
+            SaveInfoBtn.IsEnabled = true;
 
             TestDryBtn.IsEnabled        = true;
             TestWetBtn.IsEnabled        = true;
             AbortSensTestBtn.IsEnabled  = false;
-            ClearAllButton.IsEnabled    = true;
+            SaveInfoBtn.IsEnabled       = true;
         }
 
         #endregion
@@ -470,13 +491,18 @@ namespace MC_Suite.Views
 
         private async void InitConnections()
         {
-            ConncetionRing.Visibility = Visibility.Visible;
+            LoadingBox.Visibility = Visibility.Visible;
             ConverterState.Fill = new SolidColorBrush(Colors.Yellow);
 
             //Apro comunicazione con il convertitore
             if (ComSetup.ComPort.ID == null)
             {
-                var dialog = new MessageDialog("IrCOM Port Not Found", "COM Port Error");
+                ContentDialog dialog = new ContentDialog()
+                {
+                    Title = "COM Port Error",
+                    Content = "IrCOM Port Not Found",
+                    CloseButtonText = "OK"
+                };
                 await dialog.ShowAsync();
             }
             else
@@ -490,7 +516,12 @@ namespace MC_Suite.Views
             //Apro comunicazione con il Simulatore
             if (ComSetup.SimulatorComPort.ID == null)
             {
-                var dialog = new MessageDialog("Simulator COM Port Not Found", "COM Port Error");
+                ContentDialog dialog = new ContentDialog()
+                {
+                    Title = "COM Port Error",
+                    Content = "SensorSimulator COM Port Not Found",
+                    CloseButtonText = "OK",
+                };
                 await dialog.ShowAsync();
                 DisableSensorTest();
             }
@@ -574,7 +605,12 @@ namespace MC_Suite.Views
         {
             if (ComSetup.ComPort.ID == null)
             {
-                var dialog = new MessageDialog("IrCOM Port Not Found", "COM Port Error");
+                ContentDialog dialog = new ContentDialog()
+                {
+                    Title = "COM Port Error",
+                    Content = "IrCOM Port Not Found",
+                    CloseButtonText = "OK"
+                };
                 await dialog.ShowAsync();
             }
             else
@@ -594,10 +630,41 @@ namespace MC_Suite.Views
             ReadTimer.Tick += ReadTimer_Tick;
             BundleReaded = false;
             BundleIndex = 1;
+            ReLoadingBar.Value = BundleIndex;
+            BundleIndexMax = (byte)IrCOMPortManager.ReadingStateBundle.EepCustomizedDeviceInfoCmd;
+            ReLoadingBar.Maximum = BundleIndexMax;
             ReadTimer.Stop();
         }
 
-        private byte BundleIndex;
+        private byte _bundleIndex;
+        public byte BundleIndex
+        {
+            get { return _bundleIndex; }
+            set
+            {
+                if (value != _bundleIndex)
+                {
+                    _bundleIndex = value;
+                    OnPropertyChanged("BundleIndex");
+                }
+            }
+        }
+
+        private byte _bundleIndexMax;
+        public byte BundleIndexMax
+        {
+            get { return _bundleIndexMax; }
+            set
+            {
+                if (value != _bundleIndexMax)
+                {
+                    _bundleIndexMax = value;
+                    OnPropertyChanged("BundleIndexMax");
+                }
+            }
+        }
+
+
         private bool BundleReaded;
         private void BundleAutoRead()
         {
@@ -615,6 +682,8 @@ namespace MC_Suite.Views
             else
                 BundleReaded = false;
 
+            IrConnection.ReadBundleCompleted -= BundleAutoReadCompleted;
+
             ReadTimer.Start();
         }
 
@@ -622,20 +691,20 @@ namespace MC_Suite.Views
         {
             if (BundleReaded)
             {
-                if (BundleIndex < (byte)IrCOMPortManager.ReadingStateBundle.EepCustomizedDeviceInfoCmd)
+                if (BundleIndex < BundleIndexMax)
                 {
                     BundleIndex++;
+                    BundleAutoRead();
+                    BundleReaded = false;
+                    ReLoadingBar.Value = BundleIndex;
                 }
                 else
                 {                    
                     ReadTimer.Stop();
-                    BundleIndex = 1;
-
+                    LoadingBox.Visibility = Visibility.Collapsed;
                     StopIrCOM();
                     OpenSensorSimulatorCOM();
                 }
-                BundleAutoRead();
-                BundleReaded = false;
             }
             else
                 BundleAutoRead();
@@ -713,12 +782,19 @@ namespace MC_Suite.Views
 
         private async void ClearAllTest()
         {
-            var dialog = new MessageDialog("Are you sure?", "Clear all tests results and logs");
-            dialog.Commands.Add(new UICommand { Label = "Yes", Id = 0 });
-            dialog.Commands.Add(new UICommand { Label = "Cancel", Id = 1 });
-            var res = await dialog.ShowAsync();
+            ContentDialog logdialog = new ContentDialog()
+            {
+                Title = "Clear all tests results and logs",
+                Content = "Are you sure?",
+                PrimaryButtonText = "Yes",
+                CloseButtonText = "Cancel",
+                IsSecondaryButtonEnabled = false,
+                DefaultButton = ContentDialogButton.Primary
+            };
 
-            if ((int)res.Id == 0)
+            ContentDialogResult logres = await logdialog.ShowAsync();
+
+            if (logres == ContentDialogResult.Primary)
             {
                 ClearSimulationResults();
                 ClearIOTestResults();
@@ -1484,8 +1560,13 @@ namespace MC_Suite.Views
                         ECoilTestTimer.Stop();
                     }
                     else
-                    { 
-                        var dialog = new MessageDialog("No responce from Device", "Communication Error");
+                    {                       
+                        ContentDialog dialog = new ContentDialog()
+                        {
+                            Title = "Communication Error",
+                            Content = "No responce from Device",
+                            CloseButtonText = "OK",
+                        };
                         await dialog.ShowAsync();
                         ECoil_TestStep = ECoilTestStep.ECoil_End;
                     }
@@ -1864,7 +1945,12 @@ namespace MC_Suite.Views
         {
             if (ComSetup.SimulatorComPort.ID == null)
             {
-                var dialog = new MessageDialog("Sensor Simulator COM Port Not Found", "COM Port Error");
+                ContentDialog dialog = new ContentDialog()
+                {
+                    Title = "COM Port Error",
+                    Content = "SensorSimulator COM Port Not Found",
+                    CloseButtonText = "OK",
+                };
                 await dialog.ShowAsync();
             }
             else
@@ -1967,48 +2053,46 @@ namespace MC_Suite.Views
         {
             SimulatorCOMPortManager CMD = sender as SimulatorCOMPortManager;
 
-            if (SensorPingTimer.IsEnabled == false)
+            SensorSimulator.CommandCompleted -= Sensor_CommandCompleted;
+
+            if (CMD.CommandResult.Result == SimulatorCOMPortManager.SimCommandResult.Success)
             {
-                if (CMD.CommandResult.Result == SimulatorCOMPortManager.SimCommandResult.Success)
+                if (CMD.CommandResult.Answer == SimulatorCOMPortManager.ANSWER.Test_Error)
                 {
-
-                    if (CMD.CommandResult.Answer == SimulatorCOMPortManager.ANSWER.Test_Error)
+                    STestStep = SensorTestStep.Error;
+                    SimulatorState.Fill = new SolidColorBrush(Colors.Red);
+                }
+                else
+                {
+                    switch (STestStep)
                     {
-                        STestStep = SensorTestStep.Error;
-                        SimulatorState.Fill = new SolidColorBrush(Colors.Red);
-                    }
-                    else
-                    {
-                        switch (STestStep)
-                        {
-                            case SensorTestStep.Ping:
-                                //STestStep = SensorTestStep.Start;
-                                EnableSensorTest();
-                                SimulatorState.Fill = new SolidColorBrush(Colors.LimeGreen);
-                                break;
-                            case SensorTestStep.Error:
-                                STestStep = SensorTestStep.Error;
-                                break;
-                            case SensorTestStep.Start:
+                        case SensorTestStep.Ping:
+                            EnableSensorTest();
+                            CheckDatabaseTest(true);
+                            SimulatorState.Fill = new SolidColorBrush(Colors.LimeGreen);
+                            break;
+                        case SensorTestStep.Error:
+                            STestStep = SensorTestStep.Error;
+                            break;
+                        case SensorTestStep.Start:
+                            STestStep = SensorTestStep.Wait;
+                            break;
+                        case SensorTestStep.Wait:
+                            if (CMD.CommandResult.Answer == SimulatorCOMPortManager.ANSWER.StandBy)
+                                STestStep = SensorTestStep.GetResults;
+                            if (CMD.CommandResult.Answer == SimulatorCOMPortManager.ANSWER.Test_In_progress)
                                 STestStep = SensorTestStep.Wait;
-                                break;
-                            case SensorTestStep.Wait:
-                                if (CMD.CommandResult.Answer == SimulatorCOMPortManager.ANSWER.StandBy)
-                                    STestStep = SensorTestStep.GetResults;
-                                if (CMD.CommandResult.Answer == SimulatorCOMPortManager.ANSWER.Test_In_progress)
-                                    STestStep = SensorTestStep.Wait;
-                                break;
-                            case SensorTestStep.GetResults:
-                                SensorTestResultData = CMD.CommandResult.DataResults;
-                                STestStep = SensorTestStep.End;
-                                break;
-                        }
+                            break;
+                        case SensorTestStep.GetResults:
+                            SensorTestResultData = CMD.CommandResult.DataResults;
+                            STestStep = SensorTestStep.End;
+                            break;
                     }
+                }
 
-                    MonitorTimeout = 0;
-                    SensorPingTimer.Start();
-                }                
-            }
+                MonitorTimeout = 0;
+                SensorPingTimer.Start();
+            }                
         }
 
         private void SensorPingTimer_Tick(object sender, object e)
@@ -2439,13 +2523,20 @@ namespace MC_Suite.Views
                 ReportTestGrid.ItemsSource = Verificator.TestView;
             }
             else
-            { 
-                var logdialog = new MessageDialog("Are you sure?", "Clear Logs");
-                logdialog.Commands.Add(new UICommand { Label = "Yes", Id = 0 });
-                logdialog.Commands.Add(new UICommand { Label = "Cancel", Id = 1 });
-                var logres = await logdialog.ShowAsync();
+            {
+                ContentDialog logdialog = new ContentDialog()
+                {
+                    Title = "Clear Logs",
+                    Content = "Are you sure?",
+                    PrimaryButtonText = "Yes",
+                    CloseButtonText = "Cancel",
+                    IsSecondaryButtonEnabled = false,
+                    DefaultButton = ContentDialogButton.Primary
+                };
 
-                if ((int)logres.Id == 0)
+                ContentDialogResult logres = await logdialog.ShowAsync();
+
+                if (logres == ContentDialogResult.Primary)
                 {
                     Verificator.TestView.Clear();
                     Verificator.TestList.Clear();
@@ -2496,7 +2587,12 @@ namespace MC_Suite.Views
                     await BinaryStorage.Append(FileName, FileManager.CurrentFolder.Path, LogLineArray);
                 }
 
-                var dialog = new MessageDialog("Log File saved", "Log File");
+                ContentDialog dialog = new ContentDialog()
+                {
+                    Title = "Log File",
+                    Content = "Log File saved:\n" + FileName,
+                    CloseButtonText = "OK"
+                };
                 await dialog.ShowAsync();
             }            
         }
@@ -2632,10 +2728,14 @@ namespace MC_Suite.Views
             Verificator.ReportView.Clear();
             Verificator.ReportList.ForEach(p => Verificator.ReportView.Add(p));
 
-            var dialog = new MessageDialog("Report #" + NewReport.ID.ToString() + " added to Database\n" +
-                                           "Sensor ID: " + NewReport.Matricola_Sensore + "\n" +
-                                           "Converter ID : " + NewReport.Matricola_Convertitore
-                                           , "Report Saved");
+            ContentDialog dialog = new ContentDialog()
+            {
+                Title = "Report Saved",
+                Content = "Report #" + NewReport.ID.ToString() + " added to Database\n" +
+                          "Sensor ID: " + NewReport.Matricola_Sensore + "\n" +
+                          "Converter ID : " + NewReport.Matricola_Convertitore,
+                CloseButtonText = "OK",
+            };
             await dialog.ShowAsync();
 
             CheckDatabaseTest(false);
@@ -2705,21 +2805,41 @@ namespace MC_Suite.Views
             }
         }
 
-        private void SaveConfig()
+        private async void SaveConfig()
         {
             //Salvo la Configurazione
-            RAM_Configuration.Operator  = OperatorName.Text;
-            RAM_Configuration.Company   = CompanyName.Text;
+            RAM_Configuration.Operator = OperatorName.Text;
+            RAM_Configuration.Company = CompanyName.Text;
             RAM_Configuration.Company_Location = CompanyLocation.Text;
-            RAM_Configuration.Customer  = CustomerName.Text;
+            RAM_Configuration.Customer = CustomerName.Text;
             RAM_Configuration.Customer_Location = CustomerLocation.Text;
-            RAM_Configuration.Note      = Note.Text;
+            RAM_Configuration.Note = Note.Text;
 
-            List<Configuration> NewCfg = new List<Configuration>
+            List<Configuration> NewCfg = new List<Configuration>();
+            NewCfg.Add(RAM_Configuration);
+            if (await SerializableStorage<Configuration>.Save(FileManager.ConfigFile, FileManager.MainFolder.Path, NewCfg))
             {
-                RAM_Configuration
-            };
-            SerializableStorage<Configuration>.Save(FileManager.ConfigFile, FileManager.MainFolder.Path, NewCfg);
+                ContentDialog dialog = new ContentDialog()
+                {
+                    Title = "Report Info Save",
+                    Content = "Report Info Saved",
+                    CloseButtonText = "OK",
+                };
+
+                await dialog.ShowAsync();
+            }
+            else
+            {
+                ContentDialog dialog = new ContentDialog()
+                {
+                    Title = "Report Info Save",
+                    Content = "Report Info Saving Error",
+                    CloseButtonText = "OK",
+                };
+
+                await dialog.ShowAsync();
+            }
+
         }
 
 

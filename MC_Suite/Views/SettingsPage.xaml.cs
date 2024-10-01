@@ -19,6 +19,8 @@ using Windows.UI.Popups;
 using System.Linq;
 using Windows.Networking;
 using Windows.Networking.Connectivity;
+using MC_Suite.Euromag.Protocols.StdCommands;
+using Telerik.Core;
 
 namespace MC_Suite.Views
 {
@@ -147,6 +149,9 @@ namespace MC_Suite.Views
                 ComSetup.COMPorts.Clear();
                 ComSetup.COMPortsList.ForEach(p => ComSetup.COMPorts.Add(p));
 
+                ComSetup.ComPort = RAM_Configuration.ComPort;
+                ComSetup.ComPort608 = RAM_Configuration.ComPort608;
+
                 //Importare da file CFG
                 ComPortComboBox.ItemsSource = ComSetup.COMPorts;
                 ComPortComboBox608.ItemsSource = ComSetup.COMPorts;                
@@ -230,25 +235,48 @@ namespace MC_Suite.Views
             }
         }
 
-        private void SaveConfig()
+        private async void SaveConfig()
         {
             //Salvo la Configurazione
-            RAM_Configuration.ComPort       = ComSetup.ComPort;
-            RAM_Configuration.Protocol      = ComSetup.Protocol;
-            RAM_Configuration.ComPort608    = ComSetup.ComPort608;
-            RAM_Configuration.Protocol608   = ComSetup.Protocol608;
-            RAM_Configuration.MbAddress     = ComSetup.Address;
-            RAM_Configuration.MbBaudRate    = ComSetup.BaudRate;
-            RAM_Configuration.MbParity      = ComSetup.Parity;
-            RAM_Configuration.MbDataBits    = ComSetup.DataBits;
-            RAM_Configuration.MbTimeOut     = ComSetup.TimeOut;
+            RAM_Configuration.ComPort = ComSetup.ComPort;
+            RAM_Configuration.Protocol = ComSetup.Protocol;
+            RAM_Configuration.ComPort608 = ComSetup.ComPort608;
+            RAM_Configuration.Protocol608 = ComSetup.Protocol608;
+            RAM_Configuration.MbAddress = ComSetup.Address;
+            RAM_Configuration.MbBaudRate = ComSetup.BaudRate;
+            RAM_Configuration.MbParity = ComSetup.Parity;
+            RAM_Configuration.MbDataBits = ComSetup.DataBits;
+            RAM_Configuration.MbTimeOut = ComSetup.TimeOut;
 
             List<Configuration> NewCfg = new List<Configuration>();
             NewCfg.Add(RAM_Configuration);
-            SerializableStorage<Configuration>.Save(FileManager.ConfigFile, FileManager.MainFolder.Path, NewCfg);
+            if (await SerializableStorage<Configuration>.Save(FileManager.ConfigFile, FileManager.MainFolder.Path, NewCfg))
+            {
+                ContentDialog dialog = new ContentDialog()
+                {
+                    Title = "Setup",
+                    Content = "Setup Saved",
+                    CloseButtonText = "OK",
+                };
+
+                await dialog.ShowAsync();
+            }
+            else
+            {
+                ContentDialog dialog = new ContentDialog()
+                {
+                    Title = "Setup",
+                    Content = "Setup Saving Error",
+                    CloseButtonText = "OK",
+                };
+
+                await dialog.ShowAsync();
+            }
+
             SaveCfgBtn.IsEnabled = false;
             SaveCfgBtn1.IsEnabled = false;
         }
+
 
         #endregion
 
@@ -307,7 +335,12 @@ namespace MC_Suite.Views
                 }
                 catch
                 {
-                    var dialog = new MessageDialog("Please insert valid Address");
+                    ContentDialog dialog = new ContentDialog()
+                    {
+                        Title = "Modbus Address",
+                        Content = "Please insert valid Address",
+                        CloseButtonText = "OK",
+                    };
                     await dialog.ShowAsync();
                     AddressVal.Text = string.Empty;
                     return;
@@ -411,6 +444,9 @@ namespace MC_Suite.Views
                 ConfigList.Add(RAM_VerifConfiguration);
                 SerializableStorage<VerificatorConfig>.Save(FileManager.VerificatorConfigFile, FileManager.MainFolder.Path, ConfigList);
 
+                CommResources.DryTestEnabled = true;
+                CommResources.DryTestVisibility = Visibility.Visible;
+
                 passwordResultTxt.Text = "Calibration Mode Active";
             }
             if (passwordBox.Password == "231042")
@@ -435,6 +471,14 @@ namespace MC_Suite.Views
                 }
                 SaveConfig();
             }            
+        }
+
+        public CommonResources CommResources
+        {
+            get
+            {
+                return CommonResources.Instance;
+            }
         }
     }
 }

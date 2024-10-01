@@ -171,6 +171,10 @@
             return await _port.ReadAsync( Mode );
         }
 
+        public byte[] GetReadBuffer()
+        {
+            return _port.ReadDataBuffer;
+        }
 
         public List<Byte> receiveDataFromByteList(Int32 answerSize)
         {

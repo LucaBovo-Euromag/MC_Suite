@@ -57,6 +57,11 @@
                 </NavigationViewItem.Icon>
             </NavigationViewItem>
             <NavigationViewItem x:Name="IO_Tab" x:Uid="Shell_IO" Icon="Sort" helpers:NavHelper.NavigateTo="views:IOpage" Visibility="Visible"/>
+            <NavigationViewItem x:Name="DryCalibration_Tab"
+                                x:Uid="Shell_DryCalibration"
+                                Icon="Remote"
+                                helpers:NavHelper.NavigateTo="views:DryCalibrationPage"
+                                Visibility="Visible"/>
         </NavigationView.MenuItems>
         <NavigationView.HeaderTemplate>
             <DataTemplate>

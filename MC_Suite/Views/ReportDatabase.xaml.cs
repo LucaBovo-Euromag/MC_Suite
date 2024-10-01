@@ -82,13 +82,19 @@ namespace MC_Suite.Views
         {
             if (ReportDB.SelectedItem != null)
             {
-                var dialog = new MessageDialog("Are you sure?");
-                dialog.Title = "Delete Report";
-                dialog.Commands.Add(new UICommand { Label = "Ok", Id = 0 });
-                dialog.Commands.Add(new UICommand { Label = "Cancel", Id = 1 });
-                var res = await dialog.ShowAsync();
+                ContentDialog logdialog = new ContentDialog()
+                {
+                    Title = "Delete Report",
+                    Content = "Are you sure?",
+                    PrimaryButtonText = "Yes",
+                    CloseButtonText = "Cancel",
+                    IsSecondaryButtonEnabled = false,
+                    DefaultButton = ContentDialogButton.Primary
+                };
 
-                if ((int)res.Id == 0)
+                ContentDialogResult logres = await logdialog.ShowAsync();
+
+                if (logres == ContentDialogResult.Primary)
                 {
                     ReportLine ReportToDelete = ReportDB.SelectedItem as ReportLine;
 
@@ -125,6 +131,7 @@ namespace MC_Suite.Views
             {
                 ReporViewer.Visibility = Visibility.Visible;
                 ExportReportBtn.Visibility = Visibility.Visible;
+                ReportExpander.IsExpanded = false;
 
                 ReportLine ReportToShow = ReportDB.SelectedItem as ReportLine;
 
@@ -187,9 +194,9 @@ namespace MC_Suite.Views
                 Signature.Text = "Signature   ___________________\n";
 
                 FooterLine1.Text = "Euromag International Srl\t" + "web: www.euromag.com";
-                FooterLine2.Text = "Via della Tecnica, 20 -35035\t" + "e-mail: euromag@euromag.com";
-                FooterLine3.Text = "Mestrino\t\t\t" + "phone: +39/049.9005064";
-                FooterLine4.Text = "PADOVA-ITALY\t\t" + "fax: +39/049.9007764\t\t" + "Rev 2.0";
+                FooterLine2.Text = "Via Balla, 55 -35010\t\t" + "e-mail: euromag@euromag.com";
+                FooterLine3.Text = "Villafranca Padovana\t\t" + "phone: +39/049.9005064";
+                FooterLine4.Text = "PADOVA-ITALY\t\t" + "fax: +39/049.9007764\t\t\t" + "Rev 2.1";
             }                  
         }
 
@@ -286,7 +293,13 @@ namespace MC_Suite.Views
             //Cancella il file in chiaro
             await SerializableStorage<VariableImage>.Delete(FileManager.SavedFileName, FileManager.CurrentFolder.Path, false);
 
-            var dialog = new MessageDialog(SavedReport + " Saved");
+            ContentDialog dialog = new ContentDialog()
+            {
+                Title = "Export Report",
+                Content = SavedReport + "\ncorrectly saved",
+                CloseButtonText = "OK",
+            };
+
             var res = await dialog.ShowAsync();
         }
 
@@ -360,7 +373,13 @@ namespace MC_Suite.Views
             //Cancella il file in chiaro
             await SerializableStorage<VariableImage>.Delete(FileManager.SavedFileName, FileManager.CurrentFolder.Path, false);
 
-            var dialog = new MessageDialog("Database Saved");
+            ContentDialog dialog = new ContentDialog()
+            {
+                Title = "Save Database",
+                Content = "Database Saved",
+                CloseButtonText = "OK",
+            };
+
             var res = await dialog.ShowAsync();
         }
 

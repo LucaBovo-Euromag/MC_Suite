@@ -34,16 +34,18 @@
             <TextBlock x:Name="ConverterSelectionTitle" Text="Converter Selection" FontSize="22" Padding="10,20,0,0"/>
             <StackPanel x:Name="ConverterList" Orientation="Horizontal" VerticalAlignment="Top">
                 <StackPanel x:Name="MC406_Init" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5,5,5,5">
-                    <Button x:Name="MC406Select" Grid.Column="0" Grid.Row="0" HorizontalAlignment="Center" Click="MC406Select_Click" Height="140" Width="140" Background="#FFAB0534">
+                    <Button x:Name="MC406Select" Grid.Column="0" Grid.Row="0" HorizontalAlignment="Center" Click="MC406Select_Click" Width="140" Background="#FF0069B4">
                         <StackPanel>
-                            <TextBlock Text="CH406" VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="Normal" FontSize="30"/>
+                            <Image Source="/Images/Frontalino_406.PNG" Width="100"/>
+                            <TextBlock Text="MC406" VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="Normal" FontSize="20"/>
                         </StackPanel>
                     </Button>
                 </StackPanel>
                 <StackPanel x:Name="MC608_Init" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5,5,5,5" >
-                    <Button x:Name="MC608Select" HorizontalAlignment="Center" Click="MC608Select_Click" Height="140" Width="140" Background="#FFAB0534">
+                    <Button x:Name="MC608Select" HorizontalAlignment="Center" Click="MC608Select_Click" Width="140" Background="#FF0069B4">
                         <StackPanel>
-                            <TextBlock Text="CH608" VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="Normal" FontSize="30"/>
+                            <Image Source="/Images/Frontalino_608.PNG" Width="100"/>
+                            <TextBlock Text="MC608" VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="Normal" FontSize="20"/>
                         </StackPanel>
                     </Button>
                 </StackPanel>
@@ -51,9 +53,10 @@
             <TextBlock x:Name="SensorOnlySelection" Text="Sensor Only" FontSize="22" Padding="10,20,0,0"/>
             <StackPanel>
                 <StackPanel x:Name="Sensor_Init" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5,5,5,5">
-                    <Button x:Name="SensorSelect" Grid.Column="0" Grid.Row="0" HorizontalAlignment="Center" Click="SensorSelect_Click" Height="140" Width="140" Background="#FFAB0534">
+                    <Button x:Name="SensorSelect" Grid.Column="0" Grid.Row="0" HorizontalAlignment="Center" Click="SensorSelect_Click" Width="140" Background="#FF0069B4">
                         <StackPanel>
-                            <TextBlock Text="Sensor" VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="Normal" FontSize="30"/>
+                            <Image Source="/Images/Sensore.png" Width="100"/>
+                            <TextBlock Text="Sensor" VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="Normal" FontSize="20"/>
                         </StackPanel>
                     </Button>
                 </StackPanel>
@@ -88,12 +91,12 @@
                 </Button>
             </StackPanel>
             <StackPanel x:Name="ClockSettings">
-                <TimePicker x:Name="SetTimePicker" ClockIdentifier="24HourClock" TimeChanged="SetTimePicker_TimeChanged" HorizontalAlignment="Stretch" Margin="0,0,0,5"/>
+                <TimePicker x:Name="SetTimePicker" TimeChanged="SetTimePicker_TimeChanged" HorizontalAlignment="Stretch" Margin="0,0,0,5"/>
                 <DatePicker x:Name="SetDatePicker" DateChanged="SetDatePicker_DateChanged" HorizontalAlignment="Stretch" Margin="0,0,0,5"/>
                 <Button x:Name="SaveClockButton" Content="Ok" HorizontalAlignment="Stretch" Click="SaveClockButton_Click"/>
             </StackPanel>
         </StackPanel>
-        <Image x:Name="MainLogo" HorizontalAlignment="Center" VerticalAlignment="Center" Source="/Images/Logo Chemitec Alfa Complete.png" Grid.Column="1" Margin="0,0,0,5" Width="383" Grid.Row="2">
+        <Image x:Name="MainLogo" HorizontalAlignment="Center" VerticalAlignment="Center" Source="/Images/Logo Euromag Alfa Complete.png" Grid.Column="1" Margin="0,0,0,5" Opacity="0.5" Width="383" Grid.Row="2">
             <Image.FocusVisualPrimaryBrush>
                 <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
                     <GradientStop Color="Black"/>

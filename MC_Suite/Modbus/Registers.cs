@@ -46,7 +46,6 @@ namespace MC_Suite.Modbus
             }
         }
     }
-
     public class Float32_mdb : ModbusRegister
     {
         public bool reverse;
@@ -124,7 +123,6 @@ namespace MC_Suite.Modbus
             return misura;
         }
     }
-
     public class Int32_mdb : ModbusRegister
     {
         public Int32_mdb(ushort _addr, byte _cmd)
@@ -196,7 +194,6 @@ namespace MC_Suite.Modbus
             return ((word_HI << 16) + word_LO);
         }
     }
-
     public class Registro_mdb : ModbusRegister
     {
         public Registro_mdb(ushort _addr, byte _cmd)
@@ -267,7 +264,6 @@ namespace MC_Suite.Modbus
             }
         }
     }
-
     public class Command_mdb : ModbusRegister
     {
         private ushort _reg_value = 0;

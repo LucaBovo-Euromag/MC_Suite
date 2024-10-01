@@ -15,6 +15,7 @@ using System.Collections.ObjectModel;
 using Windows.UI.Popups;
 using MC_Suite.Services;
 using MC_Suite.Properties;
+using MC_Suite.Modbus;
 using MC_Suite.Euromag.Devices;
 using MC_Suite.Euromag.Protocols;
 using MC_Suite.Euromag.Protocols.StdCommands;
@@ -27,54 +28,92 @@ namespace MC_Suite.Views
 
     public sealed partial class MainPage : Page, INotifyPropertyChanged
     {
-        public MC406 MC406_Device;
-
-        #region Istanze
-
-        public TargetVariablesFields Fields
-        {
-            get
-            {
-                return TargetVariablesFields.Instance;
-            }
-        }
-
-        public COMPortManager Connection
-        {
-            get
-            {
-                return COMPortManager.Instance;
-            }
-        }
-
-        #endregion
-          
-        public DispatcherTimer UpdateClockTimer { get; set; }
 
         public MainPage()
         {
             this.InitializeComponent();
-
             InitBundles();
+            LoadingBox.Visibility = Visibility.Collapsed;
+            LoadingBar.Visibility = Visibility.Collapsed;
+            ClockSettings.Visibility = Visibility.Collapsed;
+            SystemClock.Visibility = Visibility.Visible;
 
-            Connection.PropertyChanged += Connection_PropertyChanged;
+            Fields.KaRatio.PropertyChanged += KaRatio_PropertyChanged;
 
-            Fields.FlowRateTU.PropertyChanged += FlowRateTU_PropertyChanged;
-            Fields.FlowRatePERC.PropertyChanged += FlowRatePERC_PropertyChanged;
-            Fields.FlowRateMS.PropertyChanged += FlowRateMS_PropertyChanged;
-            Fields.TotalPositiveM3.PropertyChanged += TotalPositiveM3_PropertyChanged;
-            Fields.TotalNegativeM3.PropertyChanged += TotalNegativeM3_PropertyChanged;
-            Fields.PartialPositiveM3.PropertyChanged += PartialPositiveM3_PropertyChanged;
-            Fields.PartialNegativeM3.PropertyChanged += PartialNegativeM3_PropertyChanged;
-
-            Fields.FwRevision.PropertyChanged += FwRevision_PropertyChanged;
-            Fields.FwVersion.PropertyChanged += FwVersion_PropertyChanged;
-
-            UpdateClockTimer = new DispatcherTimer();
-            UpdateClockTimer.Interval = TimeSpan.FromMinutes(1);
-            UpdateClockTimer.Tick += UpdateClockTimer_Tick;
-            UpdateClockTimer.Stop();
+            //Sys Clock Refresh*********************************************************************
+            DispatcherTimer RefreshTimer = new DispatcherTimer();
+            RefreshTimer.Interval = TimeSpan.FromMilliseconds(5000);
+            RefreshTimer.Tick += RefreshTimer_Tick;
+            RefreshTimer.Start();
+            SysDate = DateTime.Now.ToString("dd MMMM yyyy");
+            SysTime = DateTime.Now.ToString("HH:mm");
         }
+
+        private string _sysDate;
+        public string SysDate
+        {
+            get { return _sysDate; }
+            set
+            {
+                if (value != _sysDate)
+                {
+                    _sysDate = value;
+                    OnPropertyChanged("SysDate");
+                }
+            }
+        }
+
+        private string _sysTime;
+        public string SysTime
+        {
+            get { return _sysTime; }
+            set
+            {
+                if (value != _sysTime)
+                {
+                    _sysTime = value;
+                    OnPropertyChanged("SysTime");
+                }
+            }
+        }
+
+             
+        private byte _bundleIndex;
+        public byte BundleIndex
+        {
+            get { return _bundleIndex; }
+            set
+            {
+                if (value != _bundleIndex)
+                {
+                    _bundleIndex = value;
+                    OnPropertyChanged("BundleIndex");
+                }
+            }
+        }
+
+        private byte _bundleIndexMax;
+        public byte BundleIndexMax
+        {
+            get { return _bundleIndexMax; }
+            set
+            {
+                if (value != _bundleIndexMax)
+                {
+                    _bundleIndexMax = value;
+                    OnPropertyChanged("BundleIndexMax");
+                }
+            }
+        }
+
+
+        private void RefreshTimer_Tick(object sender, object e)
+        {
+            SysDate = DateTime.Now.ToLongDateString();
+            SysTime = DateTime.Now.ToShortTimeString();
+        }
+
+        #region Init Bundles
 
         private void InitBundles()
         {
@@ -94,8 +133,6 @@ namespace MC_Suite.Views
             dummyRead = Fields.ConverterId.ValAsString;
             dummyRead = Fields.ConverterSerialNumber.ValAsString;
             dummyRead = Fields.Cutoff.ValAsString;
-            dummyRead = Fields.DAC161_OutMax_mA.ValAsString;
-            dummyRead = Fields.DAC161_OutMin_mA.ValAsString;
             dummyRead = Fields.DAC161_Out_mA.ValAsString;
             dummyRead = Fields.DAC161_State.ValAsString;
             dummyRead = Fields.Damping.ValAsString;
@@ -181,721 +218,75 @@ namespace MC_Suite.Views
             dummyRead = Fields.WaterDetectMeasThreshold.ValAsString;
         }
 
-
-        #region FW Version and revision
-
-        private async void FwVersion_PropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
-            {
-                Fields.FwRelease = Fields.FwVersion.ValAsString + "." + Fields.FwRevision.ValAsString;
-            });
-        }
-
-        private async void FwRevision_PropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
-            {
-                Fields.FwRelease = Fields.FwVersion.ValAsString + "." + Fields.FwRevision.ValAsString;
-            });
-        }
-
-        private string _fwVersion_Loc;
-        public string FwVersion_Loc
-        {
-            get { return _fwVersion_Loc; }
-            set
-            {
-                if (value != _fwVersion_Loc)
-                {
-                    _fwVersion_Loc = value;
-                    OnPropertyChanged("FwVersion_Loc");
-                }
-            }
-        }
-
-        private string _fwRevision_Loc;
-        public string FwRevision_Loc
-        {
-            get { return _fwRevision_Loc; }
-            set
-            {
-                if (value != _fwRevision_Loc)
-                {
-                    _fwRevision_Loc = value;
-                    OnPropertyChanged("FwRevision_Loc");
-                }
-            }
-        }
         #endregion
 
-        #region FlowrateTechUnit
+        #region Istanze
 
-        private string _flowrateTechUnit_Loc;
-        public string FlowrateTechUnit_Loc
-        {
-            get { return _flowrateTechUnit_Loc; }
-            set
-            {
-                if (value != _flowrateTechUnit_Loc)
-                {
-                    _flowrateTechUnit_Loc = value;
-                    OnPropertyChanged("FlowrateTechUnit_Loc");
-                }
-            }
-        }
-
-        #endregion
-
-        #region FlowRateTU
-
-        public int FlowMaxDigit = 5;
-        private async void FlowRateTU_PropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
-            {
-                byte ndig = Fields.FlowrateNdigit.Value;
-                string StrValue = Convert.ToString(Fields.FlowRateTU.Value, System.Globalization.CultureInfo.InvariantCulture);
-                if (Fields.FlowRateTU.Value == 0)
-                {
-                    switch (ndig)
-                    {
-                        case 0:
-                            Fields.FlowRateTU_str = StrValue;
-                            break;
-                        case 1:
-                            Fields.FlowRateTU_str = StrValue + ".0";
-                            break;
-                        case 2:
-                            Fields.FlowRateTU_str = StrValue + ".00";
-                            break;
-                        case 3:
-                            Fields.FlowRateTU_str = StrValue + ".000";
-                            break;
-                    }
-                }
-                else
-                {
-                    int CommaIndex = StrValue.IndexOf(".");
-                    if (ndig == 0)
-                    {
-                        Fields.FlowRateTU_str = StrValue.Substring(0, CommaIndex);
-                    }
-                    else
-                    {
-                        int ValueLenght = StrValue.Length;
-                        byte DecimalDigits = (byte)(ValueLenght - CommaIndex - 1);
-                        if (DecimalDigits < ndig)
-                            ndig = DecimalDigits;
-
-                        if (CommaIndex <= FlowMaxDigit)
-                            Fields.FlowRateTU_str = StrValue.Substring(0, CommaIndex + 1 + ndig);
-                        else
-                            Fields.FlowRateTU_str = StrValue.Substring(0, CommaIndex);
-                    }
-                }
-
-                FlowRateFullScale_Converter();
-            });
-        }
-
-        #endregion
-
-        #region FlowRatePER
-
-        private async void FlowRatePERC_PropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
-            {
-                byte ndig = Fields.FlowrateNdigit.Value;
-                string StrValue = Convert.ToString(Fields.FlowRatePERC.Value, System.Globalization.CultureInfo.InvariantCulture);
-                if (Fields.FlowRatePERC.Value == 0)
-                {
-                    switch (ndig)
-                    {
-                        case 0:
-                            Fields.FlowRatePERC_str = StrValue;
-                            break;
-                        case 1:
-                            Fields.FlowRatePERC_str = StrValue + ".0";
-                            break;
-                        case 2:
-                            Fields.FlowRatePERC_str = StrValue + ".00";
-                            break;
-                        case 3:
-                            Fields.FlowRatePERC_str = StrValue + ".000";
-                            break;
-                    }
-                }
-                else
-                {
-                    int CommaIndex = StrValue.IndexOf(".");
-                    if (ndig == 0)
-                    {
-                        Fields.FlowRatePERC_str = StrValue.Substring(0, CommaIndex);
-                    }
-                    else
-                    {
-                        int ValueLenght = StrValue.Length;
-                        byte DecimalDigits = (byte)(ValueLenght - CommaIndex - 1);
-                        if (DecimalDigits < ndig)
-                            ndig = DecimalDigits;
-
-                        if (CommaIndex <= FlowMaxDigit)
-                            Fields.FlowRatePERC_str = StrValue.Substring(0, CommaIndex + 1 + ndig);
-                        else
-                            Fields.FlowRatePERC_str = StrValue.Substring(0, CommaIndex);
-                    }
-                }
-            });
-        }
-
-        #endregion
-
-        #region FlowRateMS
-
-        private async void FlowRateMS_PropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
-            {
-                byte ndig = Fields.FlowrateNdigit.Value;
-                string StrValue = Convert.ToString(Fields.FlowRateMS.Value, System.Globalization.CultureInfo.InvariantCulture);
-                if (Fields.FlowRateMS.Value == 0)
-                {
-                    switch (ndig)
-                    {
-                        case 0:
-                            Fields.FlowRateMS_str = StrValue;
-                            break;
-                        case 1:
-                            Fields.FlowRateMS_str = StrValue + ".0";
-                            break;
-                        case 2:
-                            Fields.FlowRateMS_str = StrValue + ".00";
-                            break;
-                        case 3:
-                            Fields.FlowRateMS_str = StrValue + ".000";
-                            break;
-                    }
-                }
-                else
-                {
-                    int CommaIndex = StrValue.IndexOf(".");
-                    if (ndig == 0)
-                    {
-                        Fields.FlowRateMS_str = StrValue.Substring(0, CommaIndex);
-                    }
-                    else
-                    {
-                        int ValueLenght = StrValue.Length;
-                        byte DecimalDigits = (byte)(ValueLenght - CommaIndex - 1);
-                        if (DecimalDigits < ndig)
-                            ndig = DecimalDigits;
-
-                        if (CommaIndex <= FlowMaxDigit)
-                            Fields.FlowRateMS_str = StrValue.Substring(0, CommaIndex + 1 + ndig);
-                        else
-                            Fields.FlowRateMS_str = StrValue.Substring(0, CommaIndex);
-                    }
-                }
-            });
-        }
-
-        #endregion
-
-        #region TotalPositive
-
-        public int TotalizerMaxDigit = 8;
-
-        void TotalPositiveM3_PropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName == "Value")
-            {
-                string StrValue = Convert.ToString(Fields.TotalPositiveM3.Value, System.Globalization.CultureInfo.InvariantCulture);
-                byte ndig = Fields.AccumulatorNdigit.Value;
-                if (Fields.TotalPositiveM3.Value == 0)
-                {
-                    switch (ndig)
-                    {
-                        case 0:
-                            Fields.TotalPositiveM3_str = StrValue;
-                            break;
-                        case 1:
-                            Fields.TotalPositiveM3_str = StrValue + ".0";
-                            break;
-                        case 2:
-                            Fields.TotalPositiveM3_str = StrValue + ".00";
-                            break;
-                        case 3:
-                            Fields.TotalPositiveM3_str = StrValue + ".000";
-                            break;
-                    }
-                }
-                else
-                {
-                    int CommaIndex = StrValue.IndexOf(".");
-
-                    if (ndig == 0)
-                    {
-                        int ValueLenght = StrValue.Length;
-                        int IntValue = (ValueLenght - (ValueLenght - CommaIndex));
-                        if (IntValue <= TotalizerMaxDigit)
-                            Fields.TotalPositiveM3_str = StrValue.Substring(0, IntValue);
-                        else
-                            Fields.TotalPositiveM3_str = StrValue.Substring(IntValue - TotalizerMaxDigit, TotalizerMaxDigit);
-                    }
-                    else
-                    {
-                        int ValueLenght = StrValue.Length;
-                        byte DecimalDigits = (byte)(ValueLenght - CommaIndex - 1);
-                        if (DecimalDigits < ndig)
-                            ndig = DecimalDigits;
-
-                        if (CommaIndex <= TotalizerMaxDigit)
-                            Fields.TotalPositiveM3_str = StrValue.Substring(0, CommaIndex + 1 + ndig);
-                        else
-                            Fields.TotalPositiveM3_str = StrValue.Substring(ValueLenght - 8, CommaIndex);
-                    }
-                }
-            }
-        }
-
-        #endregion
-
-        #region TotalNegative
-
-        void TotalNegativeM3_PropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName == "Value")
-            {
-                string StrValue = Convert.ToString(Fields.TotalNegativeM3.Value, System.Globalization.CultureInfo.InvariantCulture);
-                byte ndig = Fields.AccumulatorNdigit.Value;
-                if (Fields.TotalNegativeM3.Value == 0)
-                {
-                    switch (ndig)
-                    {
-                        case 0:
-                            Fields.TotalNegativeM3_str = StrValue;
-                            break;
-                        case 1:
-                            Fields.TotalNegativeM3_str = StrValue + ".0";
-                            break;
-                        case 2:
-                            Fields.TotalNegativeM3_str = StrValue + ".00";
-                            break;
-                        case 3:
-                            Fields.TotalNegativeM3_str = StrValue + ".000";
-                            break;
-                    }
-                }
-                else
-                {
-                    int CommaIndex = StrValue.IndexOf(".");
-
-                    if (ndig == 0)
-                    {
-                        int ValueLenght = StrValue.Length;
-                        int IntValue = (ValueLenght - (ValueLenght - CommaIndex));
-                        if (IntValue <= TotalizerMaxDigit)
-                            Fields.TotalNegativeM3_str = StrValue.Substring(0, IntValue);
-                        else
-                            Fields.TotalNegativeM3_str = StrValue.Substring(IntValue - TotalizerMaxDigit, TotalizerMaxDigit);
-                    }
-                    else
-                    {
-                        int ValueLenght = StrValue.Length;
-                        byte DecimalDigits = (byte)(ValueLenght - CommaIndex - 1);
-                        if (DecimalDigits < ndig)
-                            ndig = DecimalDigits;
-
-                        if (CommaIndex <= TotalizerMaxDigit)
-                            Fields.TotalNegativeM3_str = StrValue.Substring(0, CommaIndex + 1 + ndig);
-                        else
-                            Fields.TotalNegativeM3_str = StrValue.Substring(ValueLenght - 8, CommaIndex);
-                    }
-                }
-            }
-        }
-
-        #endregion
-
-        #region PartialPositive
-
-        void PartialPositiveM3_PropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName == "Value")
-            {
-                string StrValue = Convert.ToString(Fields.PartialPositiveM3.Value, System.Globalization.CultureInfo.InvariantCulture);
-                byte ndig = Fields.AccumulatorNdigit.Value;
-                if (Fields.PartialPositiveM3.Value == 0)
-                {
-                    switch (ndig)
-                    {
-                        case 0:
-                            Fields.PartialPositiveM3_str = StrValue;
-                            break;
-                        case 1:
-                            Fields.PartialPositiveM3_str = StrValue + ".0";
-                            break;
-                        case 2:
-                            Fields.PartialPositiveM3_str = StrValue + ".00";
-                            break;
-                        case 3:
-                            Fields.PartialPositiveM3_str = StrValue + ".000";
-                            break;
-                    }
-                }
-                else
-                {
-                    int CommaIndex = StrValue.IndexOf(".");
-
-                    if (ndig == 0)
-                    {
-                        int ValueLenght = StrValue.Length;
-                        int IntValue = (ValueLenght - (ValueLenght - CommaIndex));
-                        if (IntValue <= TotalizerMaxDigit)
-                            Fields.PartialPositiveM3_str = StrValue.Substring(0, IntValue);
-                        else
-                            Fields.PartialPositiveM3_str = StrValue.Substring(IntValue - TotalizerMaxDigit, TotalizerMaxDigit);
-                    }
-                    else
-                    {
-                        int ValueLenght = StrValue.Length;
-                        byte DecimalDigits = (byte)(ValueLenght - CommaIndex - 1);
-                        if (DecimalDigits < ndig)
-                            ndig = DecimalDigits;
-
-                        if (CommaIndex <= TotalizerMaxDigit)
-                            Fields.PartialPositiveM3_str = StrValue.Substring(0, CommaIndex + 1 + ndig);
-                        else
-                            Fields.PartialPositiveM3_str = StrValue.Substring(ValueLenght - 8, CommaIndex);
-                    }
-                }
-            }
-        }
-
-        #endregion
-
-        #region PartialNegative
-
-        void PartialNegativeM3_PropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName == "Value")
-            {
-                string StrValue = Convert.ToString(Fields.PartialNegativeM3.Value, System.Globalization.CultureInfo.InvariantCulture);
-                byte ndig = Fields.AccumulatorNdigit.Value;
-                if (Fields.PartialNegativeM3.Value == 0)
-                {
-                    switch (ndig)
-                    {
-                        case 0:
-                            Fields.PartialNegativeM3_str = StrValue;
-                            break;
-                        case 1:
-                            Fields.PartialNegativeM3_str = StrValue + ".0";
-                            break;
-                        case 2:
-                            Fields.PartialNegativeM3_str = StrValue + ".00";
-                            break;
-                        case 3:
-                            Fields.PartialNegativeM3_str = StrValue + ".000";
-                            break;
-                    }
-                }
-                else
-                {
-                    int CommaIndex = StrValue.IndexOf(".");
-
-                    if (ndig == 0)
-                    {
-                        int ValueLenght = StrValue.Length;
-                        int IntValue = (ValueLenght - (ValueLenght - CommaIndex));
-                        if (IntValue <= TotalizerMaxDigit)
-                            Fields.PartialNegativeM3_str = StrValue.Substring(0, IntValue);
-                        else
-                            Fields.PartialNegativeM3_str = StrValue.Substring(IntValue - TotalizerMaxDigit, TotalizerMaxDigit);
-                    }
-                    else
-                    {
-                        int ValueLenght = StrValue.Length;
-                        byte DecimalDigits = (byte)(ValueLenght - CommaIndex - 1);
-                        if (DecimalDigits < ndig)
-                            ndig = DecimalDigits;
-
-                        if (CommaIndex <= TotalizerMaxDigit)
-                            Fields.PartialNegativeM3_str = StrValue.Substring(0, CommaIndex + 1 + ndig);
-                        else
-                            Fields.PartialNegativeM3_str = StrValue.Substring(0, CommaIndex);
-                    }
-                }
-            }
-        }
-
-        #endregion
-
-        #region FullScale
-
-        private double _locFlowFullScale;
-        public double LocFlowFullScale
-        {
-            get { return _locFlowFullScale; }
-            set
-            {
-                if (value != _locFlowFullScale)
-                {
-                    _locFlowFullScale = value;
-                    OnPropertyChanged("LocFlowFullScale");
-                }
-            }
-        }
-
-        public double kUT;
-        public double kTB;
-        public double FullScaleFactor;
-        public const double PGRECO = 3.141592653589793;
-
-        void FlowRateFullScale_Converter()
-        {
-            if ((Fields.FlowrateTimeBase.Value != 0) && (Fields.FlowrateFullscale.Value != 0))
-            {
-                switch (Fields.FlowrateTechUnit.Value)
-                {
-                    case (2): // "cubic meter [m³]"
-                        kUT = 0.001;
-                        break;
-                    case (3): // "liter [L]"
-                        kUT = 1.0;
-                        break;
-                    case (4): // "mega liter [ML]"
-                        kUT = 0.000001;
-                        break;
-                    case (5): // "cubic foot [ft³]"
-                        kUT = 0.0353147;
-                        break;
-                    case (6): // "US liquid gallon [gal]"
-                        kUT = 0.264172;
-                        break;
-                    case (7): // "US Oil Barrel [BBL]"
-                        kUT = 0.0062898107;
-                        break;
-                }
-
-                switch (Fields.FlowrateTimeBase.Value)
-                {
-                    case (1): // "second [s]"
-                        kTB = 0.0001;
-                        break;
-                    case (2): // "minute [m]"
-                        kTB = 0.006;
-                        break;
-                    case (3): // "hour [h]"
-                        kTB = 0.36;
-                        break;
-                    case (4): // "day [d]"
-                        kTB = 8.64;
-                        break;
-                }
-
-                if (Fields.FlowrateTechUnit.Value == 1)
-                    FullScaleFactor = kTB / 0.0001; //se voglio i m/s non moltiplico per niente; scalo solo il fattore tempo
-                else
-                    FullScaleFactor = 2.5 * PGRECO * Fields.SensorDiameter.Value * Fields.SensorDiameter.Value * kUT * kTB;
-
-                LocFlowFullScale = (Fields.FlowrateFullscale.Value / 10) * FullScaleFactor;
-
-                byte ndig = Fields.FlowrateNdigit.Value;
-                string StrValue = Convert.ToString(LocFlowFullScale, System.Globalization.CultureInfo.InvariantCulture);
-                int CommaIndex = StrValue.IndexOf(".");
-                if (ndig == 0)
-                {
-                    Fields.LocFlowFullScale_Str = StrValue.Substring(0, CommaIndex);
-                }
-                else
-                {
-                    int ValueLenght = StrValue.Length;
-                    byte DecimalDigits = (byte)(ValueLenght - CommaIndex - 1);
-                    if (DecimalDigits < ndig)
-                        ndig = DecimalDigits;
-
-                    if (CommaIndex <= FlowMaxDigit)
-                        Fields.LocFlowFullScale_Str = StrValue.Substring(0, CommaIndex + 1 + ndig);
-                    else
-                        Fields.LocFlowFullScale_Str = StrValue.Substring(0, CommaIndex);
-                }
-            }
-        }
-
-
-        #endregion
-
-        #region DateTime
-
-        private void UpdateClockTimer_Tick(object sender, object e)
-        {
-            GetTargetClock();
-        }
-
-        private ICommand _readClock;
-        public ICommand ReadClock
+        public Settings Config
         {
             get
             {
-                if (_readClock == null)
-                {
-                    _readClock = new RelayCommand(
-                        param => GetTargetClock()
-                            );
-                }
-                return _readClock;
+                return Settings.Instance;
             }
         }
 
-        private void GetTargetClock()
-        {
-            GetTargetDateTime getClockCmd = new GetTargetDateTime(Settings.Instance.portHandler);
-            getClockCmd.CommandCompleted += GetClockCmd_CommandCompleted;
-            COMPortManager.Instance.CommandList.Add(getClockCmd);
-        }
-
-        private async void GetClockCmd_CommandCompleted(object sender, PropertyChangedEventArgs e)
-        {
-            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
-            {
-                GetTargetDateTime cmd = sender as GetTargetDateTime;
-                if(cmd.Result.Outcome ==  CommandResultOutcomes.CommandSuccess)
-                { 
-                    Fields.ConvDateTime = cmd.Date_Time.Date;                    
-                    CheckTargetClock();
-                }
-                COMPortManager.Instance.ExtCommandCompleted = COMPortManager.CommandState.WaitForNew;
-                COMPortManager.Instance.CommandList.Remove(cmd);
-                COMPortManager.Instance.SuccessCounter += 1;
-            });
-        }
-
-        Visibility CheckTargetClock()
-        {
-            DateTime CurrentDateTime = DateTime.Now;
-            Visibility LocVisibility;
-
-            LocVisibility = Visibility.Collapsed;
-
-            //Controlla anno
-            if (Fields.ConvDateTime.Year.Equals(CurrentDateTime.Year))
-            {
-                //Controlla Mese
-                if (Fields.ConvDateTime.Month.Equals(CurrentDateTime.Month))
-                {
-                    if (Fields.ConvDateTime.Day.Equals(CurrentDateTime.Day))
-                    {
-                        if (Fields.ConvDateTime.Hour.Equals(CurrentDateTime.Hour))
-                        {
-                            LocVisibility = Visibility.Visible;
-                        }
-                    }
-                }
-            }
-            return LocVisibility;
-        }
-
-        private ICommand _updateClock;
-        public ICommand UpdateClock
+        public TargetVariablesFields Fields
         {
             get
             {
-                if (_updateClock == null)
-                {
-                    _updateClock = new RelayCommand(
-                        param => SendSetTimeCommand()
-                            );
-                }
-                return _updateClock;
+                return TargetVariablesFields.Instance;
             }
         }
 
-        private void SendSetTimeCommand()
+        public Settings ComSetup
         {
-            SetDateTime setClockCmd = new SetDateTime(Settings.Instance.portHandler);
-            setClockCmd.DateTimeToSet = DateTime.Now;
-            setClockCmd.CommandCompleted += SetClockCmd_CommandCompleted;
-            COMPortManager.Instance.CommandList.Add(setClockCmd);           
-        }
-
-        private async void SetClockCmd_CommandCompleted(object sender, PropertyChangedEventArgs e)
-        {
-            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+            get
             {
-                SetDateTime cmd = sender as SetDateTime;
-                if (cmd.Result.Outcome == CommandResultOutcomes.CommandSuccess)
-                {
-                    Fields.ConvDateTime = DateTime.Now;
-                    CheckTargetClock();
-                }
-                COMPortManager.Instance.ExtCommandCompleted = COMPortManager.CommandState.WaitForNew;
-                COMPortManager.Instance.CommandList.Remove(cmd);
-            });
+                return Settings.Instance;
+            }
         }
 
+        public IrCOMPortManager IrConnection
+        {
+            get
+            {
+                return IrCOMPortManager.Instance;
+            }
+        }
+
+        public MbCOMPortManager MbConnection
+        {
+            get
+            {
+                return MbCOMPortManager.Instance;
+            }
+        }
+
+        public AnalogsService AnalogMeasures
+        {
+            get
+            {
+                return AnalogsService.Instance;
+            }
+        }
+
+        public SimulatorCOMPortManager SensorSimulator
+        {
+            get
+            {
+                return SimulatorCOMPortManager.Instance;
+            }
+        }
+
+        public GPIO_Device GPIO_Control
+        {
+            get
+            {
+                return GPIO_Device.Instance;
+            }
+        }
 
         #endregion
-
-        private COMPortManager.ConnectionStates memConnectionStatus;
-        private async void Connection_PropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
-            {
-                switch (Connection.ConnectionStatus)
-                {
-                    case COMPortManager.ConnectionStates.Stop:
-                        memConnectionStatus = Connection.ConnectionStatus;
-                        UpdateClockTimer.Stop();
-                        break;
-                    case COMPortManager.ConnectionStates.Ping:                        
-                        break;
-                    case COMPortManager.ConnectionStates.Retry:
-                    case COMPortManager.ConnectionStates.Working:                     
-                        if(memConnectionStatus == COMPortManager.ConnectionStates.Stop)
-                        { 
-                            GetTargetClock();
-                            memConnectionStatus = Connection.ConnectionStatus;
-                            UpdateClockTimer.Start();
-                        }
-                        break;
-                }
-
-                TimeoutCounterTxt = "Timeouts: " + Connection.TimeoutCounter.ToString();
-                SuccessCounterTxt = "Success : " + Connection.SuccessCounter.ToString();
-            });
-        }       
-
-
-        private string _timeoutCounterTxt;
-        public string TimeoutCounterTxt
-        {
-            get { return _timeoutCounterTxt; }
-            set
-            {
-                if (value != _timeoutCounterTxt)
-                {
-                    _timeoutCounterTxt = value;
-                    OnPropertyChanged("TimeoutCounterTxt");
-                }
-            }
-        }
-        
-        private string _successCounterTxt;
-        public string SuccessCounterTxt
-        {
-            get { return _successCounterTxt; }
-            set
-            {
-                if (value != _successCounterTxt)
-                {
-                    _successCounterTxt = value;
-                    OnPropertyChanged("SuccessCounterTxt");
-                }
-            }
-        }
 
         #region ObservableObject
 
@@ -920,5 +311,269 @@ namespace MC_Suite.Views
         private void OnPropertyChanged(string propertyName) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
         #endregion
+
+        private void MC406Select_Click(object sender, RoutedEventArgs e)
+        {
+            Config.ConverterSelection.MC406.Connected = true;
+            Config.ConverterSelection.MC608.Connected = false;
+            ComSetup.SensorOnly                       = false;
+            Config.ConverterSelectionChanged = true;
+            BundleIndexMax          = 10;
+            LoadingBox.Visibility   = Visibility.Visible;
+            LoadingBar.Visibility = Visibility.Visible;
+            Config.SensorOnly = false;
+
+            if (SensorSimulator.IsOpen)
+                SensorSimulator.Close();
+
+            if (IrConnection.IsOpen)
+                IrConnection.Close();
+
+            if (MbConnection.IsOpen)
+                MbConnection.Close();
+
+            ComSetup.Verificator406PageReady = false;
+            StartComPort( ComSetup.Protocol, ComSetup.ComPort );            
+        }
+
+        private void MC608Select_Click(object sender, RoutedEventArgs e)
+        {
+            Config.ConverterSelection.MC406.Connected = false;
+            Config.ConverterSelection.MC608.Connected = true;
+            ComSetup.SensorOnly                       = false;
+            Config.ConverterSelectionChanged = true;
+            LoadingBox.Visibility = Visibility.Visible;
+            LoadingBar.Visibility = Visibility.Collapsed;
+            Config.SensorOnly = false;
+
+            if (SensorSimulator.IsOpen)
+                SensorSimulator.Close();
+
+            if (IrConnection.IsOpen)
+                IrConnection.Close();
+
+            if (MbConnection.IsOpen)
+                MbConnection.Close();
+
+            ComSetup.Verificator608PageReady = false;
+            StartComPort( ComSetup.Protocol608, ComSetup.ComPort608 );
+        }
+
+        #region Start Connection
+
+        private void StartComPort(byte _protocol, Settings.COMPortItem _ComPort)
+        {
+            switch (_protocol)
+            {
+                default:
+                case 0: //IrCOM
+                    StartIrCOM( _ComPort );
+                    break;
+                case 1: //Modbus
+                    StartModbus( _ComPort );
+                    break;
+
+            }
+        }
+
+        #region IrCom Connection
+
+        private async void StartIrCOM( Settings.COMPortItem _port )
+        {
+            if (IrConnection.IsOpen)
+            {
+                if (IrConnection.IrConnectionStatus == IrCOMPortManager.IrConnectionStates.Stop)
+                {
+                    IrConnection.Start();
+                }
+
+                GPIO_Control.InitGPIO();
+
+                if (AnalogMeasures.ADC_ModuleIsReady == false)
+                    await AnalogMeasures.ADC_Module_Open();
+
+                this.Frame.Navigate(typeof(VerificatorPage));
+            }
+            else
+            {
+                OpenIrCOM( _port );
+            }
+        }
+
+        private async void OpenIrCOM( Settings.COMPortItem _port )
+        {
+            if (_port.ID == null)
+            {
+                var dialog = new MessageDialog("NO Com Port");
+                await dialog.ShowAsync();
+                LoadingBox.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                IrConnection.Open(_port, IrCOMPortManager.ComMode.Manual);
+                InitReadTimer();
+            }
+        }
+
+        private DispatcherTimer ReadTimer;
+        private void InitReadTimer()
+        {
+            ReadTimer = new DispatcherTimer();
+            ReadTimer.Interval = TimeSpan.FromMilliseconds(2000);
+            ReadTimer.Tick += ReadTimer_Tick;
+            BundleReaded = false;
+            BundleIndex = 1;
+            BundleAutoreading = true;
+            ReadTimer.Start();
+        }
+        
+        private bool BundleReaded;
+        private static bool BundleAutoreading;
+        private void BundleAutoRead()
+        {
+            IrConnection.ReadBundleCompleted += BundleAutoReadCompleted;
+            IrConnection.ReadBundle(BundleIndex);
+            ReadTimer.Stop();
+        }
+
+        private void BundleAutoReadCompleted(object sender, PropertyChangedEventArgs e)
+        {
+            IrCOMPortManager cmd = sender as IrCOMPortManager;
+
+            if (IrConnection.ReadBundle_CommandResult.Outcome == Euromag.Protocols.CommandResultOutcomes.CommandSuccess)
+                BundleReaded = true;
+            else
+                BundleReaded = false;
+
+            if (BundleAutoreading)
+                ReadTimer.Start();
+            else
+                ReadTimer.Stop();
+        }
+
+        private void KaRatio_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {            
+            /*if(BundleAutoreading)
+            {
+                ReadTimer.Stop();
+                BundleAutoreading = false;
+                Settings.Instance.Verificator406PageReady = false;
+                this.Frame.Navigate(typeof(VerificatorPage));
+            }*/
+        }
+
+        private async void ReadTimer_Tick(object sender, object e)
+        {
+            if (BundleReaded)
+            {
+                if (BundleIndex < BundleIndexMax)
+                {
+                    BundleIndex++;
+                }
+                else
+                {
+                    BundleIndex       = 1;
+                    BundleAutoreading = false;
+
+                    GPIO_Control.InitGPIO();
+
+                    if (AnalogMeasures.ADC_ModuleIsReady == false)
+                        await AnalogMeasures.ADC_Module_Open();
+
+                    this.Frame.Navigate(typeof(VerificatorPage));
+                }
+                BundleAutoRead();
+                BundleReaded = false;
+            }
+            else
+                BundleAutoRead();
+        }
+
+        #endregion
+
+        private async void StartModbus(Settings.COMPortItem _port)
+        {
+            if (_port.ID == null)
+            {
+                var dialog = new MessageDialog("NO Com Port");
+                await dialog.ShowAsync();
+                LoadingBox.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                Settings.Instance.TimeOut = TimeSpan.FromSeconds(5);
+
+                if (await MbConnection.Open( _port ))
+                {
+                    MC608.Reset();
+                    MC608.Tipo_Connessione = MC608.Comunicazione.Connesso_ModBus;
+
+                    GPIO_Control.InitGPIO();
+
+                    if (AnalogMeasures.ADC_ModuleIsReady == false)
+                        await AnalogMeasures.ADC_Module_Open();
+
+                    this.Frame.Navigate(typeof(VerificatorPage608));
+                }
+            }
+        }
+
+        #endregion
+
+        private void SensorSelect_Click(object sender, RoutedEventArgs e)
+        {
+            Config.ConverterSelection.MC406.Connected = false;
+            Config.ConverterSelection.MC608.Connected = false;
+            Config.SensorOnly                         = true;
+            Config.ConverterSelectionChanged          = true;
+            
+            this.Frame.Navigate(typeof(SensorOnlyPage));
+        }
+
+        private void SetClockButton_Click(object sender, RoutedEventArgs e)
+        {
+            ClockSettings.Visibility = Visibility.Visible;
+            SystemClock.Visibility = Visibility.Collapsed;
+
+            newDate = DateTime.Now;
+            newTime = DateTime.Now;
+
+            SetTimePicker.Time = new TimeSpan(DateTime.Now.Ticks);
+            SetDatePicker.Date = new DateTimeOffset(DateTime.Now);
+        }
+
+        private void SaveClockButton_Click(object sender, RoutedEventArgs e)
+        {
+            ClockSettings.Visibility = Visibility.Collapsed;
+            SystemClock.Visibility = Visibility.Visible;
+
+            DateTime DateTimeToSet = new DateTime(newDate.Year,
+                                                  newDate.Month,
+                                                  newDate.Day,
+                                                  newTime.Hour,
+                                                  newTime.Minute,
+                                                  newTime.Second);
+
+            Windows.System.DateTimeSettings.SetSystemDateTime(DateTimeToSet);
+        }
+
+        private DateTime newTime;
+        private DateTime newDate;
+        private void SetTimePicker_TimeChanged(object sender, TimePickerValueChangedEventArgs e)
+        {
+            var currentDate = DateTime.Now.ToUniversalTime();
+
+            newTime = new DateTime(currentDate.Year,
+                                    currentDate.Month,
+                                    currentDate.Day,
+                                    e.NewTime.Hours,
+                                    e.NewTime.Minutes,
+                                    e.NewTime.Seconds);                        
+        }
+
+        private void SetDatePicker_DateChanged(object sender, DatePickerValueChangedEventArgs e)
+        {
+            newDate = e.NewDate.UtcDateTime;            
+        }
     }
 }

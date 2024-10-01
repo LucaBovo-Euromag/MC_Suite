@@ -867,7 +867,12 @@ namespace MC_Suite.Views
 
             SerializableStorage<VerificatorConfig>.Save(FileManager.VerificatorConfigFile, FileManager.MainFolder.Path, ConfigList);
 
-            var dialog = new MessageDialog("Calibration succesfully saved", "Calibration");
+            ContentDialog dialog = new ContentDialog()
+            {
+                Title = "Calibration",
+                Content = "Calibration succesfully saved",
+                CloseButtonText = "OK",
+            };            
             await dialog.ShowAsync();
         }
 
@@ -884,9 +889,14 @@ namespace MC_Suite.Views
             RAM_VerifConfiguration.Icoil_Offs = Offset_CoilBkup;
             RAM_VerifConfiguration.VAlim_Gain = Gain_Valim_Bkup;
             RAM_VerifConfiguration.VAlim_Offs = Offset_Valim_Bkup;
-            RAM_VerifConfiguration.Vbattery100 = Vbattery100_Bkup;
+            RAM_VerifConfiguration.Vbattery100 = Vbattery100_Bkup;            
 
-            var dialog = new MessageDialog("Calibration not saved, parameters restored", "Calibration");
+            ContentDialog dialog = new ContentDialog()
+            {
+                Title = "Calibration",
+                Content = "Calibration not saved, parameters restored",
+                CloseButtonText = "OK",
+            };
             await dialog.ShowAsync();
         }
 

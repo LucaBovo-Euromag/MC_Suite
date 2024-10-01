@@ -21,6 +21,7 @@ using System.Windows.Input;
 using System.Collections.Generic;
 using Windows.Devices.Enumeration;
 using Windows.UI.Popups;
+using MC_Suite.Modbus;
 
 namespace MC_Suite.Views
 {
@@ -64,8 +65,14 @@ namespace MC_Suite.Views
             InitConverterSelection();
             ComSetup.SensorOnly                = false;
 
-            Calibration_Tab.Visibility         = Visibility.Collapsed;
+            if(RAM_VerifConfiguration.TarMode)
+                Calibration_Tab.Visibility     = Visibility.Visible;
+            else
+                Calibration_Tab.Visibility     = Visibility.Collapsed;
+
             IO_Tab.Visibility                  = Visibility.Collapsed;
+
+            CommResources.DryTestVisibility    = Visibility.Collapsed;
 
             DispatcherTimer RefreshInterface = new DispatcherTimer
             {
@@ -97,9 +104,11 @@ namespace MC_Suite.Views
             await FileManager.UpdateFileList(FileManager.CurrentFolder);
 
             //USB Device Watcher**********************************************************
+
+            FileManager.UsbDriveChanged = await FileManager.GetUSBDrives();;
             Watcher = DeviceInformation.CreateWatcher();
             Watcher.Updated += Watcher_Updated;
-            Watcher.Added += Watcher_Added;
+            //Watcher.Added += Watcher_Added;
             Watcher.Start();
 
             //****************************************************************************
@@ -107,7 +116,7 @@ namespace MC_Suite.Views
             //Sys Clock Refresh***********************************************************
             DispatcherTimer RefreshTimer = new DispatcherTimer
             {
-                Interval = TimeSpan.FromMinutes(1)
+                Interval = TimeSpan.FromSeconds(10)
             };
             RefreshTimer.Tick += RefreshTimer_Tick;
             RefreshTimer.Start();
@@ -141,12 +150,14 @@ namespace MC_Suite.Views
                 CalibrationIcon.Visibility = Visibility.Visible;
                 Calibration_Tab.Visibility = Visibility.Visible;
                 IO_Tab.Visibility = Visibility.Visible;
+                DryCalibration_Tab.Visibility = Visibility.Visible;
             }
             else
             {
                 CalibrationIcon.Visibility = Visibility.Collapsed;
                 Calibration_Tab.Visibility = Visibility.Collapsed;
                 IO_Tab.Visibility = Visibility.Collapsed;
+                DryCalibration_Tab.Visibility = Visibility.Collapsed;
             }
 
             if(AnalogMeasures.PowerMonitorOn == true)
@@ -436,19 +447,39 @@ namespace MC_Suite.Views
                     }
                 }
 
-                if ((BatteryPerc <= 20.0f) && (BatteryData.Charging == false))
-                {
-                    if (AnalogMeasures.VAlimLow == false)
+                if(RAM_VerifConfiguration.TarMode == false)
+                { 
+                    if ((BatteryPerc <= 20.0f) && (BatteryData.Charging == false))
                     {
-                        var messageDialog = new MessageDialog("Please connect the external power supply", "Battery Low");
-                        await messageDialog.ShowAsync();
-                        AnalogMeasures.VAlimLow = true;
-                        GPIO_Control.SetLowBatteryOut();
+                        if (AnalogMeasures.VAlimLow == false)
+                        {
+                            AnalogMeasures.VAlimLow = true;
+                            GPIO_Control.SetLowBatteryOut();
+
+                            ContentDialog messageDialog = new ContentDialog()
+                            {
+                                Title = "Battery Low",
+                                Content = "Please connect the external power supply",
+                                CloseButtonText = "OK",
+                            };
+                            await messageDialog.ShowAsync();
+                        }
+                        BatteryIcon.Glyph = ((char)0xEBA0).ToString();
                     }
-                    BatteryIcon.Glyph = ((char)0xEBA0).ToString();
+                    else
+                    {
+                        if(BatteryData.Charging == false)
+                        {
+                            if(AnalogMeasures.VAlimLow)
+                            {
+                                AnalogMeasures.VAlimLow = false;
+                                GPIO_Control.ResLowBatteryOut();
+                            }
+                        }
+                    }
                 }
 
-                if(BatteryData.Charging == false)
+                if (BatteryData.Charging == false)
                 {
                     if (BatteryPerc >= 100f)
                         BatteryIcon.Glyph = ((char)0xEBAA).ToString();
@@ -569,10 +600,24 @@ namespace MC_Suite.Views
         {
             if(FileCrypt.Instance.CryptEnabled == false)
             { 
-                var cryptMessag = new MessageDialog("ATTENTION: Cryptography not avaiable", "Crypt Key Not Found");
+                ContentDialog cryptMessag = new ContentDialog()
+                {
+                    Title = "Crypt Key Not Found",
+                    Content = "ATTENTION: Cryptography not avaiable",
+                    CloseButtonText = "OK",
+                };
+
+
                 await cryptMessag.ShowAsync();
             }
-            var clockMessage = new MessageDialog("Please check Date and Time", "Clock");            
+
+            ContentDialog clockMessage = new ContentDialog()
+            {
+                Title = "Clock",
+                Content = "Please check Date and Time",
+                CloseButtonText = "OK",
+            };
+            
             await clockMessage.ShowAsync();
         }
 
@@ -609,6 +654,7 @@ namespace MC_Suite.Views
             {
                 ActiveConverter = "MC406 Selected";
                 Verificator_406.Visibility = Visibility.Visible;
+
                 /*MC406_HomeBtn.Visibility = Visibility.Visible;
                 if(ComSetup.ConverterSelection.MC406.ConfigEnabled)
                     MC406_CfgBtn.Visibility = Visibility.Visible;
@@ -682,10 +728,10 @@ namespace MC_Suite.Views
         }
 
         private DeviceWatcher Watcher;
-        private async void Watcher_Added(DeviceWatcher sender, DeviceInformation args)
-        {
-            FileManager.UsbDriveChanged = await FileManager.GetUSBDrives();
-        }
+        //private async void Watcher_Added(DeviceWatcher sender, DeviceInformation args)
+        //{
+            //FileManager.UsbDriveChanged = await FileManager.GetUSBDrives();
+        //}
 
         private async void Watcher_Updated(DeviceWatcher sender, DeviceInformationUpdate args)
         {
@@ -773,20 +819,26 @@ namespace MC_Suite.Views
                 if (FileManager.ConfigList.Count > 0)
                 {
 
-                    RAM_Configuration.ComPort = null;
-                    for (int i=0;i< ComSetup.COMPortsList.Count; i++)
-                    { 
-                        if (ComSetup.COMPortsList[i].ID.Equals( FileManager.ConfigList[0].ComPort.ID) )
-                            RAM_Configuration.ComPort = FileManager.ConfigList[0].ComPort;
+                    RAM_Configuration.ComPort = new Settings.COMPortItem();
+                    for (int i=0;i < ComSetup.COMPortsList.Count; i++)
+                    {
+                        if(FileManager.ConfigList[0].ComPort.ID != null)
+                        { 
+                            if (ComSetup.COMPortsList[i].ID.Equals( FileManager.ConfigList[0].ComPort.ID) )
+                                RAM_Configuration.ComPort = FileManager.ConfigList[0].ComPort;
+                        }
                     }
 
                     RAM_Configuration.Protocol = FileManager.ConfigList[0].Protocol;
 
-                    RAM_Configuration.ComPort608 = null;
+                    RAM_Configuration.ComPort608 = new Settings.COMPortItem();
                     for (int i = 0; i < ComSetup.COMPortsList.Count; i++)
                     {
-                        if (ComSetup.COMPortsList[i].ID.Equals(FileManager.ConfigList[0].ComPort608.ID) )
-                            RAM_Configuration.ComPort608 = FileManager.ConfigList[0].ComPort608;
+                        if (FileManager.ConfigList[0].ComPort608.ID != null)
+                        {
+                            if (ComSetup.COMPortsList[i].ID.Equals(FileManager.ConfigList[0].ComPort608.ID))
+                                RAM_Configuration.ComPort608 = FileManager.ConfigList[0].ComPort608;
+                        }
                     }
 
                     RAM_Configuration.Protocol608 = FileManager.ConfigList[0].Protocol608;
@@ -1042,6 +1094,14 @@ namespace MC_Suite.Views
             get
             {
                 return Storage.Instance;
+            }
+        }
+
+        public CommonResources CommResources
+        {
+            get
+            {
+                return CommonResources.Instance;
             }
         }
 

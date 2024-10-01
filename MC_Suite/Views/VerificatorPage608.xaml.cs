@@ -22,6 +22,7 @@ using System.Runtime.CompilerServices;
 using MC_Suite.Modbus;
 
 using System.Security.Cryptography;
+using System.Data;
 
 // Il modello di elemento Pagina vuota è documentato all'indirizzo https://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -67,6 +68,11 @@ namespace MC_Suite.Views
             DisableSensorTest();
             AbortSensTestBtn.IsEnabled = false;
 
+            if (ComSetup.Protocol608 == 0)
+                RunningProtocolTxt.Text = "IrCom";
+            else
+                RunningProtocolTxt.Text = "Modbus";
+
             if (ComSetup.Verificator608PageReady == false)
             {
                 RisultatiTest.Init_Sensore();
@@ -82,15 +88,19 @@ namespace MC_Suite.Views
                 ComSetup.Verificator608PageReady = true;
             }
 
-            if (MbConnection.MbConnectionStatus == MbCOMPortManager.MbConnectionStates.Working)
+            ConnectionStatus.Visibility = Visibility.Collapsed;
+
+            if (MbConnection.MbConnectionStatus == MbCOMPortManager.MbConnectionStates.Ready)
             {
+                InitMbConnections();
+            }
+            else
+            { 
                 ConverterState.Fill = new SolidColorBrush(Colors.LimeGreen);
                 AggiornaInfo();
                 EnableConverterTest();
-                ConncetionRing.Visibility = Visibility.Collapsed;
             }
-            else
-                InitMbConnections();
+
 
             Simulation_Read.Text = "-.-- m/s";
 
@@ -107,7 +117,12 @@ namespace MC_Suite.Views
             }
             else
             {
-                var dialog = new MessageDialog("ADC Module Not Ready", "ADC Module Error");
+                ContentDialog dialog = new ContentDialog()
+                {
+                    Title = "ADC Module Error",
+                    Content = "ADC Module Not Ready",
+                    CloseButtonText = "OK"
+                };                
                 await dialog.ShowAsync();
             }
         }
@@ -123,7 +138,6 @@ namespace MC_Suite.Views
             for (int i = 0; i < Verificator.ReportList.Count; i++)
             {
                 if (Verificator.ReportList[i].Matricola_Convertitore.Equals(MC608.Convertitore.Matricola))
-                //if (Verificator.ReportList[i].Matricola_Sensore.Equals(MC608.Sensore.Matricola))
                 {
                     OldTestIndex = i;
                     OldTestFound = true;
@@ -137,14 +151,26 @@ namespace MC_Suite.Views
             {
                 if (OldTestFound)
                 {
-                    var dialog = new MessageDialog("Converter " + MC608.Convertitore.Matricola + " Found\n" +
-                                                   "Last test on " + Verificator.ReportList[OldTestIndex].Data_Test, "Old Report");
+                    ContentDialog dialog = new ContentDialog()
+                    {
+                        Title = "Report Database",
+                        Content = "Converter " + MC608.Convertitore.Matricola + " Found\n" +
+                                  "Last test on " + Verificator.ReportList[OldTestIndex].Data_Test,
+                        CloseButtonText = "OK",
+                    };
+
                     await dialog.ShowAsync();
                 }
                 else
                 {
-                    var dialog = new MessageDialog("Converter " + MC608.Convertitore.Matricola + " Not Found\n" +
-                                                   "No test data, default parameters will be used", "Old Report");
+                    ContentDialog dialog = new ContentDialog()
+                    {
+                        Title = "Report Database",
+                        Content = "Converter " + MC608.Convertitore.Matricola + " Not Found\n" +
+                                  "No test data, default parameters will be used",
+                        CloseButtonText = "OK",
+                    };
+
                     await dialog.ShowAsync();
                 }
             }
@@ -174,6 +200,10 @@ namespace MC_Suite.Views
             ECoilTestbtn.IsEnabled = false;
             TestIObtn.IsEnabled = false;
             AllTestBtn.IsEnabled = false;
+            SaveReportBtn.IsEnabled = false;
+            OpenComBtn.IsEnabled = false;
+            SaveInfoBtn.IsEnabled = false;
+            ClearAllButton.IsEnabled = false;
             AbortConvTestBtn.IsEnabled = true;
             TestDryBtn.IsEnabled = false;
             TestWetBtn.IsEnabled = false;
@@ -188,6 +218,10 @@ namespace MC_Suite.Views
             ECoilTestbtn.IsEnabled = true;
             TestIObtn.IsEnabled = true;
             AllTestBtn.IsEnabled = true;
+            SaveInfoBtn.IsEnabled = true;
+            OpenComBtn.IsEnabled = true;
+            SaveReportBtn.IsEnabled = true;
+            ClearAllButton.IsEnabled = true;
             AbortConvTestBtn.IsEnabled = false;
             if (SensorSimulator.IsReady)
             {
@@ -204,6 +238,10 @@ namespace MC_Suite.Views
             ECoilTestbtn.IsEnabled = false;
             TestIObtn.IsEnabled = false;
             AllTestBtn.IsEnabled = false;
+            SaveReportBtn.IsEnabled = false;
+            OpenComBtn.IsEnabled = false;
+            SaveInfoBtn.IsEnabled = false;
+            ClearAllButton.IsEnabled = false;
             AbortConvTestBtn.IsEnabled = false;
 
             TestDryBtn.IsEnabled = false;
@@ -219,6 +257,10 @@ namespace MC_Suite.Views
             ECoilTestbtn.IsEnabled = true;
             TestIObtn.IsEnabled = true;
             AllTestBtn.IsEnabled = true;
+            SaveReportBtn.IsEnabled = true;
+            OpenComBtn.IsEnabled = true;
+            SaveInfoBtn.IsEnabled = true;
+            ClearAllButton.IsEnabled = true;
             AbortConvTestBtn.IsEnabled = false;
 
             TestDryBtn.IsEnabled = true;
@@ -378,12 +420,25 @@ namespace MC_Suite.Views
         {
             if (ComSetup.ComPort608.ID == null)
             {
-                var dialog = new MessageDialog("Modbus Port Not Found", "COM Port Error");
+                ContentDialog dialog = new ContentDialog()
+                {
+                    Title = "COM Port Error",
+                    Content = "Modbus Port Not Found",
+                    CloseButtonText = "OK"
+                };
                 await dialog.ShowAsync();
             }
             else
             {
                 Settings.Instance.TimeOut = TimeSpan.FromSeconds(5);
+
+                ConnectionStatus.Visibility = Visibility.Visible;
+                ConnectionMessage.Text = "Start Connection...";
+
+                if (ComSetup.Protocol608 == 0)
+                    ComSetup.ComPort608.BaudRate = 76800;
+                else
+                    ComSetup.ComPort608.BaudRate = Settings.Instance.BaudRate;
 
                 if (await MbConnection.Open(ComSetup.ComPort608))
                 {
@@ -391,6 +446,10 @@ namespace MC_Suite.Views
                     MC608.Tipo_Connessione = MC608.Comunicazione.Connesso_ModBus;
                     ConverterState.Fill = new SolidColorBrush(Colors.Yellow);
                     InitModbusReader();
+                }
+                else
+                {
+                    ConnectionStatus.Visibility = Visibility.Collapsed;
                 }
             }
         }
@@ -485,16 +544,13 @@ namespace MC_Suite.Views
         void RefreshDevice608()
         {
             //Chiudo connessioni precedenti
-            if (SensorSimulator.IsOpen)
-                SensorSimulator.Close();
+            SensorSimulator.Close();
 
             SimulatorState.Fill = new SolidColorBrush(Colors.Yellow);
 
-            if (IrConnection.IsOpen)
-                IrConnection.Close();
+            IrConnection.Close();
 
-            if (MbConnection.IsOpen)
-                MbConnection.Close();
+            MbConnection.Close();
 
             DisableConverterTest();
             DisableSensorTest();
@@ -508,8 +564,6 @@ namespace MC_Suite.Views
             ClearSensorResults();
             ClearLog(true);
 
-            ConncetionRing.Visibility = Visibility.Visible;
-
             //Riapro connessione
             InitMbConnections();
         }
@@ -520,15 +574,17 @@ namespace MC_Suite.Views
             {
                 case ModbusReadStates.Idle:
                     break;
-                case ModbusReadStates.ReadParams:
+                case ModbusReadStates.ReadParams:                    
                     ReadRegister();
                     ModbusReader.Stop();
                     break;
                 case ModbusReadStates.ReadTara:
+                    ConnectionMessage.Text = "Connected, reading params...";
                     ReadTaratura();
                     ModbusReader.Stop();
                     break;
                 case ModbusReadStates.ReadBatteryMode:
+                    ConnectionMessage.Text = "Reading status...";
                     ReadBatteryMode();
                     ModbusReader.Stop();
                     break;
@@ -629,12 +685,19 @@ namespace MC_Suite.Views
 
         private async void ClearAllTest()
         {
-            var dialog = new MessageDialog("Are you sure?", "Clear all tests results and logs");
-            dialog.Commands.Add(new UICommand { Label = "Yes", Id = 0 });
-            dialog.Commands.Add(new UICommand { Label = "Cancel", Id = 1 });
-            var res = await dialog.ShowAsync();
+            ContentDialog logdialog = new ContentDialog()
+            {
+                Title = "Clear all tests results and logs",
+                Content = "Are you sure?",
+                PrimaryButtonText = "Yes",
+                CloseButtonText = "Cancel",
+                IsSecondaryButtonEnabled = false,
+                DefaultButton = ContentDialogButton.Primary
+            };
 
-            if ((int)res.Id == 0)
+            ContentDialogResult logres = await logdialog.ShowAsync();
+
+            if (logres == ContentDialogResult.Primary)
             {
                 ClearTest420mAResults();
                 ClearSimulationResults();
@@ -811,7 +874,13 @@ namespace MC_Suite.Views
                         {
                             RisultatiTest.AnOut.I_OffSet = RisultatiTest.Esito.FAIL;
                             Test420mA_Step = Test420mAStep.TestEnd;
-                            var dialog = new MessageDialog("Current Loop Power error:\n\rTry to connect power supply and charge Battery", "Current Loop Error");
+
+                            ContentDialog dialog = new ContentDialog()
+                            {
+                                Title = "Current Loop Error",
+                                Content = "Current Loop Power error:\n\rTry to connect power supply and charge Battery",
+                                CloseButtonText = "OK"
+                            };
                             await dialog.ShowAsync();
                         }
 
@@ -1200,7 +1269,7 @@ namespace MC_Suite.Views
         {
             if (AbortPending)
             {
-                SimTestStep = SimulationTestStep.Sim_End;
+                SimTestStep = SimulationTestStep.CheckResults;
             }
 
             ModbusReadState = ModbusReadStates.ReadMeas;
@@ -1239,7 +1308,13 @@ namespace MC_Suite.Views
                             MbConnection.SendCommandCompleted += MbConnection_SendCommandCompleted;
                             PortataMsReadTimer.Stop();
 
-                            var dialog = new MessageDialog("Simulation error:\n\rCheck connectors or try to connect power supply and charge Battery", "Simulation Board Error");
+                            ContentDialog dialog = new ContentDialog()
+                            {
+                                Title = "Simulation Board Error",
+                                Content = "Simulation error:\n\rCheck connectors or try to connect power supply and charge Battery",
+                                CloseButtonText = "OK",
+                            };
+
                             await dialog.ShowAsync();
                         }
                         else
@@ -1687,9 +1762,23 @@ namespace MC_Suite.Views
                     min_ver = Parametri.ICoil.Offset_min;
                     max_ver = Parametri.ICoil.Offset_max;
 
-                    RisultatiTest.ICoil.Offset_I = AnalogMeasures.Analogiche[AnalogsService.Icoil].Misura;
-                    AnalogMeasures.Analogiche[AnalogsService.Icoil].TestOffset = RisultatiTest.ICoil.Offset_I;
+                    //Rimozione offset dello zero, limitato a min_def-max_def
+                    if(AnalogMeasures.Analogiche[AnalogsService.Icoil].Misura != 0)
+                    {
+                        if((AnalogMeasures.Analogiche[AnalogsService.Icoil].Misura < max_def) &&
+                           (AnalogMeasures.Analogiche[AnalogsService.Icoil].Misura > min_def))
+                        {
+                            if( Math.Abs(AnalogMeasures.Analogiche[AnalogsService.Icoil].Misura) > Math.Abs(AnalogMeasures.Analogiche[AnalogsService.Icoil].TestOffset))
+                            {
+                                if(AnalogMeasures.Analogiche[AnalogsService.Icoil].Misura > 0)
+                                    RisultatiTest.ICoil.Offset_I = -1 * AnalogMeasures.Analogiche[AnalogsService.Icoil].Misura;
+                                else
+                                    RisultatiTest.ICoil.Offset_I = AnalogMeasures.Analogiche[AnalogsService.Icoil].Misura;
 
+                                AnalogMeasures.Analogiche[AnalogsService.Icoil].TestOffset = RisultatiTest.ICoil.Offset_I;
+                            }
+                        }
+                    }                                       
                     measure = RisultatiTest.ICoil.Offset_I;
                     break;
                 case ECoilTestPhase.ECoil_Pos:
@@ -1748,7 +1837,7 @@ namespace MC_Suite.Views
         {
             if (AbortPending)
             {
-                ECoil_TestStep = ECoilTestStep.ECoil_End;
+                ECoil_TestStep = ECoilTestStep.CheckResults;
             }
 
             switch (ECoil_TestStep)
@@ -1938,15 +2027,17 @@ namespace MC_Suite.Views
             IO_Init         = 1,
             IO_EnterTest    = 2,
             IO_ResetIO      = 3,
-            IO_GP_IN_off    = 4,
-            IO_GP_IN_on     = 5,
-            IO_GP_OUT_off   = 6,
-            IO_GP_OUT_on    = 7,
-            IO_GP_PULSE_off = 8,
-            IO_GP_PULSE_on  = 9,
-            IO_GP_FREQ_Off  = 10,
-            IO_GP_FREQ_on   = 11,
-            IO_End          = 12
+            IO_GP_IN_off_CS = 4,
+            IO_GP_IN_off    = 5,
+            IO_GP_IN_on_CS  = 6,
+            IO_GP_IN_on     = 7,
+            IO_GP_OUT_off   = 8,
+            IO_GP_OUT_on    = 9,
+            IO_GP_PULSE_off = 10,
+            IO_GP_PULSE_on  = 11,
+            IO_GP_FREQ_Off  = 12,
+            IO_GP_FREQ_on   = 13,
+            IO_End          = 14
         }
 
         private ICommand _startIOTestCmd;
@@ -2030,11 +2121,12 @@ namespace MC_Suite.Views
         private void InitIOTestTimer()
         {
             IOTestTimer = new DispatcherTimer();
-            IOTestTimer.Interval = TimeSpan.FromMilliseconds(500);
+            IOTestTimer.Interval = TimeSpan.FromMilliseconds(100);
             IOTestTimer.Tick += IOTestTimer_Tick; ;
             IOTestTimer.Stop();
         }
 
+        private static byte IoDelay;
         private void IOTestTimer_Tick(object sender, object e)
         {
             if (AbortPending)
@@ -2059,13 +2151,18 @@ namespace MC_Suite.Views
                     IOTestTimer.Stop();
                     NextStepReady = true;
                     break;
-                case IOTestStep.IO_GP_IN_off:
+                case IOTestStep.IO_GP_IN_off_CS:
                     IO_TestStep_Mem = IOTestStep.IO_None;
-                    TestInfo.Text = "Reset IO...";                    
+                    TestInfo.Text = "Reset IO...";
                     GPInStatus.Fill = GPIO_Control.ResGPIn();
-                    GetDigitalIOStatus();                    
+                    IO_TestStep = IOTestStep.IO_GP_IN_off;
+                    IoDelay = 0;
                     break;
-                case IOTestStep.IO_GP_IN_on:
+                case IOTestStep.IO_GP_IN_off:
+                    if(IoDelay++ >= 5)
+                        GetDigitalIOStatus();                    
+                    break;
+                case IOTestStep.IO_GP_IN_on_CS:
                     TestInfo.Text = "Prog In On...";
                     if (MC608.DIGITAL_IO.GP_IN == true)
                     { 
@@ -2081,8 +2178,12 @@ namespace MC_Suite.Views
                     IO_TestStep_Mem = IOTestStep.IO_None;
                     
                     GPInStatus.Fill = GPIO_Control.SetGPIn();
-                    GetDigitalIOStatus();
-                    
+                    IO_TestStep = IOTestStep.IO_GP_IN_on;
+                    IoDelay = 0;
+                    break;
+                case IOTestStep.IO_GP_IN_on:
+                    if (IoDelay++ >= 5)
+                        GetDigitalIOStatus();
                     break;
                 case IOTestStep.IO_GP_OUT_off:
                     TestInfo.Text = "Prog In Off...";
@@ -2216,32 +2317,35 @@ namespace MC_Suite.Views
 
                     break;
                 case IOTestStep.IO_End:
-                    TestInfo.Text = "Freq Off...";
 
-                    FreqOutStatus.Fill = GPIO_Control.GetFreqOut().color;
+                    if(AbortPending == false)
+                    { 
+                        TestInfo.Text = "Freq Off...";
+                        FreqOutStatus.Fill = GPIO_Control.GetFreqOut().color;
 
-                    if (MC608.Bobine.I_Coil == (byte)MC608.ICoil.I_125mA)
-                    {
-                        if (GPIO_Control.GetFreqOut().value == true)
+                        if (MC608.Bobine.I_Coil == (byte)MC608.ICoil.I_125mA)
+                        {
+                            if (GPIO_Control.GetFreqOut().value == true)
+                            {
+                                RisultatiTest.IO.GP_FREQ_on = RisultatiTest.Esito.PASS_Verify;
+                                RisultatiTest.IO.Test_GP_FREQ_on.Reading = "On";
+                            }
+                            else
+                            {
+                                RisultatiTest.IO.GP_FREQ_on = RisultatiTest.Esito.FAIL;
+                                RisultatiTest.IO.Test_GP_FREQ_on.Reading = "Off";
+                            }
+                        }
+                        else
                         {
                             RisultatiTest.IO.GP_FREQ_on = RisultatiTest.Esito.PASS_Verify;
                             RisultatiTest.IO.Test_GP_FREQ_on.Reading = "On";
                         }
-                        else
-                        {
-                            RisultatiTest.IO.GP_FREQ_on = RisultatiTest.Esito.FAIL;
-                            RisultatiTest.IO.Test_GP_FREQ_on.Reading = "Off";
-                        }
+                        TestInfo.Text = "";                    
+                        VAuxStatus.Fill = GPIO_Control.ResVAux();
+                        MbConnection.SendCommand(ComSetup.Address, Map.Comandi.TEST_MODE, 0, 3);
+                        MbConnection.SendCommandCompleted += MbConnection_SendCommandCompleted;
                     }
-                    else
-                    {
-                        RisultatiTest.IO.GP_FREQ_on = RisultatiTest.Esito.PASS_Verify;
-                        RisultatiTest.IO.Test_GP_FREQ_on.Reading = "On";
-                    }
-                    TestInfo.Text = "";                    
-                    VAuxStatus.Fill = GPIO_Control.ResVAux();
-                    MbConnection.SendCommand(ComSetup.Address, Map.Comandi.TEST_MODE, 0, 3);
-                    MbConnection.SendCommandCompleted += MbConnection_SendCommandCompleted;
                     RisultatiTestIO();
                     break;
             }
@@ -2372,7 +2476,12 @@ namespace MC_Suite.Views
             //Apro comunicazione con la scheda STM1
             if (ComSetup.SimulatorComPort.ID == null)
             {
-                var dialog = new MessageDialog("SensorSimulator COM Port Not Found", "COM Port Error");
+                ContentDialog dialog = new ContentDialog()
+                {
+                    Title = "COM Port Error",
+                    Content = "SensorSimulator COM Port Not Found",
+                    CloseButtonText = "OK",
+                };
                 await dialog.ShowAsync();
                 DisableSensorTest();
             }
@@ -2896,15 +3005,16 @@ namespace MC_Suite.Views
             MbCOMPortManager cmd = sender as MbCOMPortManager;
             if (cmd.ReadRegisters_CommandResult.Result == Protocol.ModbusTransferResult.success)
             {
+                MbConnection.ReadRegistersCompleted -= MbConnection_ReadRegistersCompleted;
+
                 MbConnection.MbConnectionStatus = MbCOMPortManager.MbConnectionStates.Working;
                 switch (ModbusReadState)
                 {
                     case ModbusReadStates.Idle:
                         break;
                     case ModbusReadStates.ReadParams:
-                        ConncetionRing.Visibility = Visibility.Visible;
-                        ModbusReadState = ModbusReadStates.ReadTara;
-                        CheckDatabaseTest(true);
+                        ConnectionStatus.Visibility = Visibility.Visible;
+                        ModbusReadState = ModbusReadStates.ReadTara;                        
                         ModbusReader.Start();
                         ReadTaraReady = false;
                         ReadBatteryModeReady = false;
@@ -2922,9 +3032,10 @@ namespace MC_Suite.Views
                             ModbusReadState = ModbusReadStates.Idle;
                             EnableConverterTest();
                             ConverterState.Fill = new SolidColorBrush(Colors.LimeGreen);
-                            ConncetionRing.Visibility = Visibility.Collapsed;
+                            ConnectionStatus.Visibility = Visibility.Collapsed;
                             MbConnection.Close();
                             AggiornaInfo();
+                            CheckDatabaseTest(true);
                         }
                         break;
                     case ModbusReadStates.ReadMeas:
@@ -2934,7 +3045,8 @@ namespace MC_Suite.Views
                             { 
                                 bufferLO.Add(MC608_Device.Flow_ms);
                                 SumAverage += MC608_Device.Flow_ms;
-                                Portata_ms_Average = SumAverage / bufferLO.Count;
+                                //Portata_ms_Average = SumAverage / bufferLO.Count;
+                                Portata_ms_Average = MC608_Device.Flow_ms;
                             }
                             MeasCount++;
                             PortataMsReadTimer.Start();
@@ -2958,7 +3070,7 @@ namespace MC_Suite.Views
                             switch (IO_TestStep)
                             {
                                 case IOTestStep.IO_GP_IN_off:
-                                    IO_TestStep = IOTestStep.IO_GP_IN_on;                                
+                                    IO_TestStep = IOTestStep.IO_GP_IN_on_CS;                                
                                     break;
                                 case IOTestStep.IO_GP_IN_on:
                                     IO_TestStep = IOTestStep.IO_GP_OUT_off;
@@ -2972,9 +3084,27 @@ namespace MC_Suite.Views
             }
             else
             {
-                var dialog = new MessageDialog(cmd.ReadRegisters_CommandResult.Message, "Connection Error");
+                MbConnection.ReadRegistersCompleted -= MbConnection_ReadRegistersCompleted;
+
+                switch (ModbusReadState)
+                {
+                    case ModbusReadStates.ReadParams:
+                        ConnectionStatus.Visibility = Visibility.Collapsed;
+                        ModbusReadState = ModbusReadStates.Idle;
+                        MbConnection.Close();                        
+                        break;
+                }
+
+                ContentDialog dialog = new ContentDialog()
+                {
+                    Title = "Connection Error",
+                    Content = cmd.ReadRegisters_CommandResult.Message,
+                    CloseButtonText = "OK",
+                };                
                 await dialog.ShowAsync();
                 AbortAllTests();
+
+                OpenComBtn.IsEnabled = true;
             }
         }
 
@@ -2985,6 +3115,8 @@ namespace MC_Suite.Views
 
             if (cmd.SendCommand_CommandResult.Result == Protocol.ModbusTransferResult.success)
             {
+                MbConnection.SendCommandCompleted -= MbConnection_SendCommandCompleted;
+
                 switch (TestRunning)
                 {
                     case VerificatorTests.Conv_420mA:
@@ -3041,7 +3173,11 @@ namespace MC_Suite.Views
                                     IOTestTimer.Start();
                                     break;
                                 case IOTestStep.IO_ResetIO:
-                                    IO_TestStep = IOTestStep.IO_GP_IN_off;
+                                    IO_TestStep = IOTestStep.IO_GP_IN_off_CS;
+                                    IOTestTimer.Start();
+                                    break;
+                                case IOTestStep.IO_GP_IN_off:
+                                    IO_TestStep = IOTestStep.IO_GP_IN_on_CS;
                                     IOTestTimer.Start();
                                     break;
                                 case IOTestStep.IO_GP_OUT_off:
@@ -3123,7 +3259,14 @@ namespace MC_Suite.Views
             }
             else
             {
-                var dialog = new MessageDialog(cmd.ReadRegisters_CommandResult.Message, "Connection Error");
+                MbConnection.SendCommandCompleted -= MbConnection_SendCommandCompleted;
+
+                ContentDialog dialog = new ContentDialog()
+                {
+                    Title = "Connection Error",
+                    Content = cmd.ReadRegisters_CommandResult.Message,
+                    CloseButtonText = "OK",
+                };
                 await dialog.ShowAsync();
                 AbortAllTests();
             }
@@ -3256,12 +3399,19 @@ namespace MC_Suite.Views
             }
             else
             {
-                var logdialog = new MessageDialog("Are you sure?", "Clear Logs");
-                logdialog.Commands.Add(new UICommand { Label = "Yes", Id = 0 });
-                logdialog.Commands.Add(new UICommand { Label = "Cancel", Id = 1 });
-                var logres = await logdialog.ShowAsync();
+                ContentDialog logdialog = new ContentDialog()
+                {
+                    Title = "Clear Logs",
+                    Content = "Are you sure?",
+                    PrimaryButtonText = "Yes",
+                    CloseButtonText = "Cancel",
+                    IsSecondaryButtonEnabled = false,
+                    DefaultButton = ContentDialogButton.Primary
+                };
 
-                if ((int)logres.Id == 0)
+                ContentDialogResult logres = await logdialog.ShowAsync();
+
+                if (logres == ContentDialogResult.Primary)
                 {
                     Verificator.TestView.Clear();
                     Verificator.TestList.Clear();
@@ -3312,7 +3462,12 @@ namespace MC_Suite.Views
                     await BinaryStorage.Append(FileName, FileManager.CurrentFolder.Path, LogLineArray);
                 }
 
-                var dialog = new MessageDialog("Log File saved", "Log File");
+                ContentDialog dialog = new ContentDialog()
+                {
+                    Title = "Log File",
+                    Content = "Log File saved:\n" + FileName,
+                    CloseButtonText = "OK"
+                };
                 await dialog.ShowAsync();
             }
         }
@@ -3440,10 +3595,15 @@ namespace MC_Suite.Views
             Verificator.ReportView.Clear();
             Verificator.ReportList.ForEach(p => Verificator.ReportView.Add(p));
 
-            var dialog = new MessageDialog("Report #" + NewReport.ID.ToString() + " added to Database\n" +
-                                           "Sensor ID: " + NewReport.Matricola_Sensore + "\n" +
-                                           "Converter ID : " + NewReport.Matricola_Convertitore
-                                           , "Report Saved");
+            ContentDialog dialog = new ContentDialog()
+            {
+                Title = "Report Saved",
+                Content = "Report #" + NewReport.ID.ToString() + " added to Database\n" +
+                          "Sensor ID: " + NewReport.Matricola_Sensore + "\n" +
+                          "Converter ID : " + NewReport.Matricola_Convertitore,
+                CloseButtonText = "OK",
+            };
+
             await dialog.ShowAsync();
 
             CheckDatabaseTest(false);
@@ -3488,19 +3648,40 @@ namespace MC_Suite.Views
             }
         }
 
-        private void SaveConfig()
+        private async void SaveConfig()
         {
             //Salvo la Configurazione
-            RAM_Configuration.Operator  = OperatorName.Text;
-            RAM_Configuration.Company   = CompanyName.Text;
-            RAM_Configuration.Company_Location = CompanyLocation.Text;
-            RAM_Configuration.Customer  = CustomerName.Text;
+            RAM_Configuration.Operator          = OperatorName.Text;
+            RAM_Configuration.Company           = CompanyName.Text;
+            RAM_Configuration.Company_Location  = CompanyLocation.Text;
+            RAM_Configuration.Customer          = CustomerName.Text;
             RAM_Configuration.Customer_Location = CustomerLocation.Text;
-            RAM_Configuration.Note      = Note.Text;
+            RAM_Configuration.Note              = Note.Text;
 
             List<Configuration> NewCfg = new List<Configuration>();
             NewCfg.Add(RAM_Configuration);
-            SerializableStorage<Configuration>.Save(FileManager.ConfigFile, FileManager.MainFolder.Path, NewCfg);
+            if( await SerializableStorage<Configuration>.Save(FileManager.ConfigFile, FileManager.MainFolder.Path, NewCfg) )
+            {
+                ContentDialog dialog = new ContentDialog()
+                {
+                    Title = "Report Info Save",
+                    Content = "Report Info Saved",
+                    CloseButtonText = "OK",
+                };
+
+                await dialog.ShowAsync();
+            }
+            else
+            {
+                ContentDialog dialog = new ContentDialog()
+                {
+                    Title = "Report Info Save",
+                    Content = "Report Info Saving Error",
+                    CloseButtonText = "OK",
+                };
+
+                await dialog.ShowAsync();
+            }
         }
 
 

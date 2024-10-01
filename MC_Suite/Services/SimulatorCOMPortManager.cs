@@ -9,6 +9,7 @@ using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using MC_Suite.Properties;
 using MC_Suite.Modbus;
+using Windows.UI.Xaml.Controls;
 
 
 namespace MC_Suite.Services
@@ -170,7 +171,12 @@ namespace MC_Suite.Services
         {
             if ((Settings.Instance.SimulatorComPort == null) || (Settings.Instance.SimulatorComPort.ID == String.Empty))
             {
-                var dialog = new MessageDialog("Please select COM port: OPTIONS->Settings->Connection", "COM Port not selected");
+                ContentDialog dialog = new ContentDialog()
+                {
+                    Title = "COM Port not selected",
+                    Content = "Please select COM port: OPTIONS->Settings->Connection",
+                    CloseButtonText = "OK",
+                };
                 await dialog.ShowAsync();
                 return false;
             }
@@ -189,14 +195,24 @@ namespace MC_Suite.Services
                     }
                     else
                     {
-                        var dialog = new MessageDialog("Error Opening " + Settings.Instance.SimulatorComPort.Name + " Port");
+                        ContentDialog dialog = new ContentDialog()
+                        {
+                            Title = "COM Port Error",
+                            Content = "Error Opening " + Settings.Instance.SimulatorComPort.Name + " Port",
+                            CloseButtonText = "OK",
+                        };
                         await dialog.ShowAsync();
                         return false;
                     }
                 }
                 catch(Exception ex)
                 {
-                    var dialog = new MessageDialog("Error Opening " + Settings.Instance.SimulatorComPort.Name + " Port\n\r" + ex.Message );
+                    ContentDialog dialog = new ContentDialog()
+                    {
+                        Title = "COM Port Error",
+                        Content = "Error Opening " + Settings.Instance.SimulatorComPort.Name + " Port\n\r" + ex.Message,
+                        CloseButtonText = "OK",
+                    };
                     await dialog.ShowAsync();
                     return false;
                 }
@@ -206,11 +222,12 @@ namespace MC_Suite.Services
         public bool Close()
         {
             if (this.IsOpen)
-            {
                 portHandler.close();
-                return true;
-            }
-            return false;
+
+            if(portHandler != null)
+                portHandler = null;
+
+            return true;
         }
 
         public bool IsOpen

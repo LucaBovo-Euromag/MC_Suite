@@ -35,18 +35,19 @@ namespace MC_Suite.Views
             else
                 FileFiltersBox.Visibility = Visibility.Collapsed;
 
+            CopyFileBtn.IsEnabled = false;
+            DeleteFileBtn.IsEnabled = false;
+
             FileFiltersBox.ItemsSource = FileFilter;
             FileFiltersBox.SelectedIndex = (int)FileManager.ViewFileFilter;
             UpdatingRing.Visibility = Visibility.Visible;
             RefreshTimer = new DispatcherTimer();
             RefreshTimer.Interval = TimeSpan.FromMilliseconds(2000);
             RefreshTimer.Tick += RefreshTimer_Tick;
-            CurrentFolder = FileManager.MainFolder;
+            FileManager.CurrentFolder = FileManager.MainFolder;
             RefreshTimer.Stop();
             RefreshDrives();
         }
-
-        private FolderData CurrentFolder;
 
         private void RefreshDirBtn_Click(object sender, RoutedEventArgs e)
         {
@@ -58,18 +59,16 @@ namespace MC_Suite.Views
         {
             FileManager.RefreshDrivesListView();
 
-            if (FileManager.UsbFolder != null)
+            /*if (FileManager.UsbFolder != null)
             {
                 ChangeDirBtn.Visibility = Visibility.Visible;
-                CopyFileBtn.Visibility = Visibility.Visible;
             }
             else
             {
                 ChangeDirBtn.Visibility = Visibility.Collapsed;
-                CopyFileBtn.Visibility = Visibility.Collapsed;
-            }
+            }*/
 
-            await FileManager.UpdateFileList( CurrentFolder );
+            await FileManager.UpdateFileList( FileManager.CurrentFolder );
 
             FileManager.RefreshFileListView();
 
@@ -116,14 +115,20 @@ namespace MC_Suite.Views
         {
             if(FileBrowserGrid.SelectedItem != null)
             {
-                var dialog = new MessageDialog("Are you sure?");
-                dialog.Title = "Delete File";
-                dialog.Commands.Add(new UICommand { Label = "Ok", Id = 0 });
-                dialog.Commands.Add(new UICommand { Label = "Cancel", Id = 1 });
-                var res = await dialog.ShowAsync();
+                ContentDialog logdialog = new ContentDialog()
+                {
+                    Title = "Delete File",
+                    Content = "Are you sure?",
+                    PrimaryButtonText = "Yes",
+                    CloseButtonText = "Cancel",
+                    IsSecondaryButtonEnabled = false,
+                    DefaultButton = ContentDialogButton.Primary
+                };
 
-                if ((int)res.Id == 0)
-                { 
+                ContentDialogResult logres = await logdialog.ShowAsync();
+
+                if (logres == ContentDialogResult.Primary)
+                {
                     FileData SelectedFile = FileBrowserGrid.SelectedItem as FileData;
 
                     await SerializableStorage<VariableImage>.Delete(SelectedFile.Name, SelectedFile.FullPath, true);
@@ -137,13 +142,19 @@ namespace MC_Suite.Views
         {
             if (FileBrowserGrid.SelectedItem != null)
             {
-                var dialog = new MessageDialog("Are you sure?");
-                dialog.Title = "Crypt File";
-                dialog.Commands.Add(new UICommand { Label = "Ok", Id = 0 });
-                dialog.Commands.Add(new UICommand { Label = "Cancel", Id = 1 });
-                var res = await dialog.ShowAsync();
+                ContentDialog logdialog = new ContentDialog()
+                {
+                    Title = "Crypt File",
+                    Content = "Are you sure?",
+                    PrimaryButtonText = "Yes",
+                    CloseButtonText = "Cancel",
+                    IsSecondaryButtonEnabled = false,
+                    DefaultButton = ContentDialogButton.Primary
+                };
 
-                if ((int)res.Id == 0)
+                ContentDialogResult logres = await logdialog.ShowAsync();
+
+                if (logres == ContentDialogResult.Primary)
                 {
                     FileData SelectedFile = FileBrowserGrid.SelectedItem as FileData;
 
@@ -151,6 +162,7 @@ namespace MC_Suite.Views
 
                     await FileManager.UpdateFileList(FileManager.CurrentFolder);
                 }
+
             }
         }
 
@@ -171,9 +183,9 @@ namespace MC_Suite.Views
         {
             if(DriveBrowserGrid.SelectedItem != null)
             {
-                CurrentFolder = DriveBrowserGrid.SelectedItem as FolderData;
+                FileManager.CurrentFolder = DriveBrowserGrid.SelectedItem as FolderData;
 
-                await FileManager.UpdateFileList(CurrentFolder);
+                await FileManager.UpdateFileList(FileManager.CurrentFolder);
 
                 FileManager.RefreshFileListView();
             }
@@ -185,6 +197,31 @@ namespace MC_Suite.Views
             FileManager.RefreshFileListView();
         }
 
+        private async void DriveBrowserGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (DriveBrowserGrid.SelectedItem != null)
+            {
+                CopyFileBtn.IsEnabled = false;
+                DeleteFileBtn.IsEnabled = false;
 
+                FileManager.CurrentFolder = DriveBrowserGrid.SelectedItem as FolderData;
+
+                await FileManager.UpdateFileList(FileManager.CurrentFolder);
+
+                FileManager.RefreshFileListView();
+            }
+        }
+
+        private void FileBrowserGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if(FileBrowserGrid.SelectedItem != null)
+            {
+                if (FileManager.USBDrivers.Count > 1)
+                {
+                    CopyFileBtn.IsEnabled = true;                    
+                }
+                DeleteFileBtn.IsEnabled = true;
+            }
+        }
     }
 }

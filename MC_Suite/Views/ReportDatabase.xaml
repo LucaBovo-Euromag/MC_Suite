@@ -21,13 +21,14 @@
                     <CommandBar.Content>
                         <Grid/>
                     </CommandBar.Content>
-                    <AppBarButton Icon="Delete" Label="Delete Report" Command="{x:Bind DelReportCmd}"/>
+                    <AppBarButton Icon="Delete" Label="Delete Report" Command="{x:Bind Path=DelReportCmd}"/>
                     <AppBarButton x:Name="OpenReportBtn" Icon="OpenFile" Label="Open Report" Command="{x:Bind Path=OpenReportCmd}"/>
-                    <AppBarButton x:Name="ExportBtn" Icon="Share" Label="Export All" Command="{x:Bind Path=SaveReportDatabaseCmd}" />
+                    <AppBarButton x:Name="ExportBtn" Icon="Share" Label="Export Database" Command="{x:Bind Path=SaveReportDatabaseCmd}" />
                     <AppBarButton x:Name="PrintReportBtn" Icon="Print" Label="Print Report" Click="PrintReportBtn_Click"/>
                 </CommandBar>
+                
                 <StackPanel Grid.Row="1">
-                    <Custom:Expander Header="Report Database" >
+                    <Custom:Expander x:Name="ReportExpander" Header="Report Database" >
                         <Custom:DataGrid x:Name="ReportDB" HorizontalAlignment="Stretch"  ItemsSource="{x:Bind Path=Verificator.ReportView}" AutoGenerateColumns="False" Margin="0,0,0,0" VerticalAlignment="Stretch" IsReadOnly="True">
                             <Custom:DataGrid.Columns>
                                 <Custom:DataGridTextColumn Header="ID"  Tag="Test D" Binding="{Binding ID, Mode=OneWay}" Width="auto"/>
@@ -46,8 +47,13 @@
                         </Custom:DataGrid>
                     </Custom:Expander>
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
-                        <Border Width="40" Height="32" VerticalAlignment="Top" Margin="0,10,10,0"/>
-                        <Border x:Name="ReporViewer" Margin="0,10,0,0" Background="White" HorizontalAlignment="Center" Padding="0,0,0,0" VerticalAlignment="Stretch" Width="800">
+                        <Border x:Name="ReporViewer"
+                                Margin="0,10,0,0"
+                                Background="White"
+                                HorizontalAlignment="Center"
+                                Padding="0,0,0,0"
+                                VerticalAlignment="Stretch"
+                                Width="800">
                             <Grid x:Name="PrintableArea">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto" MinHeight="0"/>
@@ -57,7 +63,7 @@
                                     <RowDefinition Height="Auto" MinHeight="0"/>
                                 </Grid.RowDefinitions>
                                 <StackPanel x:Name="Header" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                                    <Image HorizontalAlignment="Stretch" Height="80" Margin="0,20,0,0" VerticalAlignment="Stretch" Source="/Images/LogoEuromagCertificato.png" Width="383" />
+                                    <Image HorizontalAlignment="Right" Margin="0,0,20,0" VerticalAlignment="Stretch" Source="/Images/Logo Euromag Certificato.jpg" Width="383" Height="150" />
                                 </StackPanel>
 
                                 <RichTextBlock Foreground="Black" x:Name="TextSelection" FontSize="16" Grid.Row="1"  Grid.ColumnSpan="2" OverflowContentTarget="{Binding ElementName=FirstLinkedContainer}"
@@ -65,9 +71,11 @@
 
                                 <RichTextBlock Foreground="Black" x:Name="TextContent" FontSize="16" Grid.Row="1"  Grid.ColumnSpan="2" OverflowContentTarget="{Binding ElementName=FirstLinkedContainer}"
                              IsTextSelectionEnabled="True" TextAlignment="Left" FontFamily="Segoe UI" VerticalAlignment="Top" HorizontalAlignment="CENTER">
-                                    <Paragraph></Paragraph>
-                                    <Paragraph FontSize="30" FontWeight="Bold">FLOWMETER VERIFICATION CERTIFICATE</Paragraph>
-                                    <Paragraph></Paragraph>
+                                    <Paragraph/>
+                                    <Paragraph FontSize="30" FontWeight="Bold">
+                                        <Run Text="FLOWMETER VERIFICATION CERTIFICATE"/>
+                                    </Paragraph>
+                                    <Paragraph/>
                                     <Paragraph>
                                         <InlineUIContainer>
                                             <TextBlock x:Name="MainInfo" FontSize="12" />
@@ -151,9 +159,10 @@
                             </Grid>
                         </Border>
                         <Button x:Name="ExportReportBtn" HorizontalAlignment="Center" Command="{x:Bind Path=SaveReportCmd}" VerticalAlignment="Top" Margin="10,10,0,0">
-                            <Button.Content>
+                            <StackPanel Orientation="Vertical">
                                 <SymbolIcon Symbol="Share" ToolTipService.ToolTip="Export Report"/>
-                            </Button.Content>
+                                <TextBlock Text="Export Report"/>
+                            </StackPanel>
                         </Button>
                     </StackPanel>
                 </StackPanel>
