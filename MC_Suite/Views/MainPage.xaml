@@ -54,10 +54,12 @@
                             Grid.Row="0"
                             HorizontalAlignment="Center"
                             Click="MC406Select_Click"
-                            Width="140"
-                            Background="#FF0069B4">
+                            Width="140">
+                        <Button.Background>
+                            <ImageBrush ImageSource="/Images/ButtonBkg.png"/>
+                        </Button.Background>
                         <StackPanel>
-                            <Image Source="/Images/Frontalino_406.PNG" Width="100"/>
+                            <Image Source="/Images/Frontalino_406_new.png" Width="100"/>
                             <TextBlock Text="MC406" VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="Normal" FontSize="20"/>
                         </StackPanel>
                     </Button>
@@ -66,8 +68,10 @@
                     <Button x:Name="MC608Select"
                             HorizontalAlignment="Center"
                             Click="MC608Select_Click"
-                            Width="140"
-                            Background="#FF0069B4">
+                            Width="140">
+                        <Button.Background>
+                            <ImageBrush ImageSource="/Images/ButtonBkg.png"/>
+                        </Button.Background>
                         <StackPanel>
                             <Image Source="/Images/Frontalino_608_Neutro.png" Width="100"/>
                             <TextBlock Text="MC608" VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="Normal" FontSize="20"/>
@@ -82,7 +86,10 @@
                             VerticalAlignment="Center"
                             Orientation="Horizontal"
                             Margin="5,5,5,5">
-                    <Button x:Name="SensorSelect" Grid.Column="0" Grid.Row="0" HorizontalAlignment="Center" Click="SensorSelect_Click" Width="140" Background="#FF0069B4">
+                    <Button x:Name="SensorSelect" Grid.Column="0" Grid.Row="0" HorizontalAlignment="Center" Click="SensorSelect_Click" Width="140">
+                        <Button.Background>
+                            <ImageBrush ImageSource="/Images/ButtonBkg.png"/>
+                        </Button.Background>
                         <StackPanel>
                             <Image Source="/Images/Sensore.png" Width="100"/>
                             <TextBlock Text="Sensor" VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="Normal" FontSize="20"/>
@@ -109,7 +116,7 @@
                 <Canvas Height="100"/>
             </StackPanel>
         </Border>
-        
+
         <StackPanel Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center" Orientation="Vertical" Margin="0,0,0,0">
             <StackPanel x:Name="SystemClock" VerticalAlignment="Center" HorizontalAlignment="Center" Orientation="Horizontal">
                 <StackPanel  VerticalAlignment="Center" HorizontalAlignment="Center">
